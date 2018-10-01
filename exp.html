@@ -2,6 +2,8 @@
 
 <link rel="stylesheet" href="css/dropzone.css" />
 <link rel="stylesheet" href="css/ui.jqgrid.css"/>
+<link rel="stylesheet" href="css/jquery.gritter.css" />
+
 
 <script src="js/xlsx.full.min.js"></script>
 <script src="js/jquery.nestable.min.js"></script>
@@ -242,7 +244,7 @@
     } catch(e) {
         alert('Dropzone.js does not support older browsers!');
     }
-    var scripts = ["js/jq-table.js","js/xls-export.js"]
+    var scripts = ["js/jq-table.js","js/xls-export.js","js/jquery.gritter.min.js"]
 //    var scripts = [];
     ace.load_ajax_scripts(scripts, function() {
         //inline scripts related to this page

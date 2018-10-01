@@ -283,9 +283,14 @@ function updatePagerIcons(table) {
 }
 
 function setTableData(data) {
-    $(grid_selector).setGridParam({ datastr: data, datatype:'jsonstring', rowNum: 10 }).trigger('reloadGrid');
+    var page = jQuery(grid_selector).jqGrid('getGridParam','page');
+    // var rowNum = o.jqGrid('getGridParam', 'rowNum'); //获取显示配置记录数量
+
+    $(grid_selector).setGridParam({ datastr: data, datatype:'jsonstring' ,page:1}).trigger('reloadGrid');
 
     $('.ui-jqgrid tr.jqgrow td').css("text-overflow","ellipsis");
+
+    jQuery(grid_selector).jqGrid('setGridParam', { page:page}).trigger('reloadGrid'); //还原原来显示的记录数量
 
 }
 
@@ -323,9 +328,28 @@ $('#myModal').on('show.bs.modal', function (event) {
 
     modal.find('.modal-title').text(title);
     modal.find('.dd-list').html(body);
-    //modal.find('.modal-footer').html(footer);
-    // $('.dd').nestable();
+
+
 });
+
+showMissOrder = function (data,title) {
+
+    let text = "<ol>";
+
+    jQuery(data).each(function () {
+        text+= "<li>"+this+"</li>";
+    });
+    text += "</ol>";
+
+    $.gritter.add({
+        title: title,
+        text: text,
+        // image: $path_assets+'/avatars/avatar.png',
+        sticky: true,
+        time: '',
+        class_name: 'gritter-error gritter-light'
+    });
+}
 
 function getContentHtml(datas) {
     if(!datas)
@@ -379,8 +403,8 @@ function splitOrders(rowDatas) {
                 continue;
             var c = good.split(';');
             var sku = c[1];
-            var content = c[0].split('X')[0].trim();
-            var num = c[0].split('X')[1].trim();
+            var content = c[0].split(' X ')[0].trim();
+            var num = c[0].split(' X ')[1].trim();
 
             for(var n = 0; n < Number(num) ; n++){
                 var item = {};
@@ -437,11 +461,27 @@ function nestableChange() {
     $('#myModal').find('.dd-list').html(getContentHtml(newDatas));
 }
 
+function getJQAllData() {
+    var o = jQuery(grid_selector);
+    //获取当前显示的数据
+    var rows = o.jqGrid('getRowData');
+    var rowNum = o.jqGrid('getGridParam', 'rowNum'); //获取显示配置记录数量
+    var total = o.jqGrid('getGridParam', 'records'); //获取查询得到的总记录数量
+    var page = o.jqGrid('getGridParam','page');
+
+    //设置rowNum为总记录数量并且刷新jqGrid，使所有记录现出来调用getRowData方法才能获取到所有数据
+    o.jqGrid('setGridParam', { rowNum: total ,page:1}).trigger('reloadGrid');
+    var rows = o.jqGrid('getRowData');  //此时获取表格所有匹配的
+
+    o.jqGrid('setGridParam', { rowNum: rowNum ,page:page}).trigger('reloadGrid'); //还原原来显示的记录数量
+    return rows;
+}
+
 function split_order() {
     var rowDatas = [];
-    var obj=$(grid_selector).jqGrid("getRowData");
+    // var obj=$(grid_selector).jqGrid("getRowData");
+    var obj = getJQAllData();
     var datas = $('.dd').nestable('serialize');
-
     var order = datas[0].id.toString();
     var isAdd = false;
     var o = order.split("-")[0];
@@ -487,13 +527,14 @@ function split_order() {
             rowDatas.push(this);
         }
     });
+
     $('.modal').modal('hide');
     setTableData(rowDatas);
 }
 
 function download_data() {
     //get all data
-    var obj=$(grid_selector).jqGrid("getRowData");
+    var obj=getJQAllData();
     downloadExl(format_data(obj),"xlsx",month + "." + date + "微商城-Enring" + ".xlsx");
     downloadExl(createDetailData(obj),"xlsx",month + "." + date + "New订单" + ".xlsx");
     $("#accordionThree").trigger("click");

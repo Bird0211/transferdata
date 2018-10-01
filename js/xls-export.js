@@ -88,7 +88,6 @@ function importdata(myDropzone) {//导入
         //导出汇总表
         //downloadExl(total_data(oridatas),"xlsx","批量数据处理表.xlsx");
         */
-
         //format_data
         show_data(oridatas);
 
@@ -200,8 +199,8 @@ function createDetailData(table_datas) {
                 continue;
 
             var sku = c.split(';')[1];
-            var detail_content = c.split(';')[0].split('X')[0].trim();
-            var num = c.split(';')[0].split('X')[1].trim();
+            var detail_content = c.split(';')[0].split(' X ')[0].trim();
+            var num = c.split(';')[0].split(' X ')[1].trim();
             var d = {};
             d["订单编码"] = this.order;
             d["商品"] = detail_content;
@@ -284,81 +283,6 @@ function getFilterModel() {
     return dataString;
 }
 
-function final_data(ori_datas) {
-    if(ori_datas == null || ori_datas.length < 2)
-        return;
-
-    var f_data = [];
-    var detail_data = {};
-    var express_data = {};
-    var order_data = {};
-    for(var f = 0; f < ori_datas.length; f++){
-        var file_data = ori_datas[f];
-        var wb = file_data.data;
-        var sheet = wb[0];
-        var data = sheet.data;
-        var filename = file_data.name;
-        switch (getFileType(data[0])){
-            case 1 : detail_data = getDetailData(data);
-                break;
-            case 2 : express_data = getExpData(data);
-                break;
-            case 3 : order_data = getOrderData(data);
-                break;
-            case -1:
-                toastr.error("文件内容有误，请确认文件包含必要列信息！");
-                return;
-        }
-    }
-
-    if(detail_data && order_data) {
-        var key;
-        for (var item in detail_data) {
-            var detail = detail_data[item];
-            var order = detail.order;
-            var orderData = order_data[order];
-            var exp = express_data[order];
-            if(!exp) {
-                toastr.info("数据错误，快递信息找不到， orderId = "+order);
-                continue;
-            }
-            var expNum = getExpId(exp,detail.content);
-            if(expNum < 0) {
-                toastr.info("数据错误，快递信息找不到， orderId = "+order);
-                continue;
-            }
-
-            var expId = exp[expNum].express;
-            if(!expId || expId == null || expId == ''){
-                continue;
-            }
-
-            /*
-            exp.splice(expNum,1)   //['a','c','d'] 删除起始下标为1，长度为1的一个值，len设置的1，如果为0，则数组不变
-            express_data[order] = exp;
-            */
-
-            var rowdata = order+","+
-                orderData.name+","+
-                orderData.id_num+","+
-                orderData.addr+","+
-                orderData.phone+"," +
-                detail.sku+","+
-                detail.content+","+
-                parseFloat(detail.num)+","+
-                expId+"\n";
-            if(item == 0){
-                key = rowdata;
-            }else {
-                var format_data = {};
-                format_data[key] = rowdata;
-                f_data.push(format_data);
-            }
-        }
-    }
-    return f_data;
-}
-
 function show_data(ori_datas) {
     if(ori_datas == null || ori_datas.length < 2)
         return;
@@ -385,7 +309,6 @@ function show_data(ori_datas) {
         }
     }
 
-    console.info(detail_data);
     if(detail_data && !$.isEmptyObject(order_data)){
         data_processing(order_data,detail_data);
         $('#accordionTwo').trigger("click");
@@ -399,20 +322,21 @@ function show_data(ori_datas) {
 function data_merge(base_data,express_data) {
     var f_data = [];
     var key;
-    console.info(base_data);
+    var missExpdata = [];
     for (var item in base_data) {
         var datas = base_data[item];
         for(var i = 0; i < datas.length; i++){
             var data = datas[i];
             var order = data.order;
             var expInfo = express_data[order];
-            console.info(expInfo);
-            if(!expInfo)
+            if(!expInfo) {
+                missExpdata.push(order);
                 continue;
+            }
 
             var expId = expInfo.express;
-            console.info(expId);
             if(!expId || expId == null || expId == ''){
+                missExpdata.push(order);
                 continue;
             }
 
@@ -445,7 +369,10 @@ function data_merge(base_data,express_data) {
 
     }
 
-    console.info(f_data);
+    if(missExpdata.length > 0){
+        showMissOrder(missExpdata,"部分快递信息匹配错误，请确认以下订单");
+    }
+
     return f_data;
 }
 
@@ -454,6 +381,7 @@ function data_merge(base_data,express_data) {
 function data_processing(order_data,detail_data) {
     if (detail_data && order_data) {
         var process_data = [];
+        var missOrder = [];
         for (var data in order_data) {
             var d = order_data[data];
             var order = d.order;
@@ -464,12 +392,14 @@ function data_processing(order_data,detail_data) {
             var id_num = d.id_num;
             var detail = detail_data[d.order];
 
-            if(!detail)
+            if(!detail) {
+                missOrder.push(d.order);
                 continue;
+            }
             var content = "";
             for(var item in detail){
                 var d_data = detail[item];
-                var c = d_data.content +" X "+ d_data.num +";" +d_data.sku + "<br/>";
+                var c = d_data.content +" X "+ d_data.num +";" +d_data.sku + "</br>";
                 content += c;
             }
             var f_data = {};
@@ -483,14 +413,16 @@ function data_processing(order_data,detail_data) {
             process_data.push(f_data);
 
         }
-
+        console.info(missOrder);
         setTableData(process_data);
+        if(missOrder.length > 0){
+            showMissOrder(missOrder,"部分订单信息有误,请确认！");
+        }
     }
 }
 
 function getDetailData(data){
     var detail_data = {};
-    console.info(data);
     for(var i = 0; i<data.length; i++){
         var d = data[i];
         let order = d["订单编码"].toString().replace(reg, "").trim();
@@ -516,11 +448,9 @@ function getDetailData(data){
         if(!d)
             d = [];
 
-        console.info(d);
         d.push(item);
         detail_data[order] = d;
     }
-    console.info(detail_data);
     return detail_data;
 }
 
