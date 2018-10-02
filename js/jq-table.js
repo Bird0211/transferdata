@@ -335,7 +335,6 @@ $('#myModal').on('show.bs.modal', function (event) {
 showMissOrder = function (data,title) {
 
     let text = "<ol>";
-
     jQuery(data).each(function () {
         text+= "<li>"+this+"</li>";
     });
