@@ -9,8 +9,14 @@ jQuery(grid_selector).jqGrid({
         {name:'option',width:10,sortable:false, align:"center",editable:false,
             formatter:function (cellvalue, options, rowObject) {
 
-                var detail="<a id='splitorder' data-toggle=\"modal\" href='#' data-target=\"#myModal\" data-original-title=\"拆分订单\" data-whatever="+options.rowId+"><i class=\"ui-icon ace-icon fa fa-plus-circle purple\"></i></a>"
+                var detail="<a id='splitorder' data-toggle=\"modal\" href='#' data-target=\"#myModal\" data-original-title=\"拆分订单\" data-whatever="+options.rowId+">"
                     ;
+                if(rowObject.num > 5)
+                    detail += '<i class="ui-icon ace-icon fa fa-plus-circle red"></i>';
+                else
+                    detail += '<i class="ui-icon ace-icon fa fa-plus-circle purple"></i>';
+
+                detail += "</a>";
                 return detail;
             }
         },
@@ -25,10 +31,10 @@ jQuery(grid_selector).jqGrid({
 
     viewrecords : false,
     autowidth: true,
-    rowNum:10,
+    rowNum:20,
     pgbuttons:true,
     page: 1,
-    rowList:[5,10,20],
+    rowList:[10,20,50],
     pager : pager_selector,
     altRows: true,
     //toppager: true,
@@ -282,18 +288,6 @@ function updatePagerIcons(table) {
     })
 }
 
-function setTableData(data) {
-    var page = jQuery(grid_selector).jqGrid('getGridParam','page');
-    // var rowNum = o.jqGrid('getGridParam', 'rowNum'); //获取显示配置记录数量
-
-    $(grid_selector).setGridParam({ datastr: data, datatype:'jsonstring' ,page:1}).trigger('reloadGrid');
-
-    $('.ui-jqgrid tr.jqgrow td').css("text-overflow","ellipsis");
-
-    jQuery(grid_selector).jqGrid('setGridParam', { page:page}).trigger('reloadGrid'); //还原原来显示的记录数量
-
-}
-
 function enableTooltips(table) {
     $('.navtable .ui-pg-button').tooltip({container:'body'});
     $(table).find('.ui-pg-div').tooltip({container:'body'});
@@ -322,35 +316,17 @@ $('#myModal').on('show.bs.modal', function (event) {
     var order = rowData.order;
     //var footer = "";
 
-    var rowDatas = getRelatedRowData(rowData);
+    var rowDatas = table.getRelatedRowData(rowData);
     var orders = splitOrders(rowDatas);
     var body = getContentHtml(orders);
 
     modal.find('.modal-title').text(title);
     modal.find('.dd-list').html(body);
 
-
 });
 
-showMissOrder = function (data,title) {
 
-    let text = "<ol>";
-    jQuery(data).each(function () {
-        text+= "<li>"+this+"</li>";
-    });
-    text += "</ol>";
-
-    $.gritter.add({
-        title: title,
-        text: text,
-        // image: $path_assets+'/avatars/avatar.png',
-        sticky: true,
-        time: '',
-        class_name: 'gritter-error gritter-light'
-    });
-}
-
-function getContentHtml(datas) {
+getContentHtml = function(datas) {
     if(!datas)
         return;
 
@@ -370,22 +346,6 @@ function getContentHtml(datas) {
         content_hteml += "</ol></div></li>";
     }
     return content_hteml;
-}
-
-function getRelatedRowData(rowData) {
-    //
-    var rowDatas = [];
-    var obj=$(grid_selector).jqGrid("getRowData");
-    var order = rowData.order;
-
-    var o = order.split("-")[0];
-    jQuery(obj).each(function(){
-        if(this.order.indexOf(o) > -1){
-            rowDatas.push(this);
-        }
-    });
-
-    return rowDatas;
 }
 
 function splitOrders(rowDatas) {
@@ -460,7 +420,26 @@ function nestableChange() {
     $('#myModal').find('.dd-list').html(getContentHtml(newDatas));
 }
 
-function getJQAllData() {
+download_data = function () {
+    //get all data
+    var table_data=table.getJQAllData();
+    var type = "";
+    if(xlsx.option.type == 1)
+        type = "Taobao";
+    else
+        type = "Enring";
+
+    xlsx.downloadExl(xlsx.new_express_data(table_data),"xlsx",month + "." + date + "富腾达_"+type + ".xlsx");
+    xlsx.downloadExl(xlsx.new_detail_data(table_data),"xlsx",month + "." + date + "New订单_"+type + ".xlsx");
+
+
+    $('#accordionOne').trigger("click");
+    myDropzone.removeAllFiles();
+
+}
+
+var table = {};
+table.getJQAllData = function () {
     var o = jQuery(grid_selector);
     //获取当前显示的数据
     var rows = o.jqGrid('getRowData');
@@ -474,12 +453,12 @@ function getJQAllData() {
 
     o.jqGrid('setGridParam', { rowNum: rowNum ,page:page}).trigger('reloadGrid'); //还原原来显示的记录数量
     return rows;
-}
+};
 
-function split_order() {
+table.split_order = function () {
     var rowDatas = [];
     // var obj=$(grid_selector).jqGrid("getRowData");
-    var obj = getJQAllData();
+    var obj = table.getJQAllData();
     var datas = $('.dd').nestable('serialize');
     var order = datas[0].id.toString();
     var isAdd = false;
@@ -528,15 +507,53 @@ function split_order() {
     });
 
     $('.modal').modal('hide');
-    setTableData(rowDatas);
+    table.setTableData(rowDatas);
 }
 
-function download_data() {
-    //get all data
-    var obj=getJQAllData();
-    downloadExl(format_data(obj),"xlsx",month + "." + date + "微商城-Enring" + ".xlsx");
-    downloadExl(createDetailData(obj),"xlsx",month + "." + date + "New订单" + ".xlsx");
-    $("#accordionThree").trigger("click");
+table.setTableData = function (data) {
+    var page = jQuery(grid_selector).jqGrid('getGridParam','page');
+    // var rowNum = o.jqGrid('getGridParam', 'rowNum'); //获取显示配置记录数量
 
+    $(grid_selector).setGridParam({ datastr: data, datatype:'jsonstring' ,page:1}).trigger('reloadGrid');
+
+    $('.ui-jqgrid tr.jqgrow td').css("text-overflow","ellipsis");
+
+    jQuery(grid_selector).jqGrid('setGridParam', { page:page}).trigger('reloadGrid'); //还原原来显示的记录数量
+
+    if(jQuery('#accordionTwo').attr("class").indexOf("collapsed")>0){
+        $('#accordionTwo').trigger("click");
+    }
 }
 
+table.showMissOrder = function (data,title) {
+
+    let text = "<ol>";
+    jQuery(data).each(function () {
+        text+= "<li>"+this+"</li>";
+    });
+    text += "</ol>";
+
+    $.gritter.add({
+        title: title,
+        text: text,
+        // image: $path_assets+'/avatars/avatar.png',
+        sticky: true,
+        time: '',
+        class_name: 'gritter-error gritter-light'
+    });
+}
+table.getRelatedRowData = function(rowData) {
+    //
+    var rowDatas = [];
+    var obj=$(grid_selector).jqGrid("getRowData");
+    var order = rowData.order;
+
+    var o = order.split("-")[0];
+    jQuery(obj).each(function(){
+        if(this.order.indexOf(o) > -1){
+            rowDatas.push(this);
+        }
+    });
+
+    return rowDatas;
+}
