@@ -1,9 +1,14 @@
-
+const appToken = "";
+const appKey = "";
+const method_createOrder = "";
 
 init_data = function () {
     var storage = localStorage.getItem("_products");
     if(!storage || storage == '')
         xlsx.readWorkbookFromRemoteFile(xlsx.url.products,setLocalStorage);
+
+    //update special_goods
+
 }
 
 import_data = function (myDropzone) {

@@ -434,6 +434,7 @@ format_Taobao = function (ori_datas) {
 
         if(i > start_row && start_row > -1) {
             if(row_data.express != null && row_data.express != ''){   //存在物流公司 则跳过
+                console.info("express not null")
                 continue;
             }
 
@@ -458,6 +459,7 @@ format_Taobao = function (ori_datas) {
         }
     }
 
+    console.info("order_data:")
     console.info(order_data);
 
     var datas = [];
