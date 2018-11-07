@@ -202,7 +202,7 @@ var map_option = {
 };
 
 var dom = document.getElementById("container");
-var myChart = echarts.init(dom);
+var myChart = echarts.init(dom,'vintage');
 var app = {};
 
 var geoCoordMap = {

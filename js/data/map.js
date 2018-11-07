@@ -1,11 +1,10 @@
 var map_data = {};
-var products = null;
 var area_brand = {};
 var area_product = {};
 map_data.init  = function () {
     init_event();
-    init_brand();
-    init_product();
+    // init.show_brand();
+    // init.get_products();
     init_area_brand();
 }
 
@@ -20,7 +19,8 @@ init_event = function () {
             return;
         }
 
-        var p_datas = products[brand];
+
+        var p_datas = init.product[brand];
         jQuery(p_datas).each(function () {
             $('#product').append("<option value='"+this.code+"'>"+this.name+"</option>");
         })
@@ -28,25 +28,7 @@ init_event = function () {
 
     $('#product').bind("change",function () {
         show_product_info();
-
     })
-}
-
-init_brand = function() {
-    var url = "file/brand.json";
-    var htmlobj= $.ajax({url:url,async:false});
-    var dataString = htmlobj.responseText;
-    var brands = JSON.parse(dataString);
-    jQuery(brands).each(function () {
-        $('#brand').append("<option value='"+this+"'>"+this+"</option>");
-    })
-};
-
-init_product = function () {
-    var url = "file/products.json";
-    var htmlobj= $.ajax({url:url,async:false});
-    var dataString = htmlobj.responseText;
-    products = JSON.parse(dataString);
 }
 
 init_area_brand = function () {
@@ -96,18 +78,6 @@ init_area_prodcut = function (callback) {
     callback();
 }
 
-show_brand_info = function (brand) {
-    if(!brand)
-        brand = $('#brand').val();
-
-    var data = area_brand[brand];
-    if(data) {
-        set_option(data);
-
-    }else
-        toastr.error("该商品没有订单,请选择其他商品");
-}
-
 show_product_info = function() {
     var product = $('#product').val();
     if(product == "all")
@@ -120,6 +90,18 @@ show_product_info = function() {
             show_product();
         }
     }
+}
+
+show_brand_info = function (brand) {
+    if(!brand)
+        brand = $('#brand').val();
+
+    var data = area_brand[brand];
+    if(data) {
+        set_option(data);
+
+    }else
+        toastr.error("该商品没有订单,请选择其他商品");
 }
 
 show_product = function () {

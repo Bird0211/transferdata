@@ -10,7 +10,9 @@ getInfo = function (ori_Data) {
 
     // init_area_data(data);
 
-    init_area_prodcuts(data);
+    // init_area_prodcuts(data);
+
+    init_sale_data(data);
 }
 
 getBrandInfo = function (datas) {
@@ -415,3 +417,100 @@ init_area_prodcuts = function (datas) {
     console.info(JSON.stringify(area_data));
 }
 
+init_sale_data = function (datas) {
+    var product_data = {};
+    var sale_Data = {};
+
+    jQuery(datas).each(function () {
+        var brand = this.brand.replace(reg, "").replace(/^\s\s*/, '').replace(/\s\s*$/, '').toLocaleUpperCase();
+        if (brand == '开发测试产品' || brand == '包材及工时费' || brand == 'MEE')
+            return;
+
+        // var address = this.address;
+        // var phone = this.phone;
+        var num = this.qty;
+        var code = this.code;
+        var time = this.sales_time;
+        /*
+        console.info(time.toTimeString());
+        console.info(time.toDateString());
+        console.info(time.toISOString());
+        console.info(time.toUTCString());
+        console.info(this.sales_time);
+        console.info([time.getFullYear(), time.getMonth() + 1, time.getDate()].join('/'));
+        */
+        // [now.getFullYear(), now.getMonth() + 1, now.getDate()].join('/')
+        if(!time)
+            console.info(this);
+
+        var key = new Date(time).format('yyyy-MM-dd').toString();
+        var all_data = sale_Data["all"];
+        var brand_sale = sale_Data[brand];
+        var product_sale = product_data[code];
+
+        if(!all_data)
+            all_data = {};
+
+        if(!brand_sale)
+            brand_sale = {};
+
+        if(!product_sale)
+            product_sale = {};
+
+        if(all_data[key])
+           all_data[key] += parseInt(num);
+        else
+           all_data[key] = parseInt(num);
+
+        if(brand_sale[key])
+            brand_sale[key] += parseInt(num);
+        else
+            brand_sale[key] = parseInt(num);
+
+        if(product_sale[key])
+            product_sale[key] += parseInt(num);
+        else
+            product_sale[key] = parseInt(num);
+
+        sale_Data["all"] = all_data;
+        sale_Data[brand] = brand_sale;
+        product_data[code] = product_sale;
+    });
+    /*
+        var data = {};
+        data.name = time.toString();
+        data.value = [];
+
+        name: now.toString(),
+            value: [
+            [now.getFullYear(), now.getMonth() + 1, now.getDate()].join('/'),
+            Math.round(value)
+        ]*/
+
+    console.info(sale_Data);
+    console.info(JSON.stringify(sale_Data));
+    console.info(product_data);
+    console.info(JSON.stringify(product_data));
+}
+
+
+Date.prototype.format = function(fmt) {
+    var o = {
+        "M+" : this.getMonth()+1,                 //月份
+        "d+" : this.getDate(),                    //日
+        "h+" : this.getHours(),                   //小时
+        "m+" : this.getMinutes(),                 //分
+        "s+" : this.getSeconds(),                 //秒
+        "q+" : Math.floor((this.getMonth()+3)/3), //季度
+        "S"  : this.getMilliseconds()             //毫秒
+    };
+    if(/(y+)/.test(fmt)) {
+        fmt=fmt.replace(RegExp.$1, (this.getFullYear()+"").substr(4 - RegExp.$1.length));
+    }
+    for(var k in o) {
+        if(new RegExp("("+ k +")").test(fmt)){
+            fmt = fmt.replace(RegExp.$1, (RegExp.$1.length==1) ? (o[k]) : (("00"+ o[k]).substr((""+ o[k]).length)));
+        }
+    }
+    return fmt;
+}

@@ -1,7 +1,7 @@
-<title>Data Analysis</title>
+<title>Real-time Analysis</title>
 <link rel="stylesheet" href="css/chosen.css" />
-
 <script type="text/javascript" src="js/data/echarts.js"></script>
+<script type="text/javascript" src="js/data/vintage.js"></script>
 
 <!-- ajax layout which only needs content area -->
 <div class="page-header">
@@ -24,55 +24,52 @@
     </h1>
 </div><!-- /.page-header -->
 
-<!--<script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/echarts/echarts.min.js"></script>-->
-<!--<script type="text/javascript" src="js/data/echarts.js"></script>-->
-<div id="container" style="height: 100%"></div>
-<script type="text/javascript">
-    jQuery(function($){
-        $('#container').css("height",$(window).height()-190);
-    });
-</script>
+       <div id="container" style="height: 100%"></div>
+        <script type="text/javascript">
+            jQuery(function($){
+                $('#container').css("height",$(window).height()-190);
+            });
+        </script>
 
+       <!--<script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/echarts/echarts.min.js"></script>-->
        <script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/echarts-gl/echarts-gl.min.js"></script>
        <script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/echarts-stat/ecStat.min.js"></script>
        <script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/echarts/extension/dataTool.min.js"></script>
-        <!--<script type="text/javascript" src="js/data/china.js"></script>-->
-
        <!--<script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/echarts/map/js/china.js"></script>-->
        <!--<script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/echarts/map/js/world.js"></script>-->
        <script type="text/javascript" src="https://api.map.baidu.com/api?v=2.0&ak=ZUONbpqGBsYGXNIYHicvbAbM"></script>
        <script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/echarts/extension/bmap.min.js"></script>
        <script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/simplex.js"></script>
-        <script type="text/javascript" src="js/data/base_info.js"></script>
+
+        <script type="text/javascript" src="js/data/real_time_info.js"></script>
+
+        <script type="text/javascript">
+
+            var scripts = ["js/data/init.js","js/data/real_time_info.js","js/chosen.jquery.min.js","js/data/real_time.js"]
+            ace.load_ajax_scripts(scripts, function() {
+                jQuery(function($){
+                    toastr.options.positionClass = 'toast-top-center';
+                    $('.chosen-select').chosen({allow_single_deselect:true});
+
+                    //resize the chosen on window resize
+                    $(window)
+                        .off('resize.chosen')
+                        .on('resize.chosen', function() {
+                            $('.chosen-select').each(function() {
+                                var $this = $(this);
+                                $this.next().css({'width': $this.parent().width()});
+                            })
+                        }).trigger('resize.chosen');
+
+                    real_data.init();
+                });
+            });
 
 
-       <script type="text/javascript">
-
-           var scripts = ["js/data/init.js","js/data/china.js","js/chosen.jquery.min.js","js/data/map.js"]
-           ace.load_ajax_scripts(scripts, function() {
-               jQuery(function($){
-                   toastr.options.positionClass = 'toast-top-center';
-                   map_data.init();
-                   myChart.on('brushselected', renderBrushed);
-                   $('.chosen-select').chosen({allow_single_deselect:true});
-                   //resize the chosen on window resize
-
-                   $(window)
-                       .off('resize.chosen')
-                       .on('resize.chosen', function() {
-                           $('.chosen-select').each(function() {
-                               var $this = $(this);
-                               $this.next().css({'width': $this.parent().width()});
-                           })
-                       }).trigger('resize.chosen');
-               });
-           });
 
 
-
-
-/*
-if (option && typeof option === "object") {
-    myChart.setOption(option, true);
-}*/
-       </script>
+            /*
+            if (option && typeof option === "object") {
+                myChart.setOption(option, true);
+            }*/
+        </script>

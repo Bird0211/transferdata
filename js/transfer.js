@@ -36,7 +36,7 @@ show_data = function (ori_datas) {
             toastr.error("文件有误，请检查数据");
             return;
         }
-        xlsx.downloadExl(download_data,"csv",month + "." + date + "MEE-Import" + ".csv");
+        xlsx.downloadExl(download_data,"csv",month + "." + date + "MEE-Import" + ".csv",true);
         setTimeout(function () {
             myDropzone.removeAllFiles();
         }, 1000);

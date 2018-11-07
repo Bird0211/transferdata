@@ -68,14 +68,17 @@ xlsx.importdata = function (obj,callback) {
     }
 };
 
-xlsx.downloadExl = function (data, type,filename) {
+xlsx.downloadExl = function (data, type,filename,isSkipHeader) {
     if(!data || data == null || data.length <= 0) {
         toastr.error("数据错误，请检查数据");
         return;
     }
+   /* var skip = 0;
+    if(isSkipHeader)
+        skip = 1;*/
 
     const wb = { SheetNames: ['Sheet1'], Sheets: {}, Props: {} };
-    wb.Sheets['Sheet1'] = XLSX.utils.json_to_sheet(data);//通过json_to_sheet转成单页(Sheet)数据
+    wb.Sheets['Sheet1'] = XLSX.utils.json_to_sheet(data,{skipHeader: isSkipHeader});//通过json_to_sheet转成单页(Sheet)数据
     saveAs(new Blob([s2ab(XLSX.write(wb, {bookType: (type == undefined ? 'xlsx':type),bookSST: false, type: 'binary'}))],
         { type: "application/octet-stream" }),filename);
 }
@@ -143,6 +146,7 @@ xlsx.merge_data = function(ori_datas) {
     if(datas == null)
         return;
 
+    console.info(datas);
     var detail_data = datas["detail"];
     var express_data = datas["express"];
 
@@ -182,13 +186,17 @@ xlsx.new_express_data = function(table_datas) {
         if(format_content == '')
             return;
 
+        var sender = this.sender;
+        if(!sender)
+            sender = "3PL";
+
         var d = {};
         d["运单编号"] = "";
         d["订单编号"] = this.order;
         d["收件人"] = this.name;
         d["收件人联系电话"] = this.phone;
         d["收货人详细地址"] = this.address;
-        d["寄件人电话"] = "3PL";
+        d["寄件人电话"] = sender;
         d["内件品名1"] = format_content;
         d["总数量"] = num;
         d["*实际重量（kg）"] = "";
@@ -274,6 +282,9 @@ process_data = function (order_data,detail_data) {
             var phone = d.phone;
             var address = d.addr;
             var id_num = d.id_num;
+            var sender = d.sender;
+            if(!sender)
+                sender = "3PL";
             var detail = detail_data[d.order];
 
             if(!detail) {
@@ -294,6 +305,7 @@ process_data = function (order_data,detail_data) {
             f_data.address = address;
             f_data.id_num = id_num;
             f_data.content = content;
+            f_data.sender = sender;
             process_data.push(f_data);
 
         }
@@ -336,7 +348,8 @@ pre_down_data = function (base_data,express_data) {
                     data.content+","+
                     parseFloat(data.num)+","+
                     expId+"\n";
-                continue;
+                console.info(key);
+                // continue;
             }
 
             var format_data = {};
@@ -358,6 +371,7 @@ pre_down_data = function (base_data,express_data) {
     if(missExpdata.length > 0){
         table.showMissOrder(missExpdata,"部分快递信息匹配错误，请确认以下订单");
     }
+
 
     return f_data;
 }
@@ -517,6 +531,7 @@ getDetailData = function(data){
         let phone = d["电话"];
         let address = d["地址"];
         let id_num = d["身份证"];
+        // let sender = d["客户"];
 
         var item = {};
         item.order = order;
@@ -527,6 +542,7 @@ getDetailData = function(data){
         item.phone = phone;
         item.address = address;
         item.id_num = id_num;
+        // item.sender = sender;
 
         var d = detail_data[order];
         if(!d)
@@ -593,6 +609,8 @@ getOrderData = function (data) {
             }
             else if(item == '身份信息')
                 row_data.id_num = drowData.replace(reg, "").trim();
+            else if(item == '客户')
+                row_data.sender = drowData.replace(reg, "").trim();
 
         }
         row_data.express ;

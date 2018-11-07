@@ -4,7 +4,7 @@ jQuery(grid_selector).jqGrid({
     data: grid_data,
     datatype: "local",
     height: '600',
-    colNames:['','订单编号','商品名称','数量', '收件人', '电话','身份证','地址'],
+    colNames:['','订单编号','商品名称','数量','发件人' ,'收件人', '电话','身份证','地址'],
     colModel:[
         {name:'option',width:10,sortable:false, align:"center",editable:false,
             formatter:function (cellvalue, options, rowObject) {
@@ -23,6 +23,7 @@ jQuery(grid_selector).jqGrid({
         {name:'order',index:'order', width:60, sorttype:"int", editable: false},
         {name:'content',index:'content',width:200, editable:false},
         {name:'num',index:'num', width:20,editable: false},
+        {name:'sender',index:'sender', width:20,editable: false},
         {name:'name',index:'name', width:70, editable: false,hidden:true},
         {name:'phone',index:'phone', width:90, editable: false,hidden:true},
         {name:'id_num',index:'id_num', width:90, editable: false,hidden:true},
@@ -429,8 +430,8 @@ download_data = function () {
     else
         type = "Enring";
 
-    xlsx.downloadExl(xlsx.new_express_data(table_data),"xlsx",month + "." + date + "富腾达_"+type + ".xlsx");
-    xlsx.downloadExl(xlsx.new_detail_data(table_data),"xlsx",month + "." + date + "New订单_"+type + ".xlsx");
+    xlsx.downloadExl(xlsx.new_express_data(table_data),"xlsx",month + "." + date + "富腾达_"+type + ".xlsx",false);
+    xlsx.downloadExl(xlsx.new_detail_data(table_data),"xlsx",month + "." + date + "New订单_"+type + ".xlsx",false);
 
 
     $('#accordionOne').trigger("click");
