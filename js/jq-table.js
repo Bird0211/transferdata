@@ -340,7 +340,7 @@ getContentHtml = function(datas) {
         content_hteml += "<ol class=\"dd-list\">";
         for(var i = 0; i < data.length; i++){
             var d = data[i];
-            content_hteml += "<li class=\"dd-item\" data-id='"+d.sku+"' data-sku='"+d.sku+"' data-content='"+d.content+"' data-num='"+d.num+"'>";
+            content_hteml += "<li class=\"dd-item\" data-id='"+d.sku+"' data-sku='"+d.sku+"' data-content='"+d.content+"' data-num='"+d.num+"' data-sender=''"+d.sender+"'>";
             content_hteml += "<div class=\"dd-handle\">"+d.content + ' X ' + d.num + "</div>"
             content_hteml += "</li>";
         }
@@ -355,6 +355,7 @@ function splitOrders(rowDatas) {
         var rowData = rowDatas[r];
         var order = rowData.order;
         var contents = rowData.content;
+        var sender = rowData.sender;
         var goods = contents.split('<br>');
         var details = [];
         for(var i = 0; i < goods.length ; i++){
@@ -371,6 +372,7 @@ function splitOrders(rowDatas) {
                 item.content = content;
                 item.sku = sku;
                 item.num = 1;
+                item.sender = sender;
                 details.push(item);
             }
         }
@@ -498,6 +500,7 @@ table.split_order = function () {
                     d.address = this.address;
                     d.phone = this.phone;
                     d.id_num = this.id_num;
+                    d.sender = this.sender;
                     rowDatas.push(d);
                 }
                 isAdd = true;
