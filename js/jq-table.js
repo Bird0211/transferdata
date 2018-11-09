@@ -166,6 +166,16 @@ jQuery(grid_selector).jqGrid('navGrid',pager_selector,
     }
 ).navButtonAdd(pager_selector,{
     caption: "",
+    title:"Gift",
+    buttonicon: "ace-icon fa fa-gift pink",
+    onClickButton: function () {
+        gift_data();
+    },
+    position: "last"
+
+}).navSeparatorAdd(pager_selector,{sepclass : "ui-separator",sepcontent: ''
+}).navButtonAdd(pager_selector,{
+    caption: "",
     title:"Download",
     buttonicon: "ace-icon fa fa-download purple",
     onClickButton: function () {
@@ -318,6 +328,8 @@ $('#myModal').on('show.bs.modal', function (event) {
     //var footer = "";
 
     var rowDatas = table.getRelatedRowData(rowData);
+    console.info("rowData");
+    console.info(rowData);
     var orders = splitOrders(rowDatas);
     var body = getContentHtml(orders);
 
@@ -354,32 +366,38 @@ function splitOrders(rowDatas) {
     for(var r in rowDatas){
         var rowData = rowDatas[r];
         var order = rowData.order;
-        var contents = rowData.content;
-        var sender = rowData.sender;
-        var goods = contents.split('<br>');
-        var details = [];
-        for(var i = 0; i < goods.length ; i++){
-            var good = goods[i];
-            if(!good || good == '')
-                continue;
-            var c = good.split(';');
-            var sku = c[1];
-            var content = c[0].split(' X ')[0].trim();
-            var num = c[0].split(' X ')[1].trim();
-
-            for(var n = 0; n < Number(num) ; n++){
-                var item = {};
-                item.content = content;
-                item.sku = sku;
-                item.num = 1;
-                item.sender = sender;
-                details.push(item);
-            }
-        }
-        result[order] = details;
+        result[order] = splitOrder_detail(rowData);
     }
     return result;
+}
 
+splitOrder_detail = function (rowData) {
+    var contents = rowData.content;
+    var sender = rowData.sender;
+    var goods = contents.split('<br>');
+    console.info("splitOrder_detail");
+    console.info(contents)
+    console.info(goods);
+    var details = [];
+    for(var i = 0; i < goods.length ; i++){
+        var good = goods[i];
+        if(!good || good == '')
+            continue;
+        var c = good.split(';');
+        var sku = c[1];
+        var content = c[0].split(' X ')[0].trim();
+        var num = c[0].split(' X ')[1].trim();
+
+        for(var n = 0; n < Number(num) ; n++){
+            var item = {};
+            item.content = content;
+            item.sku = sku;
+            item.num = 1;
+            item.sender = sender;
+            details.push(item);
+        }
+    }
+    return details;
 }
 
 function nestableChange() {

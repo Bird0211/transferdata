@@ -171,7 +171,6 @@
 
             if(this.files.length > 0 ){
                 if(!xlsx.checkFiles(this.files)){
-                    toastr.error("文件已存在，请重新上传！");
                     this.removeFile(this.files[this.files.length-1]);
                     return;
                 }
@@ -189,7 +188,7 @@
     } catch(e) {
         alert('Dropzone.js does not support older browsers!');
     }
-    var scripts = ["js/jq-table.js?v=1","js/transfer.js?v=1","js/xlsx.js?v=1","js/jquery.gritter.min.js"]
+    var scripts = ["js/jq-table.js?v=2","js/transfer.js?v=2","js/xlsx.js?v=2","js/jquery.gritter.min.js"]
 //    var scripts = [];
     ace.load_ajax_scripts(scripts, function() {
         //inline scripts related to this page

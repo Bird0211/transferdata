@@ -7,9 +7,11 @@ xlsx.option = {}; //1:taobao;
 xlsx.option.type = 1;//1:taobao;2:Enring
 xlsx.option.isFilter = true;
 xlsx.option.split = true;
+xlsx.option.name = "";//名字:后缀
 xlsx.url = {};
 xlsx.url.products = "file/Mee_products.xls";
 xlsx.url.split = "file/Mee_split.xls";
+xlsx.url.gift = "file/gift_role.xlsx";
 
 xlsx.importdata = function (obj,callback) {
     if(!obj.files) {
@@ -77,16 +79,21 @@ xlsx.downloadExl = function (data, type,filename,isSkipHeader) {
     if(isSkipHeader)
         skip = 1;*/
 
+    // var reName = filename.split(".")[0]+xlsx.option.name+"."+filename.split(".")[1];
+
+var reName = filename.replace("."+type , xlsx.option.name+"."+type);
     const wb = { SheetNames: ['Sheet1'], Sheets: {}, Props: {} };
     wb.Sheets['Sheet1'] = XLSX.utils.json_to_sheet(data,{skipHeader: isSkipHeader});//通过json_to_sheet转成单页(Sheet)数据
     saveAs(new Blob([s2ab(XLSX.write(wb, {bookType: (type == undefined ? 'xlsx':type),bookSST: false, type: 'binary'}))],
-        { type: "application/octet-stream" }),filename);
+        { type: "application/octet-stream" }),reName);
 }
 
 xlsx.checkFile = function (files) {
     for(let i = 0; i < files.length - 1; i++){
         if(files[i].name == files[files.length-1].name)
             return false;
+
+
     }
     return true;
 }
@@ -111,12 +118,34 @@ xlsx.format_data = function (ori_datas) {
 
 xlsx.checkFiles = function (files) {
 
-    if(files.length < 2)
-        return true;
-
-    for(let i = 0; i < files.length - 1; i++){
-        if(files[i].name == files[files.length-1].name)
+    if(files.length == 1) {
+        if(files[0].name.indexOf("订单发货明细表") > -1 &&
+            files[0].name.indexOf('_') < 0) {
+            toastr.error("请修改文件名，添加所属名称，例如: "+files[0].name.split('.')[0]+"_fiona"+"."+files[0].name.split('.')[1]);
             return false;
+        }
+        return true;
+    }
+
+    var isIncludeName = false;
+    console.info(files);
+
+    if(files[files.length-2].name == files[files.length-1].name){
+        toastr.error("文件已存在，请重新上传！");
+        return false;
+    }
+
+    for(let i = 0; i < files.length; i++){
+        console.info(files[i].name);
+        if(!isIncludeName && files[i].name.indexOf('_') > 0){
+            isIncludeName = true;
+            break;
+        }
+    }
+
+    if(!isIncludeName) {
+        toastr.error("请修改文件名，添加所属名称，例如: "+files[0].name.split('.')[0]+"_fiona"+"."+files[0].name.split('.')[1]);
+        return false;
     }
     return true;
 }
@@ -689,6 +718,8 @@ xlsx.readWorkbookFromRemoteFile = function(url, callback) {
                     oridata.manges = wb.Sheets[sheet]['!merges'];
                     oridata.data = XLSX.utils.sheet_to_json(wb.Sheets[sheet],{raw:true});
                     // break; // 如果只取第一张表，就取消注释这行
+                    console.info(oridata);
+
                     remote_data.push(oridata.data);
                 }
             }
