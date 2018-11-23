@@ -9,9 +9,12 @@ xlsx.option.isFilter = true;
 xlsx.option.split = true;
 xlsx.option.name = "";//名字:后缀
 xlsx.url = {};
-xlsx.url.products = "file/Mee_products.xls";
+xlsx.url.products = "file/Mee_products.xlsx";
 xlsx.url.split = "file/Mee_split.xls";
 xlsx.url.gift = "file/gift_role.xlsx";
+xlsx.url.customer = "file/customer.xlsx";
+
+xlsx.customer = null;
 
 xlsx.importdata = function (obj,callback) {
     if(!obj.files) {
@@ -81,7 +84,7 @@ xlsx.downloadExl = function (data, type,filename,isSkipHeader) {
 
     // var reName = filename.split(".")[0]+xlsx.option.name+"."+filename.split(".")[1];
 
-var reName = filename.replace("."+type , xlsx.option.name+"."+type);
+var reName = filename.replace("."+type , "_"+xlsx.option.name+"."+type);
     const wb = { SheetNames: ['Sheet1'], Sheets: {}, Props: {} };
     wb.Sheets['Sheet1'] = XLSX.utils.json_to_sheet(data,{skipHeader: isSkipHeader});//通过json_to_sheet转成单页(Sheet)数据
     saveAs(new Blob([s2ab(XLSX.write(wb, {bookType: (type == undefined ? 'xlsx':type),bookSST: false, type: 'binary'}))],
@@ -128,7 +131,6 @@ xlsx.checkFiles = function (files) {
     }
 
     var isIncludeName = false;
-    console.info(files);
 
     if(files[files.length-2].name == files[files.length-1].name){
         toastr.error("文件已存在，请重新上传！");
@@ -136,7 +138,6 @@ xlsx.checkFiles = function (files) {
     }
 
     for(let i = 0; i < files.length; i++){
-        console.info(files[i].name);
         if(!isIncludeName && files[i].name.indexOf('_') > 0){
             isIncludeName = true;
             break;
@@ -171,16 +172,18 @@ xlsx.merge_data = function(ori_datas) {
         return;
     }
 
+    console.info("xlsx.merge_data");
     var datas = type_datas(ori_datas);
-    if(datas == null)
+    if(datas == null) {
+        console.info("datas is null")
         return;
+    }
 
     console.info(datas);
     var detail_data = datas["detail"];
     var express_data = datas["express"];
 
     if(express_data && !$.isEmptyObject(express_data) && detail_data) {
-
         return pre_down_data(detail_data,express_data);
     }
 }
@@ -196,7 +199,7 @@ xlsx.new_express_data = function(table_datas) {
 
     jQuery(table_datas).each(function() {
         var content = this.content;
-        var contents = content.split('<br>');
+        var contents = content.split('<br>').sort();
         var format_content = "";
         var num = 0;
         for(var i = 0; i < contents.length; i++){
@@ -208,7 +211,6 @@ xlsx.new_express_data = function(table_datas) {
                 continue;
 
             format_content += c.split(";")[0] + ";";
-            // Red Seal 红印儿童牙膏 无氟可吞咽 75g X 1
             num = Number(num) + Number(c.split(';')[0].split(' X ')[1].trim());
 
         }
@@ -216,8 +218,11 @@ xlsx.new_express_data = function(table_datas) {
             return;
 
         var sender = this.sender;
-        if(!sender)
+        var is3pl = this.is3pl;
+
+        if(is3pl == "true" || !sender) {
             sender = "3PL";
+        }
 
         var d = {};
         d["运单编号"] = "";
@@ -226,8 +231,8 @@ xlsx.new_express_data = function(table_datas) {
         d["收件人联系电话"] = this.phone;
         d["收货人详细地址"] = this.address;
         d["寄件人电话"] = sender;
-        d["内件品名1"] = format_content;
-        d["总数量"] = num;
+        d["内件品名1"] =  xlsx.reNewContext(format_content);
+        d["总数量"] = num.toString();
         d["*实际重量（kg）"] = "";
         format_data.push(d);
     });
@@ -296,6 +301,7 @@ type_datas = function (ori_datas) {
                 return;
         }
     }
+    console.info(types_datas);
     return types_datas;
 }
 
@@ -338,7 +344,6 @@ process_data = function (order_data,detail_data) {
             process_data.push(f_data);
 
         }
-        console.info(missOrder);
         if(missOrder.length > 0){
             table.showMissOrder(missOrder,"部分订单信息有误,请确认！");
         }
@@ -406,7 +411,6 @@ pre_down_data = function (base_data,express_data) {
 }
 
 format_Taobao = function (ori_datas) {
-    console.info(ori_datas);
     var start_row = -1;
     var order_data = {};
     var isMac = true;
@@ -415,10 +419,8 @@ format_Taobao = function (ori_datas) {
     var sheet = wb[0];
     var data = sheet.data;
 
-    console.info(data);
     for(var i = 0; i<data.length; i++){
         var d = data[i];
-        console.info(d);
         var row_data = {};
         for(var item in d) {
             if(!d[item])
@@ -501,10 +503,6 @@ format_Taobao = function (ori_datas) {
             }
         }
     }
-
-    console.info("order_data:")
-    console.info(order_data);
-
     var datas = [];
     if(order_data != null && !$.isEmptyObject(order_data)){
         for(var key in order_data){
@@ -654,7 +652,6 @@ function filter_order(content,filterModel) {
     //读取文件内容
     if(!filterModel || filterModel == '')
         return false;
-    console.info(content);
     var models = filterModel.split('\n');
     return models.includes(content);
 }
@@ -708,11 +705,13 @@ xlsx.readWorkbookFromRemoteFile = function(url, callback) {
             var remote_data = [];
             var data = new Uint8Array(xhr.response)
             var wb = XLSX.read(data, {type: 'array'});
+            console.info(wb);
+            console.info(wb.Props.ModifiedDate);
             // 遍历每张表读取
             for (var sheet in wb.Sheets) {
                 if (wb.Sheets.hasOwnProperty(sheet)) {
                     var oridata = {};
-                    oridata.name = wb.SheetNames[sheet];
+                    oridata.name = sheet
                     oridata.fromTo = wb.Sheets[sheet]['!ref'];
                     oridata.range = wb.Sheets[sheet]['!range'];
                     oridata.manges = wb.Sheets[sheet]['!merges'];
@@ -720,7 +719,7 @@ xlsx.readWorkbookFromRemoteFile = function(url, callback) {
                     // break; // 如果只取第一张表，就取消注释这行
                     console.info(oridata);
 
-                    remote_data.push(oridata.data);
+                    remote_data.push(oridata);
                 }
             }
             if(callback) callback(remote_data);
@@ -747,12 +746,13 @@ reNewData = function (datas,format_data) {
             return;
         var product = {};
         product.code = this.code.toString().replace(reg, "").trim();
-        product.name = this.oversea_name.replace('[不含GST]','');
+        product.name = this.oversea_name.replace('[不含GST]','').replace('【不含GST】','');
         product.weight = this.weight;
        products[this.code] = product;
     });
     var d_data = [];
     jQuery(format_data).each(function() {
+        var order = this.order;
         var content = this.content;
         var contents = content.split("</br>");
         var format_content = "";
@@ -775,8 +775,105 @@ reNewData = function (datas,format_data) {
 
         var new_data = this;
         new_data.content = format_content;
+        // new_data.order = reNewOrder(order);
         d_data.push(new_data);
     });
     return d_data;
 
+}
+
+xlsx.reNewContext = function (context) {
+    var customer = xlsx.getCustomer();
+    if(!customer || customer == null)
+        return order;
+
+    var time = new Date().Format('MMdd');
+
+    return customer.ID + time +" " +context;
+
+}
+
+xlsx.getCustomer = function () {
+    if(!xlsx.option.name || xlsx.option.name == "")
+        return null;
+
+    var customer = xlsx.get_customerByName(xlsx.option.name);
+    return customer;
+}
+
+xlsx.init_customer = function () {
+    xlsx.readWorkbookFromRemoteFile(xlsx.url.customer,set_customer);
+}
+
+
+set_customer = function (oridata) {
+    if(!oridata || oridata == null)
+        return;
+
+    var data = oridata[0].data;
+    var datas = {};
+    jQuery(data).each(function () {
+        datas[this.name] = this;
+    });
+
+    var dataString = JSON.stringify(datas);
+    sessionStorage.setItem("_customer",dataString);
+}
+
+xlsx.get_customerByName = function (name) {
+    if(!xlsx.customer || xlsx.customer == null){
+        var customerString = sessionStorage.getItem("_customer");
+        if(customerString && customerString!= null) {
+            xlsx.customer = JSON.parse(customerString);
+        }
+    }
+
+    var customer;
+    if(xlsx.customer){
+        customer = xlsx.customer[name];
+    }
+    return customer;
+}
+
+xlsx.init_gifr_role = function(){
+    xlsx.readWorkbookFromRemoteFile(xlsx.url.gift,set_gift_role);
+}
+
+set_gift_role = function (oridata) {
+    if(!oridata || oridata == null)
+        return;
+
+    var giftdata = {};
+    jQuery(oridata).each(function () {
+        var data = this.data;
+        var sheet_name = this.name;
+        var gifts = [];
+        jQuery(data).each((i,v)=>{
+            var sku = v["商品SKU"];
+            if(!sku)
+                return;
+
+            var skus = sku.split('\n');
+            var gift = v["赠品"].split('\n');
+
+            var g = {};
+            g.skus = skus;
+            g.num = v["匹配数量"];
+            g.gift = gift;
+            g.order = v["优先级"];
+
+            gifts.push(g);
+        });
+
+        if(gifts && gifts.length > 0){
+            gifts = gifts.sort(function (a,b) {
+                return a.order - b.order;
+            });
+            giftdata[sheet_name] = gifts;
+        }
+
+    });
+
+    var giftString = JSON.stringify(giftdata);
+    sessionStorage.setItem("_giftrole",giftString);
 }

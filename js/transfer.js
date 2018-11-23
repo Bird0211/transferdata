@@ -3,9 +3,23 @@ const appKey = "";
 const method_createOrder = "";
 
 init_data = function () {
-    var storage = localStorage.getItem("_products");
-    if(!storage || storage == '')
+    var storage = sessionStorage.getItem("_products");
+    if(!storage || storage == ''){
+        console.info("init products");
         xlsx.readWorkbookFromRemoteFile(xlsx.url.products,setLocalStorage);
+    }
+
+    var customer = sessionStorage.getItem("_customer");
+    if(!customer || customer == '') {
+        console.info("init customer");
+        xlsx.init_customer();
+    }
+
+    var gift_role = sessionStorage.getItem("_giftrole")
+    if(!gift_role || gift_role == '') {
+        console.info("init gift_role")
+        xlsx.init_gifr_role();
+    }
 
 }
 
@@ -13,8 +27,8 @@ import_data = function (myDropzone) {
     xlsx.importdata(myDropzone,show_data);
 }
 
-setLocalStorage = function (data) {
-    localStorage.setItem("_products", JSON.stringify(data));
+setLocalStorage = function (oridata) {
+    sessionStorage.setItem("_products", JSON.stringify(oridata[0].data));
 }
 
 show_data = function (ori_datas) {
@@ -23,7 +37,7 @@ show_data = function (ori_datas) {
         var name = ori_datas[i].name;
         if(name.indexOf("_") > -1){
             var names = name.split("_");
-            xlsx.option.name = "_"+ names[names.length - 1].split(".")[0];
+            xlsx.option.name = names[names.length - 1].split(".")[0];
             break;
         }
     }
@@ -34,12 +48,18 @@ show_data = function (ori_datas) {
             toastr.error("文件有误，请检查数据");
             return;
         }
-        init_gift();
+
+        var customer = xlsx.getCustomer();
+        if(!customer || customer == null){
+            table.showMissOrder(["请联系管理员，添加用户("+xlsx.option.name+") ID"], "用户基本信息有误!");
+        }
+
         xlsx.transferName(format_data);
 
     }else if(getStep(ori_datas) == 2) {
         var download_data = xlsx.merge_data(ori_datas);
         if(download_data == null) {
+            console.info("download_data is null")
             toastr.error("文件有误，请检查数据");
             return;
         }
@@ -62,46 +82,13 @@ getStep = function (ori_datas) {
         return 1;
 }
 
-init_gift = function () {
-    var gift_url = xlsx.url.gift.split('.')[0]+xlsx.option.name+'.'+xlsx.url.gift.split('.')[1];
-    xlsx.readWorkbookFromRemoteFile(gift_url,setGift);
-}
-
-setGift = function (data) {
-    var gifts = [];
-    jQuery(data[0]).each(function () {
-        var sku = this["商品SKU"];
-        if(!sku)
-            return;
-
-        var skus = sku.split('\n');
-        var gift = this["赠品"].split('\n');
-
-        var g = {};
-        g.skus = skus;
-        g.num = this["匹配数量"];
-        g.gift = gift;
-        g.order = this["优先级"];
-
-        gifts.push(g);
-    });
-
-    if(gifts && gifts.length > 0){
-        gifts = gifts.sort(function (a,b) {
-            return a.order - b.order;
-        });
-        var giftString = JSON.stringify(gifts);
-        sessionStorage.setItem("_gift"+xlsx.option.name,giftString);
-    }
-}
-
 getGift = function () {
-    var giftString = sessionStorage.getItem("_gift"+xlsx.option.name);
+    var giftString = sessionStorage.getItem("_giftrole");
     var gift = null;
     if(giftString){
         gift = JSON.parse(giftString);
     }
-    return gift;
+    return gift[xlsx.option.name];
 }
 
 gift_data = function () {
@@ -203,4 +190,19 @@ intersectNum = function (orderSKU,giftSKU) {
     return num;
 }
 
+Date.prototype.Format = function (fmt) { //author: meizz
+    var o = {
+        "M+": this.getMonth() + 1, //月份
+        "d+": this.getDate(), //日
+        "h+": this.getHours(), //小时
+        "m+": this.getMinutes(), //分
+        "s+": this.getSeconds(), //秒
+        "q+": Math.floor((this.getMonth() + 3) / 3), //季度
+        "S": this.getMilliseconds() //毫秒
+    };
+    if (/(y+)/.test(fmt)) fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
+    for (var k in o)
+        if (new RegExp("(" + k + ")").test(fmt)) fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+    return fmt;
+}
 

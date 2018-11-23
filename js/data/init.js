@@ -1,6 +1,6 @@
 var init = {};
 init.brand = null;
-init.product = null
+init.product = null;
 
 init.get_brands = function (callback) {
     var brandString = sessionStorage.getItem("_brands");
@@ -34,7 +34,6 @@ init.show_brand = function(brands) {
         $('#brand').append("<option value='"+this+"'>"+this+"</option>");
     })
 }
-
 
 Date.prototype.Format = function (fmt) { //author: meizz
     var o = {

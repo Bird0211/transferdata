@@ -4,7 +4,7 @@ jQuery(grid_selector).jqGrid({
     data: grid_data,
     datatype: "local",
     height: '600',
-    colNames:['','订单编号','商品名称','数量','发件人' ,'收件人', '电话','身份证','地址'],
+    colNames:['','订单编号','商品名称','数量','发件人','sender','is3pl','收件人' ,'电话','身份证','地址'],
     colModel:[
         {name:'option',width:10,sortable:false, align:"center",editable:false,
             formatter:function (cellvalue, options, rowObject) {
@@ -23,13 +23,30 @@ jQuery(grid_selector).jqGrid({
         {name:'order',index:'order', width:60, sorttype:"int", editable: false},
         {name:'content',index:'content',width:200, editable:false},
         {name:'num',index:'num', width:20,editable: false},
-        {name:'sender',index:'sender', width:20,editable: false},
+        {name:'', width:20,editable: false,
+            formatter:function (cellvalue, options, rowObject) {
+                var checked = 'checked';
+                if(rowObject.is3pl && rowObject.is3pl == "true"){
+                    checked = ''
+                }
+            var value = subString(rowObject.sender,6).padEnd(6);
+            var detail = "<label>";
+                detail +="<input name='switch-field-1' onclick='change_row_3pl("+options.rowId+")' "+checked+" class='ace ace-switch' type='checkbox' />"
+                detail +="<span class='lbl middle' data-lbl='"+value+"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;3PL'></span>"
+                detail += "</label>"
+
+                return detail;
+            },
+        },
+        {name:'sender',index:'sender', width:70, editable: false,hidden:true},
+        {name:'is3pl',index:'is3pl', width:70, editable: false,hidden:true},
         {name:'name',index:'name', width:70, editable: false,hidden:true},
         {name:'phone',index:'phone', width:90, editable: false,hidden:true},
         {name:'id_num',index:'id_num', width:90, editable: false,hidden:true},
         {name:'address',index:'address', width:150, sortable:false,editable:false,hidden:true}
     ],
-
+    cellEdit:true,
+    cellsubmit:"clientArray",
     viewrecords : false,
     autowidth: true,
     rowNum:20,
@@ -175,6 +192,17 @@ jQuery(grid_selector).jqGrid('navGrid',pager_selector,
 
 }).navSeparatorAdd(pager_selector,{sepclass : "ui-separator",sepcontent: ''
 }).navButtonAdd(pager_selector,{
+    id:'3pl',
+    caption: "3PL",
+    title:"3PL",
+    buttonicon: "ace-icon fa fa-exchange btn-yellow",
+    onClickButton: function () {
+        change_3pl();
+    },
+    position: "last"
+
+}).navSeparatorAdd(pager_selector,{sepclass : "ui-separator",sepcontent: ''
+}).navButtonAdd(pager_selector,{
     caption: "",
     title:"Download",
     buttonicon: "ace-icon fa fa-download purple",
@@ -184,6 +212,7 @@ jQuery(grid_selector).jqGrid('navGrid',pager_selector,
     position: "last"
 
 }).navSeparatorAdd(pager_selector,{sepclass : "ui-separator",sepcontent: ''});
+
 
 $('#grid-pager_left').css("width",'15px');
 
@@ -328,8 +357,6 @@ $('#myModal').on('show.bs.modal', function (event) {
     //var footer = "";
 
     var rowDatas = table.getRelatedRowData(rowData);
-    console.info("rowData");
-    console.info(rowData);
     var orders = splitOrders(rowDatas);
     var body = getContentHtml(orders);
 
@@ -374,10 +401,8 @@ function splitOrders(rowDatas) {
 splitOrder_detail = function (rowData) {
     var contents = rowData.content;
     var sender = rowData.sender;
+    var is3pl = rowData.is3pl;
     var goods = contents.split('<br>');
-    console.info("splitOrder_detail");
-    console.info(contents)
-    console.info(goods);
     var details = [];
     for(var i = 0; i < goods.length ; i++){
         var good = goods[i];
@@ -394,6 +419,7 @@ splitOrder_detail = function (rowData) {
             item.sku = sku;
             item.num = 1;
             item.sender = sender;
+            item.is3pl = is3pl;
             details.push(item);
         }
     }
@@ -457,6 +483,38 @@ download_data = function () {
     $('#accordionOne').trigger("click");
     myDropzone.removeAllFiles();
 
+}
+
+change_3pl = function () {
+
+    var is3pl = "false";
+    if($('#3pl div span').hasClass("btn-yellow")){
+        console.info("has Class")
+        $('#3pl div span').addClass('info');
+        $('#3pl div span').removeClass('btn-yellow');
+        is3pl = "true";
+    }else {
+        console.info("No Class")
+        $('#3pl div span').addClass('btn-yellow');
+        $('#3pl div span').removeClass('info');
+    }
+
+    var table_data=table.getJQAllData();
+    jQuery(table_data).each(function(){
+        this.is3pl = is3pl;
+    })
+    table.setTableData(table_data);
+}
+
+change_row_3pl = function (rowId) {
+    var rowData = jQuery(grid_selector).jqGrid("getRowData",rowId);
+    var is3pl = rowData.is3pl;
+    if(is3pl == "true")
+        is3pl = "false";
+    else
+        is3pl = "true";
+
+    jQuery(grid_selector).setCell(rowId,'is3pl',is3pl);
 }
 
 var table = {};
@@ -579,3 +637,34 @@ table.getRelatedRowData = function(rowData) {
 
     return rowDatas;
 }
+
+
+function subString(str, len) {
+    var newLength = 0;
+    var newStr = "";
+    var chineseRegex = /[^\x00-\xff]/g;
+    var singleChar = "";
+    var strLength = str.replace(chineseRegex,"**").length;
+    for(var i = 0;i < strLength;i++) {
+        singleChar = str.charAt(i).toString();
+        if(singleChar.match(chineseRegex) != null) {
+            newLength += 2;
+        }else {
+            newLength++;
+        }
+        if(newLength > len) {
+            break;
+        }
+        newStr += singleChar;
+    }
+    if(strLength > len) {
+        // newStr += "...";
+    }
+    return newStr;
+}
+
+/*
+$('.switch-field-1').attr('checked' , 'checked').on('click', function(){
+    $('.switch-field-1 .btn').toggleClass('no-border');
+});
+*/
