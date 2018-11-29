@@ -25,6 +25,11 @@ jQuery(grid_selector).jqGrid({
         {name:'num',index:'num', width:20,editable: false},
         {name:'', width:20,editable: false,
             formatter:function (cellvalue, options, rowObject) {
+            if(!rowObject.sender || rowObject.sender == ''){
+                rowObject.sender == "3PL"
+                return "3PL";
+            }
+
                 var checked = 'checked';
                 if(rowObject.is3pl && rowObject.is3pl == "true"){
                     checked = ''
@@ -393,37 +398,9 @@ function splitOrders(rowDatas) {
     for(var r in rowDatas){
         var rowData = rowDatas[r];
         var order = rowData.order;
-        result[order] = splitOrder_detail(rowData);
+        result[order] = table.splitOrder_detail(rowData);
     }
     return result;
-}
-
-splitOrder_detail = function (rowData) {
-    var contents = rowData.content;
-    var sender = rowData.sender;
-    var is3pl = rowData.is3pl;
-    var goods = contents.split('<br>');
-    var details = [];
-    for(var i = 0; i < goods.length ; i++){
-        var good = goods[i];
-        if(!good || good == '')
-            continue;
-        var c = good.split(';');
-        var sku = c[1];
-        var content = c[0].split(' X ')[0].trim();
-        var num = c[0].split(' X ')[1].trim();
-
-        for(var n = 0; n < Number(num) ; n++){
-            var item = {};
-            item.content = content;
-            item.sku = sku;
-            item.num = 1;
-            item.sender = sender;
-            item.is3pl = is3pl;
-            details.push(item);
-        }
-    }
-    return details;
 }
 
 function nestableChange() {
@@ -534,6 +511,34 @@ table.getJQAllData = function () {
     return rows;
 };
 
+table.splitOrder_detail = function (rowData) {
+    var contents = rowData.content;
+    var sender = rowData.sender;
+    var is3pl = rowData.is3pl;
+    var goods = contents.split('<br>');
+    var details = [];
+    for(var i = 0; i < goods.length ; i++){
+        var good = goods[i];
+        if(!good || good == '')
+            continue;
+        var c = good.split(';');
+        var sku = c[1];
+        var content = c[0].split(' X ')[0].trim();
+        var num = c[0].split(' X ')[1].trim();
+
+        for(var n = 0; n < Number(num) ; n++){
+            var item = {};
+            item.content = content;
+            item.sku = sku;
+            item.num = 1;
+            item.sender = sender;
+            item.is3pl = is3pl;
+            details.push(item);
+        }
+    }
+    return details;
+}
+
 table.split_order = function () {
     var rowDatas = [];
     // var obj=$(grid_selector).jqGrid("getRowData");
@@ -550,28 +555,9 @@ table.split_order = function () {
                     var children = data["children"];
                     var d = {};
                     d.order = data.id;
-                    var content = "";
-                    var num = 0 ;
-                    var merge = {};
-                    for(var c = 0; c < children.length; c ++){
-                        var child = children[c];
-                        num += parseInt(child.num);
-                        var childData = merge[child.sku];
-                        if(!childData) {
-                            childData = child;
-                        }else {
-                            childData.num += parseInt(child.num);
-                        }
-                        merge[child.sku] = childData;
-                    }
-
-                    for(var item in merge){
-                        var mergeData = merge[item];
-                        content += mergeData.content +" X " + mergeData.num +";" + mergeData.sku + "<br/>";
-                    }
-
-                    d.content = content;
-                    d.num = num;
+                    var merge_data = table.merge(children);
+                    d.content = merge_data.content;
+                    d.num = merge_data.num;
                     d.name = this.name;
                     d.address = this.address;
                     d.phone = this.phone;
@@ -588,6 +574,33 @@ table.split_order = function () {
 
     $('.modal').modal('hide');
     table.setTableData(rowDatas);
+}
+
+table.merge = function (data) {
+    var content = "";
+    var num = 0 ;
+    var merge = {};
+    for(var c = 0; c < data.length; c ++){
+        var child = data[c];
+        num += parseInt(child.num);
+        var childData = merge[child.sku];
+        if(!childData) {
+            childData = child;
+        }else {
+            childData.num = parseInt(childData.num) + parseInt(child.num);
+        }
+        merge[child.sku] = childData;
+    }
+
+    for(var item in merge){
+        var mergeData = merge[item];
+        content += mergeData.content +" X " + mergeData.num +";" + mergeData.sku + "<br/>";
+    }
+
+    var merge_data = {};
+    merge_data.num = num;
+    merge_data.content = content;
+    return merge_data;
 }
 
 table.setTableData = function (data) {

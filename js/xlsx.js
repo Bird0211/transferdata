@@ -434,6 +434,7 @@ format_Taobao = function (ori_datas) {
                 break;
             }
 
+            console.info(item_data)
             if(item_data.indexOf('合计') > -1){
                 start_row = -1;
                 break;
@@ -729,26 +730,70 @@ xlsx.readWorkbookFromRemoteFile = function(url, callback) {
 }
 
 xlsx.transferName = function (format_data) {
-    var datas = localStorage.getItem("_products");
-
+    var datas = sessionStorage.getItem("_products");
     var new_data = reNewData(JSON.parse(datas),format_data);
-    table.setTableData(new_data);
+    var error_sku = [];
+    var merge = [];
+    jQuery(new_data).each(function () {
+        var goods = this.content.split('<br>');
+        var details = [];
+        for(var i = 0; i < goods.length ; i++){
+            var good = goods[i];
+            if(!good || good == '')
+                continue;
+            var c = good.split(';');
+            var sku = c[1];
+            var content = c[0].split(' X ')[0].trim();
+            var num = c[0].split(' X ')[1].trim();
+
+            var item = {};
+            item.content = content;
+            item.sku = sku;
+            item.num = parseInt(num);
+            details.push(item);
+
+            if(!isNumber(item.sku)){
+                //不是数字
+                error_sku.push("order : "+this.order + " SKU : "+item.sku);
+            }
+
+        }
+        var merge_date = table.merge(details);
+        this.content = merge_date.content;
+        this.num = merge_date.num;
+        merge.push(this);
+    })
+
+    if(error_sku && error_sku.length > 0) {
+        table.showMissOrder($.unique(error_sku),"以下SKU有误，请确认！");
+    }
+
+    table.setTableData(merge);
+
 }
+
+function isNumber(value) {
+    return !Number.isNaN(Number(value))
+}
+
+
 
 reNewData = function (datas,format_data) {
     if(!datas)
         return format_data;
 
-    var data = datas[0];
+    /*var data = datas[0];
+    console.info(data);*/
     var products = {};
-    jQuery(data).each(function() {
+    jQuery(datas).each(function() {
         if(!this.oversea_name || !this.code)
             return;
+        var code = this.code.toString().replace(reg, "").trim()
         var product = {};
-        product.code = this.code.toString().replace(reg, "").trim();
+        product.code = code;
         product.name = this.oversea_name.replace('[不含GST]','').replace('【不含GST】','');
         product.weight = this.weight;
-       products[this.code] = product;
+       products[code] = product;
     });
     var d_data = [];
     jQuery(format_data).each(function() {
