@@ -54,6 +54,9 @@ show_data = function (ori_datas) {
             table.showMissOrder(["请联系管理员，添加用户("+xlsx.option.name+") ID"], "用户基本信息有误!");
         }
 
+        console.info("format_data");
+        console.info(format_data);
+
         xlsx.transferName(format_data);
 
     }else if(getStep(ori_datas) == 2) {
@@ -130,7 +133,7 @@ gift_data = function () {
 
 match_gift = function (row_data,gifts) {
     var add_gift = null;
-    var datas = splitOrder_detail(row_data);
+    var datas = table.splitOrder_detail(row_data);
     var prudict_skus = [];
     jQuery(datas).each(function () {
         prudict_skus.push(this.sku);

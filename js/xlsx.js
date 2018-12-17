@@ -433,12 +433,15 @@ format_Taobao = function (ori_datas) {
                 start_row = i;
                 break;
             }
+            // console.info("item:" + item + " = " + item_data);
 
-            console.info(item_data)
-            if(item_data.indexOf('合计') > -1){
+            if(item_data.indexOf('合计') == 0 && item == '订单类型'){
                 start_row = -1;
                 break;
             }
+
+            // console.info("start_row:" + start_row +" , i = " + i);
+
             if(i > start_row && start_row > -1) {
                 if(isMac){
                     var jValue = item_data;
@@ -504,6 +507,9 @@ format_Taobao = function (ori_datas) {
             }
         }
     }
+
+    console.info("order_data");
+    console.info(order_data);
     var datas = [];
     if(order_data != null && !$.isEmptyObject(order_data)){
         for(var key in order_data){
