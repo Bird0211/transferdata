@@ -142,7 +142,7 @@
     });
 
     var dateObj = new Date();
-    //var year = dateObj.getFullYear();
+    var year = dateObj.getFullYear();
     var month = dateObj.getMonth()+1;//月  (注意：月份+1)
     var date = dateObj.getDate();//日
 
@@ -188,7 +188,7 @@
     } catch(e) {
         alert('Dropzone.js does not support older browsers!');
     }
-    var scripts = ["js/jq-table.js?v=5","js/transfer.js?v=4","js/xlsx.js?v=11","js/jquery.gritter.min.js"]
+    var scripts = ["js/jq-table.js?v=6","js/transfer.js?v=5","js/xlsx.js?v=12","js/jquery.gritter.min.js"]
 //    var scripts = [];
     ace.load_ajax_scripts(scripts, function() {
         //inline scripts related to this page

@@ -95,7 +95,7 @@
     try {
          var myDropzone = new Dropzone("#dropzone" , {
             paramName: "file", // The name that will be used to transfer the file
-            maxFilesize: 100, // MB
+            maxFilesize: 5, // MB
             maxFiles:3,
             acceptedFiles:".xls,.xlsx,.csv",
             addRemoveLinks : true,
@@ -113,7 +113,7 @@
         myDropzone.on("addedfile", function(file) {
             /* Maybe display some more file information on your page */
 
-            if(this.files.length > 0 ){
+            if(this.files.length > 1 ){
                 if(!xlsx.checkFiles(this.files)){
                     toastr.error("文件已存在，请重新上传！");
                     this.removeFile(this.files[this.files.length-1]);
@@ -130,7 +130,7 @@
     } catch(e) {
         alert('Dropzone.js does not support older browsers!');
     }
-    var scripts = ["js/jq-table.js","js/data/import.js","js/xlsx.js","js/basic.js"]
+    var scripts = ["js/jq-table.js","js/data/compared.js","js/xlsx.js","js/jquery.gritter.min.js"]
 //    var scripts = [];
     ace.load_ajax_scripts(scripts, function() {
         //inline scripts related to this page

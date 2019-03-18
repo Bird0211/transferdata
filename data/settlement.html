@@ -95,7 +95,7 @@
     try {
          var myDropzone = new Dropzone("#dropzone" , {
             paramName: "file", // The name that will be used to transfer the file
-            maxFilesize: 100, // MB
+            maxFilesize: 5, // MB
             maxFiles:3,
             acceptedFiles:".xls,.xlsx,.csv",
             addRemoveLinks : true,
@@ -130,7 +130,7 @@
     } catch(e) {
         alert('Dropzone.js does not support older browsers!');
     }
-    var scripts = ["js/jq-table.js","js/data/import.js","js/xlsx.js","js/basic.js"]
+    var scripts = ["js/jq-table.js","js/data/settlement.js","js/xlsx.js","js/jquery.gritter.min.js"]
 //    var scripts = [];
     ace.load_ajax_scripts(scripts, function() {
         //inline scripts related to this page

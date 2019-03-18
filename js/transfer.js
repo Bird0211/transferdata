@@ -9,11 +9,13 @@ init_data = function () {
         xlsx.readWorkbookFromRemoteFile(xlsx.url.products,setLocalStorage);
     }
 
+    /*
     var customer = sessionStorage.getItem("_customer");
     if(!customer || customer == '') {
         console.info("init customer");
         xlsx.init_customer();
     }
+    */
 
     var gift_role = sessionStorage.getItem("_giftrole")
     if(!gift_role || gift_role == '') {
@@ -38,6 +40,7 @@ show_data = function (ori_datas) {
         if(name.indexOf("_") > -1){
             var names = name.split("_");
             xlsx.option.name = names[names.length - 1].split(".")[0];
+            console.info("set name = "+xlsx.option.name);
             break;
         }
     }
@@ -54,9 +57,6 @@ show_data = function (ori_datas) {
             table.showMissOrder(["请联系管理员，添加用户("+xlsx.option.name+") ID"], "用户基本信息有误!");
         }
 
-        console.info("format_data");
-        console.info(format_data);
-
         xlsx.transferName(format_data);
 
     }else if(getStep(ori_datas) == 2) {
@@ -67,6 +67,11 @@ show_data = function (ori_datas) {
             return;
         }
         xlsx.downloadExl(download_data,"csv",month + "." + date + "MEE-Import" + ".csv",true);
+
+        settlement(download_data);
+
+        saveData(download_data);
+
         setTimeout(function () {
             myDropzone.removeAllFiles();
         }, 1000);
@@ -148,6 +153,7 @@ match_gift = function (row_data,gifts) {
             break;
         }
     }
+
     if(match_gift) {
         add_gift = [];
         var gift_pruducts = match_gift.gift;
@@ -193,6 +199,172 @@ intersectNum = function (orderSKU,giftSKU) {
     return num;
 }
 
+saveData = function (datas) {
+    var customer = xlsx.getCustomer();
+    var allProject = getAllProduct();
+    var mongoDB = [];
+    jQuery(datas).each(function () {
+        $.each(this,function (i,value) {
+            var infos = value.split(",");
+            var obj = {};
+            obj.order = infos[0];
+                obj.name = infos[1];
+                obj.id_num = infos[2];
+                obj.address = infos[3];
+                obj.phone = infos[4];
+                obj.sku = infos[5].toString().replace(reg, "").trim();;
+                obj.content = infos[6];
+                obj.num = infos[7];
+                obj.expId = infos[8];
+                obj.date = new Date().Format('yyyyMMdd');
+                obj.user = customer.ID;
+                obj.username = customer.name;
+                obj._id = obj.order + "_" + obj.sku;
+
+                var project = allProject[obj.sku];
+                if(project){
+                    obj.brand = project.brand;
+            }
+            var body = {};
+            body.body = encodeUnicode(JSON.stringify(obj));
+            mongoDB.push(body);
+        })
+    });
+
+    sendJsonData($mongoDB_path,JSON.stringify(mongoDB),true,function (data) {
+        console.info(data);
+    });
+}
+
+getAllProduct = function () {
+    var datas = sessionStorage.getItem("_products");
+    if(!datas)
+        return null;
+
+    var obj = JSON.parse(datas);
+    if(!obj)
+        return null;
+
+    var products = {};
+    jQuery(obj).each(function() {
+        if(!this.oversea_name || !this.code)
+            return;
+        var code = this.code.toString().replace(reg, "").trim();
+        var product = {};
+        product.code = code;
+        product.name = this.oversea_name.replace('[不含GST]','').replace('【不含GST】','');
+        product.weight = this.weight;
+        product.brand = this.brand;
+        products[code] = product;
+    });
+
+    return products;
+
+}
+
+settlement = function (datas) {
+    var customer = xlsx.getCustomer();
+
+    var o = {};
+    o.userId = customer.id;
+    o.userName = customer.name;
+
+    var orders = [];
+    var order_info = {};
+    var product_info = {};
+    jQuery(datas).each(function () {
+        $.each(this,function (i,value) {
+            var infos = value.split(",");
+            var obj = {};
+            obj.order = infos[0];
+            obj.name = infos[1];
+            obj.id_num = infos[2];
+            obj.address = infos[3];
+            obj.phone = infos[4];
+            obj.sku = infos[5].toString().replace(reg, "").trim();;
+            obj.content = infos[6];
+            obj.num = infos[7];
+            obj.expId = infos[8];
+
+           var info = order_info[obj.order];
+           if(!info){
+               var info = {};
+               info.orderId = obj.order;
+               info.name = obj.name;
+               info.id_num = obj.id_num;
+               info.phone = obj.phone;
+               info.expId = obj.expId;
+               info.num = obj.num;
+               info.address = obj.address;
+           }else {
+               info.num = Number(info.num) + Number(obj.num);
+           }
+            order_info[obj.order] = info;
+
+           var products = product_info[obj.order];
+           if(!products){
+               products = [];
+           }
+           var product = {};
+           product.sku = obj.sku;
+           product.content = obj.content;
+           product.num = obj.num;
+           products.push(product);
+           product_info[obj.order] = products;
+        })
+    });
+
+    for(var key in order_info) {
+        var order = order_info[key];
+        var product = product_info[key];
+
+        order.product = product;
+        orders.push(order);
+    }
+    o.order = orders;
+
+    sendJData($manage_fee_url,JSON.stringify(o),true,function (data) {
+        if(data.statusCode == 0){
+            download_settle(data.data);
+        }
+    });
+}
+
+download_settle = function(data){
+    var settle_data = [];
+    jQuery(data).each(function () {
+        var obj = {};
+        obj["订单编码"] = this.orderId;
+        obj["商品"] = getProducts(this.products);
+        obj["收件人"] = this.name;
+        obj["运单编码"] = this.expId;
+        obj["手机号"] = this.phone;
+        obj["地址"] = this.address;
+        obj["总费用"] = this.totalFee;
+
+        var fees = this.feeDetail;
+        jQuery(fees).each(function () {
+            obj[this.feeTypeName] = this.fee;
+        })
+
+        settle_data.push(obj);
+    });
+
+    xlsx.downloadExl(settle_data,"xlsx",month + "." + date + "settlement.xlsx",false);
+}
+
+getProducts = function (products) {
+    var p = "";
+    jQuery(products).each(function () {
+        console.info(this);
+        p  = p.concat(this.content,"X",this.num,"[",this.sku,"]");
+    })
+
+    return p;
+}
+
+
+
 Date.prototype.Format = function (fmt) { //author: meizz
     var o = {
         "M+": this.getMonth() + 1, //月份
@@ -208,4 +380,5 @@ Date.prototype.Format = function (fmt) { //author: meizz
         if (new RegExp("(" + k + ")").test(fmt)) fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
     return fmt;
 }
+
 

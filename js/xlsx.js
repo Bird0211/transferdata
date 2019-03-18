@@ -301,7 +301,6 @@ type_datas = function (ori_datas) {
                 return;
         }
     }
-    console.info(types_datas);
     return types_datas;
 }
 
@@ -405,7 +404,6 @@ pre_down_data = function (base_data,express_data) {
     if(missExpdata.length > 0){
         table.showMissOrder(missExpdata,"部分快递信息匹配错误，请确认以下订单");
     }
-
 
     return f_data;
 }
@@ -736,8 +734,7 @@ xlsx.readWorkbookFromRemoteFile = function(url, callback) {
 }
 
 xlsx.transferName = function (format_data) {
-    var datas = sessionStorage.getItem("_products");
-    var new_data = reNewData(JSON.parse(datas),format_data);
+    var new_data = reNewData(format_data);
     var error_sku = [];
     var merge = [];
     jQuery(new_data).each(function () {
@@ -784,23 +781,11 @@ function isNumber(value) {
 
 
 
-reNewData = function (datas,format_data) {
-    if(!datas)
+reNewData = function (format_data) {
+    var products = getAllProduct();
+    if(!products || products == null)
         return format_data;
 
-    /*var data = datas[0];
-    console.info(data);*/
-    var products = {};
-    jQuery(datas).each(function() {
-        if(!this.oversea_name || !this.code)
-            return;
-        var code = this.code.toString().replace(reg, "").trim()
-        var product = {};
-        product.code = code;
-        product.name = this.oversea_name.replace('[不含GST]','').replace('【不含GST】','');
-        product.weight = this.weight;
-       products[code] = product;
-    });
     var d_data = [];
     jQuery(format_data).each(function() {
         var order = this.order;
@@ -836,11 +821,11 @@ reNewData = function (datas,format_data) {
 xlsx.reNewContext = function (context) {
     var customer = xlsx.getCustomer();
     if(!customer || customer == null)
-        return order;
+        return context;
 
     var time = new Date().Format('MMdd');
 
-    return customer.ID + time +" " +context;
+    return customer.id + time +" " +context;
 
 }
 
@@ -848,7 +833,13 @@ xlsx.getCustomer = function () {
     if(!xlsx.option.name || xlsx.option.name == "")
         return null;
 
+    var _customer = xlsx.customer;
+    if(_customer && _customer != "" && _customer.name == xlsx.option.name){
+        return _customer;
+    }
+
     var customer = xlsx.get_customerByName(xlsx.option.name);
+    xlsx.customer = customer;
     return customer;
 }
 
@@ -872,17 +863,19 @@ set_customer = function (oridata) {
 }
 
 xlsx.get_customerByName = function (name) {
-    if(!xlsx.customer || xlsx.customer == null){
-        var customerString = sessionStorage.getItem("_customer");
-        if(customerString && customerString!= null) {
-            xlsx.customer = JSON.parse(customerString);
-        }
-    }
-
     var customer;
-    if(xlsx.customer){
-        customer = xlsx.customer[name];
-    }
+
+        var obj = "name="+name;
+        sendData($manage_user_url,obj,false,function (data) {
+          if(data){
+              var result = data;
+              if(result.statusCode == 0) {
+                  customer = result.data;
+              }
+          }
+        })
+
+
     return customer;
 }
 

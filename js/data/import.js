@@ -13,6 +13,8 @@ getInfo = function (ori_Data) {
     // init_area_prodcuts(data);
 
     init_sale_data(data);
+
+    // init_user_data(data);
 }
 
 getBrandInfo = function (datas) {
@@ -263,10 +265,12 @@ init_area_data = function (datas) {
     var area_data = {};
 
     jQuery(datas).each(function () {
-        var brand = this.brand.replace(reg,"").replace(/^\s\s*/, '').replace(/\s\s*$/, '').toLocaleUpperCase();
-        if(brand == '开发测试产品' || brand == '包材及工时费' || brand == 'MEE')
+
+        var brand = this.brand;
+        if(!brand || brand == '开发测试产品' || brand == '包材及工时费' || brand == 'MEE')
             return;
 
+        brand = brand.replace(reg,"").replace(/^\s\s*/, '').replace(/\s\s*$/, '').toLocaleUpperCase()
         var address = this.address;
         var phone = this.phone;
         var num = this.qty;
@@ -350,9 +354,11 @@ init_area_prodcuts = function (datas) {
     var area_data = {};
 
     jQuery(datas).each(function () {
-        var brand = this.brand.replace(reg,"").replace(/^\s\s*/, '').replace(/\s\s*$/, '').toLocaleUpperCase();
-        if(brand == '开发测试产品' || brand == '包材及工时费' || brand == 'MEE')
+        var brand = this.brand;
+        if(!brand || brand == '开发测试产品' || brand == '包材及工时费' || brand == 'MEE')
             return;
+
+        brand = brand.replace(reg,"").replace(/^\s\s*/, '').replace(/\s\s*$/, '').toLocaleUpperCase();
 
         var address = this.address;
         var phone = this.phone;
@@ -422,10 +428,11 @@ init_sale_data = function (datas) {
     var sale_Data = {};
 
     jQuery(datas).each(function () {
-        var brand = this.brand.replace(reg, "").replace(/^\s\s*/, '').replace(/\s\s*$/, '').toLocaleUpperCase();
-        if (brand == '开发测试产品' || brand == '包材及工时费' || brand == 'MEE')
+        var brand = this.brand;
+        if (!brand || brand == '开发测试产品' || brand == '包材及工时费' || brand == 'MEE')
             return;
 
+        brand = brand.replace(reg, "").replace(/^\s\s*/, '').replace(/\s\s*$/, '').toLocaleUpperCase();
         // var address = this.address;
         // var phone = this.phone;
         var num = this.qty;
@@ -491,6 +498,61 @@ init_sale_data = function (datas) {
     console.info(JSON.stringify(sale_Data));
     console.info(product_data);
     console.info(JSON.stringify(product_data));
+}
+
+
+init_user_data = function (datas) {
+    var mongoDB = [];
+    var i = 0;
+    jQuery(datas).each(function () {
+        if(!this.brand || !this.external_sale_id || !this.code)
+            return;
+
+        var brand = this.brand.replace(reg, "").replace(/^\s\s*/, '').replace(/\s\s*$/, '').toLocaleUpperCase();
+        if (brand == '开发测试产品' || brand == '包材及工时费' || brand == 'MEE')
+            return;
+
+
+        var address = this.address;
+        var phone = this.phone;
+        var num = this.qty;
+        var code = this.code;
+        var time = this.sales_time;
+        var name = this.name;
+
+        var obj = {};
+        obj.order = this.external_sale_id.replace(reg, "").replace(/^\s\s*/, '').replace(/\s\s*$/, '').toLocaleUpperCase();
+        obj.name = this.name;
+        obj.id_num = this.id_number;
+        obj.address = address;
+        obj.phone = phone;
+        obj.sku = code.toString().replace(reg, "").trim();
+        obj.content = this.oversea_name;
+        obj.num = num;
+        // obj.expId = infos[8];
+        obj.date = new Date(time).Format('yyyyMMdd');
+        obj.user = this.name;
+        var username = "fiona";
+        if(this.customer_id == 1118)
+            username = "fiona";
+        else if(this.customer_id == 1129)
+            username = "smile";
+
+        obj.username = username;
+        obj._id = obj.order + "_" + obj.sku;
+        obj.brand = this.brand;
+
+        var body = {};
+        body.body = encodeUnicode(JSON.stringify(obj));
+        mongoDB.push(body);
+
+    })
+
+    console.info(mongoDB);
+    sendJsonData($mongoDB_path,JSON.stringify(mongoDB),true,function (data) {
+        console.info(data);
+    });
+
 }
 
 
