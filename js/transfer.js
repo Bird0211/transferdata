@@ -45,16 +45,18 @@ show_data = function (ori_datas) {
         }
     }
 
+    xlsx.getCustomer();
+    /*
+    if(!customer || customer == null){
+        table.showMissOrder(["请联系管理员，添加用户("+xlsx.option.name+") ID"], "用户基本信息有误!");
+    }*/
+
+
     if(getStep(ori_datas) == 1) {
         var format_data = xlsx.format_data(ori_datas);
         if (format_data == null) {
             toastr.error("文件有误，请检查数据");
             return;
-        }
-
-        var customer = xlsx.getCustomer();
-        if(!customer || customer == null){
-            table.showMissOrder(["请联系管理员，添加用户("+xlsx.option.name+") ID"], "用户基本信息有误!");
         }
 
         xlsx.transferName(format_data);
