@@ -12,9 +12,11 @@ getInfo = function (ori_Data) {
 
     // init_area_prodcuts(data);
 
-    init_sale_data(data);
+    // init_sale_data(data);
 
     // init_user_data(data);
+
+    import_products(data);
 }
 
 getBrandInfo = function (datas) {
@@ -498,6 +500,73 @@ init_sale_data = function (datas) {
     console.info(JSON.stringify(sale_Data));
     console.info(product_data);
     console.info(JSON.stringify(product_data));
+}
+
+
+import_products = function(datas) {
+    var products = [];
+    var i = 0;
+    var count = 0;
+    jQuery(datas).each(function () {
+        if(!this.brand || !this.code)
+            return;
+
+        var obj = {};
+        obj.name = this.name;
+        obj.sku = this.code;
+        obj.overseaName = this.oversea_name;
+        obj.costPrice = this.cost_price;
+        obj.retailPrice = this.retail_price;
+        obj.overseaCostPrice = this.oversea_cost_price;
+        obj.overseaRetailPrice = this.oversea_retail_price;
+        obj.brand = this.brand;
+        // obj.weight = this.weight;
+        if(isNaN(this.code)){
+            console.info("SKU-Error:" + this.code);
+            return;
+        }
+
+        let weight = this.weight;
+
+        if(!weight || weight == null || weight == "" || weight == 'NULL')
+            weight = 0;
+
+        if(weight.toString().indexOf("g") > -1){
+            weight = weight.toString().replace("g","");
+        }
+
+        if(weight.toString().indexOf("ml") > -1){
+            weight = weight.toString().replace("ml","");
+        }
+
+        obj.weight = weight;
+
+        let categoryId = this.category_id;
+        if(!categoryId || categoryId == null || categoryId == 0 || categoryId === 'NULL')
+            categoryId = 0;
+        obj.categoryId = categoryId;
+
+        products.push(obj);
+        i++;
+        count++;
+        if(i == 49){
+            var object = {};
+            object.proVos = products;
+            sendJData($manage_addproducts_url,JSON.stringify(object),true,function (data) {
+                console.info("i = "+ i);
+            });
+
+            i = 0;
+            products = [];
+        }
+    })
+    var object = {};
+    object.proVos = products;
+    console.count(count);
+    sendJData($manage_addproducts_url,JSON.stringify(object),true,function (data) {
+        console.info("i = "+ i);
+    });
+
 }
 
 

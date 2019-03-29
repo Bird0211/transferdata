@@ -3,8 +3,10 @@ var $mongoDB_path = "http://47.74.253.166:5000";
 
 var $manage_user_url = "http://47.74.253.166:8801/api/getuser";
 //var $manage_user_url = "http://localhost:8801/api/getuser";
-var $manage_fee_url = "http://47.74.253.166:8801/api/settle";
-//var $manage_fee_url = "http://localhost:8801/api/settle";
+//var $manage_fee_url = "http://47.74.253.166:8801/api/settle";
+var $manage_fee_url = "http://localhost:8801/api/settle";
+
+var $manage_addproducts_url = "http://47.74.253.166:8801/api/addBathProduct";
 
 function sendJsonData(url, data,async ,callBack) {
     jQuery.ajax({

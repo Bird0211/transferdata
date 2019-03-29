@@ -91,6 +91,23 @@ var reName = filename.replace("."+type , "_"+xlsx.option.name+"."+type);
         { type: "application/octet-stream" }),reName);
 }
 
+xlsx.downloadExls = function (datas,sheet_names,type,filename,isSkipHeader) {
+    if(!datas || datas == null || datas.length <= 0) {
+        toastr.error("数据错误，请检查数据");
+        return;
+    }
+    var reName = filename.replace("."+type , "_"+xlsx.option.name+"."+type);
+    const wb = { SheetNames: sheet_names, Sheets: {}, Props: {} };
+
+    for(var i = 0; i < sheet_names.length; i ++){
+        wb.Sheets[sheet_names[i]] = XLSX.utils.json_to_sheet(datas[i],{skipHeader: isSkipHeader});//通过json_to_sheet转成单页(Sheet)数据
+    }
+    saveAs(new Blob([s2ab(XLSX.write(wb, {bookType: (type == undefined ? 'xlsx':type),bookSST: false, type: 'binary'}))],
+        { type: "application/octet-stream" }),reName);
+
+
+}
+
 xlsx.checkFile = function (files) {
     for(let i = 0; i < files.length - 1; i++){
         if(files[i].name == files[files.length-1].name)
@@ -187,6 +204,91 @@ xlsx.merge_data = function(ori_datas) {
         return pre_down_data(detail_data,express_data);
     }
 }
+
+xlsx.merge_settle_data = function (ori_datas) {
+    if(ori_datas == null || ori_datas.length < 2){
+        return;
+    }
+
+    console.info("xlsx.merge_data");
+    var datas = type_datas(ori_datas);
+    if(datas == null) {
+        console.info("datas is null")
+        return;
+    }
+
+    console.info(datas);
+    var detail_data = datas["detail"];
+    var express_data = datas["express"];
+
+    if(express_data && !$.isEmptyObject(express_data) && detail_data) {
+
+         return pre_settle_data(detail_data,express_data);
+
+    }
+}
+
+pre_settle_data = function (base_data,express_data) {
+    var f_data = [];
+    var key;
+    var missExpdata = [];
+    for (var item in base_data) {
+        var datas = base_data[item];
+        for(var i = 0; i < datas.length; i++){
+            var data = datas[i];
+            var order = data.order;
+            var expInfo = express_data[order];
+            if(!expInfo) {
+                missExpdata.push(order);
+                continue;
+            }
+
+            var expId = expInfo.express;
+            var sender = expInfo.sender;
+            if(!expId || expId == null || expId == ''){
+                missExpdata.push(order);
+                continue;
+            }
+
+            if(!key || key == ''){
+                key = order+","+
+                    data.name+","+
+                    data.id_num+","+
+                    data.address+","+
+                    data.phone+"," +
+                    data.sku+","+
+                    data.content+","+
+                    parseFloat(data.num)+","+
+                    expId+","+
+                    sender+"\n";
+                console.info(key);
+                // continue;
+            }
+
+            var format_data = {};
+            format_data[key] = order+","+
+                data.name+","+
+                data.id_num+","+
+                data.address+","+
+                data.phone+"," +
+                data.sku+","+
+                data.content+","+
+                parseFloat(data.num)+","+
+                expId+","+
+                sender+"\n";
+
+            f_data.push(format_data);
+        }
+
+    }
+
+    if(missExpdata.length > 0){
+        table.showMissOrder(missExpdata,"部分快递信息匹配错误，请确认以下订单");
+    }
+
+    return f_data;
+}
+
 
 
 
@@ -596,6 +698,7 @@ getExpData = function (data) {
         let item = {};
         item.express = d["运单编号"];
         item.content = d["*内件品名"];
+        item.sender = d["寄件人电话"];
         express_data[order] = item;
     }
     return express_data;

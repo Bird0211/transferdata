@@ -70,7 +70,8 @@ show_data = function (ori_datas) {
         }
         xlsx.downloadExl(download_data,"csv",month + "." + date + "MEE-Import" + ".csv",true);
 
-        settlement(download_data);
+        var settle_info = xlsx.merge_settle_data(ori_datas);
+        settlement(settle_info);
 
         saveData(download_data);
 
@@ -276,6 +277,8 @@ settlement = function (datas) {
     var product_info = {};
     jQuery(datas).each(function () {
         $.each(this,function (i,value) {
+            console.info(value);
+
             var infos = value.split(",");
             var obj = {};
             obj.order = infos[0];
@@ -287,10 +290,11 @@ settlement = function (datas) {
             obj.content = infos[6];
             obj.num = infos[7];
             obj.expId = infos[8];
+            obj.sender = infos[9];
 
            var info = order_info[obj.order];
            if(!info){
-               var info = {};
+               info = {};
                info.orderId = obj.order;
                info.name = obj.name;
                info.id_num = obj.id_num;
@@ -298,6 +302,7 @@ settlement = function (datas) {
                info.expId = obj.expId;
                info.num = obj.num;
                info.address = obj.address;
+               info.sender = obj.sender;
            }else {
                info.num = Number(info.num) + Number(obj.num);
            }
@@ -334,6 +339,11 @@ settlement = function (datas) {
 
 download_settle = function(data){
     var settle_data = [];
+    var exp_detail_data = [];
+    var exl_sheet_name = ["汇总","快递明细"];
+    var all_data = [];
+
+    var error_sku = "";
     jQuery(data).each(function () {
         var obj = {};
         obj["订单编码"] = this.orderId;
@@ -347,12 +357,37 @@ download_settle = function(data){
         var fees = this.feeDetail;
         jQuery(fees).each(function () {
             obj[this.feeTypeName] = this.fee;
+            if(this.feeTypeName == '快递费'){
+                if(this.remark != "")
+                    error_sku += this.remark;
+
+                var exp_details = this.details;
+                if(exp_details){
+                    jQuery(exp_details).each(function () {
+                        var d = {};
+                        d["订单编码"] = this.orderId;
+                        d["SKU"] = this.sku;
+                        d["商品"] = this.name;
+                        d["数量"] = this.num;
+                        d["发件人"] = this.sender;
+                        d["快递单价"] = this.unitprice;
+                        d["重量"] = this.weight + "g";
+                        d["快递总价"] = this.totalprice;
+                        exp_detail_data.push(d);
+                    });
+                }
+            }
         })
 
         settle_data.push(obj);
     });
 
-    xlsx.downloadExl(settle_data,"xlsx",month + "." + date + "settlement.xlsx",false);
+    if(error_sku != ""){
+        table.showMissOrder(error_sku.split(";"),"系统缺少以下SKU，请联系管理员！");
+    }
+    all_data.push(settle_data,exp_detail_data);
+
+    xlsx.downloadExls(all_data,exl_sheet_name,"xlsx",month + "." + date + "settlement.xlsx",false);
 }
 
 getProducts = function (products) {

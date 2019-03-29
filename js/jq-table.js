@@ -622,7 +622,9 @@ table.showMissOrder = function (data,title) {
 
     let text = "<ol>";
     jQuery(data).each(function () {
-        text+= "<li>"+this+"</li>";
+        if(this && this != ""){
+            text+= "<li>"+this+"</li>";
+        }
     });
     text += "</ol>";
 
