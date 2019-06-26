@@ -22,16 +22,18 @@ getLogisticsInfo = function (datas) {
         for(var i = 0; i < expInfos.length ; i++){
             var expId = expInfos[i];
             console.info(expId);
-            if(expId && (expId.indexOf('1000') >= 0 || expId.indexOf('77000') >= 0)){
+            if(expId && (expId.indexOf('1000') >= 0 || expId.indexOf('7700') >= 0)){
                 if((i+1) < expInfos.length && checkDateTime(expInfos[i+1].substring(0,10))){
                     var start = 0;
                     if(expId.indexOf('1000') >= 0)
                         start = expId.indexOf('1000')
 
-                    if(expId.indexOf('77000') >= 0)
-                        start = expId.indexOf('77000')
+                    if(expId.indexOf('7700') >= 0)
+                        start = expId.indexOf('7700')
 
                     e_id = expId.substring(start);
+                    if(e_id.indexOf('发货时间:') >= 0)
+                        e_id = e_id.replace("发货时间:","");
                 }
             }
         }

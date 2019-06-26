@@ -460,7 +460,7 @@ pre_down_data = function (base_data,express_data) {
         var datas = base_data[item];
         for(var i = 0; i < datas.length; i++){
             var data = datas[i];
-            var order = data.order;
+            var order = data.order.toUpperCase();
             var expInfo = express_data[order];
             if(!expInfo) {
                 missExpdata.push(order);

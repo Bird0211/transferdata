@@ -1,0 +1,124 @@
+<title>微盟商城数据</title>
+
+<link rel="stylesheet" href="css/ui.jqgrid.css"/>
+<link rel="stylesheet" href="css/jquery.gritter.css" />
+
+
+<script src="js/xlsx.full.min.js"></script>
+<script src="js/jquery.nestable.min.js"></script>
+<script src="js/jqGrid/jquery.jqGrid.min.js"></script>
+<script src="js/jqGrid/i18n/grid.locale-en.js"></script>
+<script src="js/ace-elements.min.js"></script>
+<script src="js/weimob_init.js"></script>
+
+<script type="text/javascript">
+    init_login();
+</script>
+
+<!-- ajax layout which only needs content area -->
+<div class="page-header">
+    <h1>
+        Weimob
+        <small>
+            <i class="ace-icon fa fa-angle-double-right"></i>
+            Data import
+        </small>
+    </h1>
+</div><!-- /.page-header -->
+
+<div class="row">
+    <div class="col-xs-12">
+        <!-- PAGE CONTENT BEGINS -->
+        <!-- #section:elements.accordion -->
+
+
+        <div id="accordion" class="accordion-style1 panel-group">
+
+            <div class="panel-collapse collapse in" id="collapseOne">
+                <div class="panel-body">
+                    <form class="form-inline" role="form" action="#" data-ajax="true" data-ajax-mode="replace" data-ajax-update="#searchTable" id="searchForm" method="post">
+                        <div class="form-group">
+                            <label for="startTime" class="control-label">订单时间:</label>
+                            <input type="text" data-date-format="yyyy-mm-dd" id="startTime" name="startTime" class="date-picker form-control" size="15">
+                            <span>至</span>
+                            <input type="text" data-date-format="yyyy-mm-dd" id="endTime" name="endTime" class="date-picker  form-control" size="15">
+                            <button id="search" type="button" class="btn btn-purple btn-sm" >查询<i class="ace-icon fa fa-search icon-on-right bigger-110"></i></button>
+                        </div>
+                    </form>
+                    <div class="space-10"></div>
+                </div>
+            </div>
+
+            <table id="grid-table"></table>
+
+            <div id="grid-pager"></div>
+
+            <!-- /section:elements.accordion -->
+
+            <!-- 模态框（Modal）modal-sm -->
+            <div class="modal fade bs-example-modal-sm" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                <div class="modal-dialog ">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                                &times;
+                            </button>
+                            <h4 class="modal-title" id="myModalLabel">
+                            </h4>
+                        </div>
+                        <div class="modal-body">
+
+                        </div>
+                        <div class="modal-footer">
+                            <button type='button' class='btn btn-default btn-sm' data-dismiss='modal'>关闭</button>
+                            <button id="splitOrder" type='button' class='btn btn-success btn-sm'>确认拆分</button>
+                        </div>
+                    </div><!-- /.modal-content -->
+                </div><!-- /.modal -->
+            </div>
+
+        </div>
+            <!-- PAGE CONTENT ENDS -->
+    </div><!-- /.col -->
+</div><!-- /.row -->
+
+
+<!-- inline scripts related to this page -->
+<script type="text/javascript">
+    toastr.options.positionClass = 'toast-top-center';
+    var grid_selector = "#grid-table";
+    var pager_selector = "#grid-pager";
+    //resize to fit page size
+    $(window).on('resize.jqGrid', function () {
+        $(grid_selector).jqGrid( 'setGridWidth', $(".page-content").width() );
+    })
+    //resize on sidebar collapse/expand
+    var parent_column = $(grid_selector).closest('[class*="col-"]');
+    $(document).on('settings.ace.jqGrid' , function(ev, event_name, collapsed) {
+        if( event_name === 'sidebar_collapsed' || event_name === 'main_container_fixed' ) {
+            //setTimeout is for webkit only to give time for DOM changes and then redraw!!!
+            setTimeout(function() {
+                $(grid_selector).jqGrid( 'setGridWidth', parent_column.width() );
+            }, 0);
+        }
+    });
+
+    var dateObj = new Date();
+    var year = dateObj.getFullYear();
+    var month = dateObj.getMonth()+1;//月  (注意：月份+1)
+    var date = dateObj.getDate();//日
+
+
+    var scripts = ["js/jq-table.js?v=7","js/xlsx.js?v=13","js/jquery.gritter.min.js","js/weimob.js"]
+//    var scripts = [];
+    ace.load_ajax_scripts(scripts, function() {
+        //inline scripts related to this page
+        jQuery(function($){
+
+            $('[data-rel="tooltip"]').tooltip();
+
+            $("#grid-pager_left").css("width", "auto");
+
+        });
+    });
+</script>

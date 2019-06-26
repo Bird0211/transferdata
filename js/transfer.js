@@ -71,7 +71,7 @@ show_data = function (ori_datas) {
         xlsx.downloadExl(download_data,"csv",month + "." + date + "MEE-Import" + ".csv",true);
 
         var settle_info = xlsx.merge_settle_data(ori_datas);
-        settlement(settle_info);
+        // settlement(settle_info);
 
         saveData(download_data);
 
