@@ -3,11 +3,13 @@ const appKey = "";
 const method_createOrder = "";
 
 init_data = function () {
+
+    /*
     var storage = sessionStorage.getItem("_products");
-    if(!storage || storage == ''){
+    if(!storage || storage == '') {
         console.info("init products");
         xlsx.readWorkbookFromRemoteFile(xlsx.url.products,setLocalStorage);
-    }
+    }*/
 
     /*
     var customer = sessionStorage.getItem("_customer");
@@ -58,8 +60,8 @@ show_data = function (ori_datas) {
             toastr.error("文件有误，请检查数据");
             return;
         }
-
         xlsx.transferName(format_data);
+
 
     }else if(getStep(ori_datas) == 2) {
         var download_data = xlsx.merge_data(ori_datas);
@@ -204,7 +206,8 @@ intersectNum = function (orderSKU,giftSKU) {
 
 saveData = function (datas) {
     var customer = xlsx.getCustomer();
-    var allProject = getAllProduct();
+    // var allProject = getAllProduct();
+    var allProject = getAllProductFromUrl();
     var mongoDB = [];
     jQuery(datas).each(function () {
         $.each(this,function (i,value) {
@@ -263,6 +266,32 @@ getAllProduct = function () {
 
     return products;
 
+}
+
+
+getAllProductFromUrl = function () {
+    const products = {};
+
+    getData($all_products_url,false,function (data) {
+        if(data.statusCode == 0){
+            var datas = data.data;
+            if(!datas)
+                return null;
+            jQuery(datas).each(function () {
+                var code = this.code.toString().replace(reg, "").trim();
+                var product = {};
+                product.code = code;
+                product.name = this.chName.replace('[不含GST]','').replace('【不含GST】','');
+                product.weight = this.weight;
+                product.brand = this.brand;
+                products[code] = product;
+            })
+
+            console.info(products);
+        }
+    });
+
+    return products;
 }
 
 settlement = function (datas) {
@@ -400,22 +429,5 @@ getProducts = function (products) {
     return p;
 }
 
-
-
-Date.prototype.Format = function (fmt) { //author: meizz
-    var o = {
-        "M+": this.getMonth() + 1, //月份
-        "d+": this.getDate(), //日
-        "h+": this.getHours(), //小时
-        "m+": this.getMinutes(), //分
-        "s+": this.getSeconds(), //秒
-        "q+": Math.floor((this.getMonth() + 3) / 3), //季度
-        "S": this.getMilliseconds() //毫秒
-    };
-    if (/(y+)/.test(fmt)) fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
-    for (var k in o)
-        if (new RegExp("(" + k + ")").test(fmt)) fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
-    return fmt;
-}
 
 

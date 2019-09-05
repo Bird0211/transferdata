@@ -1,4 +1,24 @@
 
+console.info("grid-table init start")
+var grid_selector = "#grid-table";
+var pager_selector = "#grid-pager";
+//resize to fit page size
+$(window).on('resize.jqGrid', function () {
+    $(grid_selector).jqGrid('setGridWidth', $(".page-content").width());
+})
+//resize on sidebar collapse/expand
+var parent_column = $(grid_selector).closest('[class*="col-"]');
+$(document).on('settings.ace.jqGrid' , function(ev, event_name, collapsed) {
+    if( event_name === 'sidebar_collapsed' || event_name === 'main_container_fixed' ) {
+        //setTimeout is for webkit only to give time for DOM changes and then redraw!!!
+        setTimeout(function() {
+            $(grid_selector).jqGrid( 'setGridWidth', parent_column.width() );
+        }, 0);
+    }
+});
+
+console.info("grid-table init end")
+
 var grid_data = {};
 jQuery(grid_selector).jqGrid({
     data: grid_data,
@@ -360,7 +380,7 @@ $('#myModal').on('show.bs.modal', function (event) {
     var title = "拆分订单";
     var order = rowData.order;
     //var footer = "";
-
+    console.info(rowData)
     var rowDatas = table.getRelatedRowData(rowData);
     var orders = splitOrders(rowDatas);
     var body = getContentHtml(orders);
@@ -450,15 +470,19 @@ download_data = function () {
     var type = "";
     if(xlsx.option.type == 1)
         type = "Taobao";
-    else
+    else if(xlsx.option.type == 2)
         type = "Enring";
+    else if(xlsx.option.type == 3)
+        type = "Weimob";
 
     xlsx.downloadExl(xlsx.new_express_data(table_data),"xlsx",month + "." + date + "富腾达_"+type + ".xlsx",false);
     xlsx.downloadExl(xlsx.new_detail_data(table_data),"xlsx",month + "." + date + "New订单_"+type + ".xlsx",false);
 
-
-    $('#accordionOne').trigger("click");
-    myDropzone.removeAllFiles();
+    if($('#accordionOne')) {
+        $('#accordionOne').trigger("click");
+    }
+    if(myDropzone)
+        myDropzone.removeAllFiles();
 
 }
 
@@ -516,6 +540,7 @@ table.splitOrder_detail = function (rowData) {
     var sender = rowData.sender;
     var is3pl = rowData.is3pl;
     var goods = contents.split('<br>');
+    console.info(goods)
     var details = [];
     for(var i = 0; i < goods.length ; i++){
         var good = goods[i];
@@ -536,6 +561,7 @@ table.splitOrder_detail = function (rowData) {
             details.push(item);
         }
     }
+    console.info(details);
     return details;
 }
 
@@ -613,8 +639,10 @@ table.setTableData = function (data) {
 
     jQuery(grid_selector).jqGrid('setGridParam', { page:page}).trigger('reloadGrid'); //还原原来显示的记录数量
 
-    if(jQuery('#accordionTwo').attr("class").indexOf("collapsed")>0){
-        $('#accordionTwo').trigger("click");
+    if(jQuery('#accordionTwo').attr("class")) {
+        if (jQuery('#accordionTwo').attr("class").indexOf("collapsed") > 0) {
+            $('#accordionTwo').trigger("click");
+        }
     }
 }
 
@@ -678,6 +706,7 @@ function subString(str, len) {
     return newStr;
 }
 
+console.info("jq-table")
 /*
 $('.switch-field-1').attr('checked' , 'checked').on('click', function(){
     $('.switch-field-1 .btn').toggleClass('no-border');

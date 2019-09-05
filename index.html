@@ -179,7 +179,7 @@
 				<ul id="ulmene" class="nav nav-list">
 
 					<li class="">
-						<a data-url="page=transfer" href="index.html?page=transfer">
+						<a data-url="page/transfer" href="index.html?page=transfer">
 							<i class="menu-icon fa fa-list-alt"></i>
 							<span class="menu-text"> 数据处理 </span>
 						</a>
@@ -188,7 +188,7 @@
 					</li>
 
 					<li class="">
-						<a data-url="page=weimob" href="index.html?page=weimob">
+						<a data-url="page/weimob" href="index.html?page=weimob">
 							<i class="menu-icon fa fa-list-alt"></i>
 							<span class="menu-text"> 微盟数据 </span>
 						</a>
@@ -208,7 +208,7 @@
 						<b class="arrow"></b>
 
 						<ul class="submenu">
-							<li class="active">
+							<li class="">
 								<a data-url="page=imgocr" href="index.html?page=imgocr">
 									<i class="menu-icon fa fa-list-alt"></i>
 									<span class="menu-text"> 图像识别 </span>
@@ -216,7 +216,7 @@
 
 								<b class="arrow"></b>
 							</li>
-							<li class="active">
+							<li class="">
 								<a data-url="page=textocr" href="index.html?page=textocr">
 									<i class="menu-icon fa fa-list-alt"></i>
 									<span class="menu-text"> 文字识别 </span>
@@ -240,18 +240,18 @@
 						<ul class="submenu">
 
 							<li class="">
-								<a href="index.html?page=data/settlement">
+								<a data-url="page=data/settlement" href="index.html?page=data/settlement">
 									<i class="menu-icon fa fa-caret-right"></i>
-									结算
+									<span class="menu-text"> 结算 </span>
 								</a>
 
 								<b class="arrow"></b>
 							</li>
 
 							<li class="">
-								<a href="index.html?page=data/compared">
+								<a data-url="page=data/compared" href="index.html?page=data/compared">
 									<i class="menu-icon fa fa-caret-right"></i>
-									统计未上架订单
+									<span class="menu-text"> 统计未上架订单 </span>
 								</a>
 
 								<b class="arrow"></b>
@@ -259,35 +259,35 @@
 
 
 							<li class="">
-								<a href="index.html?page=data/scatter-map-brush">
+								<a data-url="page=data/scatter-map-brush" href="index.html?page=data/scatter-map-brush">
 									<i class="menu-icon fa fa-caret-right"></i>
-									Area Arrangement
+									<span class="menu-text"> Area Arrangement </span>
 								</a>
 
 								<b class="arrow"></b>
 							</li>
 
 							<li class="">
-								<a href="index.html?page=data/dynamic-data">
+								<a data-url="page=data/dynamic-data" href="index.html?page=data/dynamic-data">
 									<i class="menu-icon fa fa-caret-right"></i>
-									Real-time sales
+									<span class="menu-text"> Real-time sales </span>
 								</a>
 
 								<b class="arrow"></b>
 							</li>
 
 							<li class="">
-								<a href="index.html?page=data/day-sale-data">
+								<a data-url="page=data/day-sale-data" href="index.html?page=data/day-sale-data">
 									<i class="menu-icon fa fa-caret-right"></i>
-									Day-sale sales
+									<span class="menu-text"> Day-sale sales </span>
 								</a>
 
 								<b class="arrow"></b>
 							</li>
 							<li class="">
-								<a href="index.html?page=data/data-import">
+								<a data-url="page=data/data-import" href="index.html?page=data/data-import">
 									<i class="menu-icon fa fa-caret-right"></i>
-									Data Import
+									<span class="menu-text"> Data Import </span>
 								</a>
 
 								<b class="arrow"></b>
@@ -488,51 +488,74 @@
 			if('ontouchstart' in document.documentElement) document.write("<script src='js/jquery.mobile.custom.min.js'>"+"<"+"/script>");
 		</script>
 		<script src="js/bootstrap.min.js"></script>
+	<!--
+		<script src="js/date-time/moment.min.js"></script>
 		<script type="text/javascript" src="js/bootstrap-datetimepicker.js" charset="UTF-8"></script>
 		<script type="text/javascript" src="js/bootstrap-datetimepicker.zh-CN.js" charset="UTF-8"></script>
-
+	-->
 		<script src="js/toastr/toastr.min.js"></script>
 
 
 
-		<!--<script src="js/date-time/bootstrap-datetimepicker.min.js"></script>
-		<script src="js/date-time/locales/bootstrap-datetimepicker.zh-CN.js"></script>-->
+		<!--<script src="js/date-time/bootstrap-datetimepicker.min.js"></script>-->
+		<!--<script src="js/date-time/locales/bootstrap-datetimepicker.zh-CN.js"></script>-->
+
 
 		<!-- ace scripts -->
 
-		<script src="js/ace.min.js"></script>
+		<script src="js/ace1.min.js"></script>
+		<script src="js/loading.js"></script>
+		<!--<script src="js/ace.ajax-content.js"></script>-->
+
 		<!--<script src="js/ace-elements.min.js"></script>-->
 		<script type="text/javascript">
 			//Load content via ajax
 					jQuery(function($) {
-					  if('enable_ajax_content' in ace) {
-						var options = {
+                        if('enable_ajax_content' in ace) {
+                            console.info("enable_ajax_content")
+                            var options = {
 						  content_url: function(url) {
 							//this is for Ace demo only, you should change it
 							//please refer to documentation for more info
-							console.info(url)
-							if(!url.match(/^page\//)) return false;
-							
+//							if(!url.match(/^page\//)) return false;
+							console.info("start")
+							if(url.indexOf("page=") < 0) return false;
+							console.info("page")
 							var path = document.location.pathname;
 							//for Ace HTML demo version, convert ajax.html?page=gallery to > gallery.html and load it
 							if(path.match(/index\.html/)) {
-
 							    var params = mee.getCurrentUrlQueryString();
 							    if(params != null) {
-							        var page = params["page"];
-							        path = path.replace(/index\.html/,page+'.html');
-							        console.info(path)
+
+							        var p = "";
+                                    for (let key in params) {
+                                        let value = params[key]
+                                        console.log(key + "=" + value);
+                                        if(key == 'page'){
+                                            path = path.replace(/index\.html/,value+'.html');
+                                        }else {
+                                            if(p.indexOf("?") > -1) {
+                                                p += "&";
+											}else {
+                                                p += "?"
+											}
+                                            p += key+"="+value;
+										}
+
+                                    }
+
 //							        return path.replace(/index\.html/,page+'.html');
-									return;
+									console.info(path + p)
+									return path + p;
 								}
+
 //                                return path.replace(/index\.html/, url.replace(/^page\//, '')+'.html') ;
-								return;
                             }
 
 							//for Ace PHP demo version convert "page=dashboard" to "?page=dashboard" and load it
 							return path + "?" + url.replace(/\//, "=");
 						  },
-						  //default_url: 'page=transfer'//default url
+//						  default_url: 'page/transfer'//default url
 						}
 						ace.enable_ajax_content($, options)
 					  }

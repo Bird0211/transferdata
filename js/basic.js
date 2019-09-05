@@ -13,10 +13,22 @@ var $manage_addproducts_url = "http://47.74.253.166:8801/api/addBathProduct";
 var $ocr_url = "http://47.74.253.166:8801/api/imageRecognition";
 // var $ocr_url = "http://localhost:8801/api/imageRecognition";
 
-//var $text_ocr_url = "http://47.74.253.166:8801/api/textocr";
-var $text_ocr_url = "http://localhost:8801/api/textocr";
+var $text_ocr_url = "http://47.74.253.166:8801/api/textocr";
+//var $text_ocr_url = "http://localhost:8801/api/textocr";
 
-var $weimob_token_url = "https://dopen.weimob.com/fuwu/b/oauth2/token";
+
+var $weimob_orderlist_url = "http://47.74.253.166:8801/api/order/queryList";
+//var $weimob_orderlist_url = "http://localhost:8801/api/order/queryList";
+
+var $weimob_checktoken_url = "http://47.74.253.166:8801/api/token/check";
+
+var $weimob_addcode_url = "http://47.74.253.166:8801/api/weimobCode/add";
+
+var $all_products_url = "http://47.74.253.166:8801/api/allProducts";
+// var $all_products_url = "http://localhost:8801/api/allProducts";
+
+
+
 
 //cookie storage
 if (!('mee' in window)) {
@@ -35,19 +47,19 @@ function sendJsonData(url, data,async ,callBack) {
         // contentType: "application/json",
         // contentType: "charset=utf-8",
         // headers: {'Content-Type': 'application/json; charset=utf-8'},
-        cache: false,
+        cache: true,
         data: data,
         beforeSend: function (request) {
-            // $("body").Loading();
+            $("body").Loading();
             // request.setRequestHeader("Access-Control-Allow-Origin", "*");
         },
         success: function (data) {
-            // $("body").Loading("hide")
+            $("body").Loading("hide")
             if(callBack)
                 return callBack(data);
         },
         error: function (e) {
-            // $("body").Loading("hide");
+            $("body").Loading("hide");
             //console.log(e);
         }
     });
@@ -65,36 +77,36 @@ function sendJData(url, data,async ,callBack) {
         // contentType: "application/json",
         // contentType: "charset=utf-8",
         // headers: {'Content-Type': 'application/json; charset=utf-8'},
-        cache: false,
+        cache: true,
         data: data,
         beforeSend: function (request) {
-            // $("body").Loading();
+            $("body").Loading();
             // request.setRequestHeader("Access-Control-Allow-Origin", "*");
         },
         success: function (data) {
-            // $("body").Loading("hide")
+            $("body").Loading("hide")
             if(callBack)
                 return callBack(data);
         },
         error: function (e) {
-            // $("body").Loading("hide");
+            $("body").Loading("hide");
             //console.log(e);
         }
     });
 }
 
 
-function getData(url,callBack) {
+function getData(url,async,callBack) {
     jQuery.ajax({
         type: "get",
-        async: true,
+        async: async,
         dataType: "json",
         url: url,
         contentType: "application/json; charset=utf-8",
         timeout: 25000,
         // contentType: "application/json",
         // headers: {'Content-Type': 'application/json'},
-        cache: false,
+        cache: true,
         // data: data,
         beforeSend: function (request) {
             // $("body").Loading();
@@ -119,7 +131,7 @@ function sendData(url, data,async ,callBack) {
         url: url,
         timeout: 25000,
         contentType:"application/x-www-form-urlencoded; charset=utf-8",
-        cache: false,
+        cache: true,
         data: data,
         beforeSend: function (request) {
             // $("body").Loading();
@@ -144,7 +156,7 @@ function sendFile(url,data,async,callBack){
         url: url,
         timeout: 25000,
         contentType: "multipart/form-data",
-        cache: false,
+        cache: true,
         data: data,
         beforeSend: function (request) {
             // $("body").Loading();
@@ -256,3 +268,19 @@ mee.getCurrentUrlQueryString = function () {
     });
     return parames;
 };
+
+Date.prototype.Format = function (fmt) { //author: meizz
+    var o = {
+        "M+": this.getMonth() + 1, //月份
+        "d+": this.getDate(), //日
+        "h+": this.getHours(), //小时
+        "m+": this.getMinutes(), //分
+        "s+": this.getSeconds(), //秒
+        "q+": Math.floor((this.getMonth() + 3) / 3), //季度
+        "S": this.getMilliseconds() //毫秒
+    };
+    if (/(y+)/.test(fmt)) fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
+    for (var k in o)
+        if (new RegExp("(" + k + ")").test(fmt)) fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+    return fmt;
+}

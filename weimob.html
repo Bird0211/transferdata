@@ -2,17 +2,21 @@
 
 <link rel="stylesheet" href="css/ui.jqgrid.css"/>
 <link rel="stylesheet" href="css/jquery.gritter.css" />
+<link rel="stylesheet" href="css/bootstrap-datepicker.min.css"/>
 
 
-<script src="js/xlsx.full.min.js"></script>
-<script src="js/jquery.nestable.min.js"></script>
-<script src="js/jqGrid/jquery.jqGrid.min.js"></script>
-<script src="js/jqGrid/i18n/grid.locale-en.js"></script>
-<script src="js/ace-elements.min.js"></script>
-<script src="js/weimob_init.js"></script>
+<!--<script src="js/xlsx.full.min.js"></script>-->
+<!--<script src="js/jquery.nestable.min.js"></script>-->
+<script type="text/javascript" src="js/jqGrid/jquery.jqGrid.min.js"></script>
+<script type="text/javascript" src="js/ace-elements.min.js"></script>
+<!--<script src="js/weimob_init.js"></script>-->
+
+<!--<script src="js/date-time/moment.min.js"></script>-->
+<!--<script src="js/bootstrap-datepicker.min.js" type="text/javascript"  charset="UTF-8"></script>-->
+
 
 <script type="text/javascript">
-    init_login();
+    toastr.options.positionClass = 'toast-top-center';
 </script>
 
 <!-- ajax layout which only needs content area -->
@@ -21,7 +25,7 @@
         Weimob
         <small>
             <i class="ace-icon fa fa-angle-double-right"></i>
-            Data import
+            Order import
         </small>
     </h1>
 </div><!-- /.page-header -->
@@ -31,7 +35,6 @@
         <!-- PAGE CONTENT BEGINS -->
         <!-- #section:elements.accordion -->
 
-
         <div id="accordion" class="accordion-style1 panel-group">
 
             <div class="panel-collapse collapse in" id="collapseOne">
@@ -39,9 +42,34 @@
                     <form class="form-inline" role="form" action="#" data-ajax="true" data-ajax-mode="replace" data-ajax-update="#searchTable" id="searchForm" method="post">
                         <div class="form-group">
                             <label for="startTime" class="control-label">订单时间:</label>
-                            <input type="text" data-date-format="yyyy-mm-dd" id="startTime" name="startTime" class="date-picker form-control" size="15">
+                            <input id="startTime" class="form-control date-picker" type="text" data-date-format="dd-mm-yyyy" />
                             <span>至</span>
-                            <input type="text" data-date-format="yyyy-mm-dd" id="endTime" name="endTime" class="date-picker  form-control" size="15">
+                            <input id="endTime" class="form-control date-picker" type="text" data-date-format="dd-mm-yyyy" />
+
+                            <label for="sendarea" class="control-label">发货地址:</label>
+                            <select class="form-control" id="sendarea" name="orderStatuses">
+                                <option value=""></option>
+                                <option value="0">新西兰仓</option>
+                                <option value="1">国内现货</option>
+                            </select>
+
+                            <label for="orderStatuses" class="control-label">订单状态:</label>
+                            <select class="form-control" id="orderStatuses" name="orderStatuses">
+                                <option value=""></option>
+                                <option value="0">待支付</option>
+                                <option value="1">待发货</option>
+                                <option value="2">已发货</option>
+                                <option value="3">已完成</option>
+                                <option value="4">已取消</option>
+                            </select>
+
+                            <label for="orderType" class="control-label">订单类型:</label>
+                            <select class="form-control" id="orderType" name="orderType">
+                                <option value=""></option>
+                                <option value="0">奶粉</option>
+                                <option value="1">其他</option>
+                            </select>
+
                             <button id="search" type="button" class="btn btn-purple btn-sm" >查询<i class="ace-icon fa fa-search icon-on-right bigger-110"></i></button>
                         </div>
                     </form>
@@ -67,7 +95,10 @@
                             </h4>
                         </div>
                         <div class="modal-body">
-
+                            <div class="dd" id="nestable">
+                                <ol id="menulist" class="dd-list">
+                                </ol>
+                            </div>
                         </div>
                         <div class="modal-footer">
                             <button type='button' class='btn btn-default btn-sm' data-dismiss='modal'>关闭</button>
@@ -82,43 +113,48 @@
     </div><!-- /.col -->
 </div><!-- /.row -->
 
-
 <!-- inline scripts related to this page -->
 <script type="text/javascript">
-    toastr.options.positionClass = 'toast-top-center';
-    var grid_selector = "#grid-table";
-    var pager_selector = "#grid-pager";
-    //resize to fit page size
-    $(window).on('resize.jqGrid', function () {
-        $(grid_selector).jqGrid( 'setGridWidth', $(".page-content").width() );
-    })
-    //resize on sidebar collapse/expand
-    var parent_column = $(grid_selector).closest('[class*="col-"]');
-    $(document).on('settings.ace.jqGrid' , function(ev, event_name, collapsed) {
-        if( event_name === 'sidebar_collapsed' || event_name === 'main_container_fixed' ) {
-            //setTimeout is for webkit only to give time for DOM changes and then redraw!!!
-            setTimeout(function() {
-                $(grid_selector).jqGrid( 'setGridWidth', parent_column.width() );
-            }, 0);
-        }
-    });
 
     var dateObj = new Date();
     var year = dateObj.getFullYear();
     var month = dateObj.getMonth()+1;//月  (注意：月份+1)
-    var date = dateObj.getDate();//日
+    var date = dateObj.getDate();
 
 
-    var scripts = ["js/jq-table.js?v=7","js/xlsx.js?v=13","js/jquery.gritter.min.js","js/weimob.js"]
+
+    var scripts = ["js/jq-table.js?v=7","js/xlsx.js?v=13","js/jquery.gritter.min.js","js/weimob.js",
+        "js/weimob_init.js",
+        "js/jqGrid/i18n/grid.locale-en.js",
+        "https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.14.3/xlsx.full.min.js",
+        "https://cdnjs.cloudflare.com/ajax/libs/Nestable/2012-10-15/jquery.nestable.min.js",
+        "https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"]
 //    var scripts = [];
     ace.load_ajax_scripts(scripts, function() {
         //inline scripts related to this page
         jQuery(function($){
+            init_weimob();
+
+            $('.dd').nestable({ "maxDepth":2 });
+
+            $('.dd-handle a').on('mousedown', function(e){
+                e.stopPropagation();
+            });
+
+            $('.dd').on('change', function() {
+                nestableChange();
+            });
 
             $('[data-rel="tooltip"]').tooltip();
 
+            $('#splitOrder').bind("click",table.split_order);
+
             $("#grid-pager_left").css("width", "auto");
 
+            $('.date-picker').datepicker({
+                autoclose: true,
+                todayHighlight: true
+            });
         });
     });
 </script>

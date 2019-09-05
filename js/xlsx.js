@@ -298,7 +298,6 @@ xlsx.new_express_data = function(table_datas) {
 
     var format_data = [];
     var filtermodel = getFilterModel();
-
     jQuery(table_datas).each(function() {
         var content = this.content;
         var contents = content.split('<br>').sort();
@@ -355,7 +354,8 @@ xlsx.new_detail_data = function(table_datas) {
             if(!c || c == '')
                 continue;
 
-            var sku = c.split(';')[1];
+            var sku = (c.split(';')[1]);
+            sku = sku.split('_')[0];
             var detail_content = c.split(';')[0].split(' X ')[0].trim();
             var num = c.split(';')[0].split(' X ')[1].trim();
             var d = {};
@@ -885,7 +885,8 @@ function isNumber(value) {
 
 
 reNewData = function (format_data) {
-    var products = getAllProduct();
+    // var products = getAllProduct();
+    var products = getAllProductFromUrl();
     if(!products || products == null)
         return format_data;
 
@@ -907,7 +908,6 @@ reNewData = function (format_data) {
             if(short && short.name)
                 con = short.name;
             format_content += con + ' X '+num + ";"+sku + "<br>";
-            // Red Seal 红印儿童牙膏 无氟可吞咽 75g X 1
         }
         if(format_content == '')
             format_content = content;
