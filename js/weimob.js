@@ -51,6 +51,8 @@ setTable = function (pageNum,pageSize,pageList,totalCount) {
         data.name = list.name;
         data.order = list.orderNo;
         data.id_num = list.idCardNo;
+        data.sender = 'MEE';
+        data.is3pl = false;
         datas.push(data);
     }
 
