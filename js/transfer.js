@@ -429,5 +429,3 @@ getProducts = function (products) {
     return p;
 }
 
-
-
