@@ -140,3 +140,49 @@ $('#countBtn').on("click",function () {
 
 });
 
+
+
+$('#updateBtn').on("click",function () {
+    const  selectData = table.getSelData();
+    if(!selectData || selectData == null || selectData.length <= 0) {
+        toastr.error("请选择需要更新的商品!");
+        return;
+    }
+
+    console.info(selectData);
+
+    const param = [];
+    selectData.forEach(function (item) {
+        const goods = {};
+        goods.goodId = item.goodsId;
+        goods.sku = item.sku;
+        goods.updateCostPrice = item.newCostPrice;
+        goods.updateSalesPrice = item.newSalePrice;
+        param.push(goods);
+    })
+
+
+    sendJData($weimob_goodupdate_url,JSON.stringify(param),true,function (data) {
+        console.info(data);
+        if(data.statusCode != 0) {
+            toastr.error("价格更新失败!");
+            return;
+        }else {
+            toastr.success("价格更新成功!");
+            const result = data.data;
+            const errorSkus = [];
+            result.forEach(function (item) {
+                if (!item.success) {
+                    errorSkus.push(item.sku);
+                }
+            });
+
+            if(errorSkus && errorSkus.length > 0){
+                table.showErrInfo(errorSkus,"部分SKU价格,更新失败:");
+            }
+
+        }
+
+    });
+
+});

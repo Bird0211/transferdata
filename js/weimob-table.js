@@ -23,13 +23,13 @@ jQuery(grid_selector).jqGrid({
     data: grid_data,
     datatype: "local",
     height: '600',
-    colNames:['商品图片','商品ID','商品名称','SKU','重量','成本价','销售价','易云成本价','易云销售价','新成本价','新销售价'],
+    colNames:['商品图片','商品ID','商品名称','SKU','重量','成本价','销售价','易云成本价','易云销售价','新成本价','新销售价','原始图片'],
     colModel:[
-        {name:'img',index:'img', width:30, sorttype:"int", editable: false,
+        {name:'image',index:'image', width:30, editable: false,
             formatter:function (cellvalue, options, rowObject) {
 
-                var content = '<a href="'+cellvalue+'" data-rel="colorbox" class="cboxElement">';
-                    content += '<img width="100%" alt="150x150" src="'+cellvalue+'" />';
+                var content = '<a href="'+rowObject.img+'" data-rel="colorbox" class="cboxElement">';
+                    content += '<img width="100%" src="'+rowObject.img+'" />';
                     content += '</a>';
 
                 return content;
@@ -42,8 +42,9 @@ jQuery(grid_selector).jqGrid({
         {name:'salesPrice',index:'salesPrice', width:20,editable: false},
         {name:'yiyunCostPrice',index:'costPrice', width:28,editable: false},
         {name:'yiyunSalesPrice',index:'salesPrice', width:28,editable: false},
-        {name:'newCostPrice',index:'costPrice', width:28,editable: false},
-        {name:'newSalePrice',index:'salesPrice', width:28,editable: false}
+        {name:'newCostPrice',index:'costPrice', width:28,editable: true},
+        {name:'newSalePrice',index:'salesPrice', width:28,editable: true},
+        {name:'img',index:'img', width:90, editable: false,hidden:true}
 
     ],
     cellEdit:true,
@@ -166,7 +167,6 @@ table.setTableData = function (data) {
     jQuery(grid_selector).jqGrid('setGridParam', { page:page}).trigger('reloadGrid'); //还原原来显示的记录数量
 
     $('[data-rel="colorbox"]').colorbox(colorbox_params);
-
 }
 
 table.getSelData = function () {
@@ -179,4 +179,44 @@ table.getSelData = function () {
         }
     }
     return rowData;
+}
+
+table.showErrInfo = function (data,title) {
+
+    let text = "<ol>";
+    jQuery(data).each(function () {
+        if(this && this != ""){
+            text+= "<li>"+this+"</li>";
+        }
+    });
+    text += "</ol>";
+
+    $.gritter.add({
+        title: title,
+        text: text,
+        // image: $path_assets+'/avatars/avatar.png',
+        // sticky: true,
+        time: '',
+        class_name: 'gritter-error gritter-light'
+    });
+}
+
+table.showSuccInfo = function (data,title) {
+
+    let text = "<ol>";
+    jQuery(data).each(function () {
+        if(this && this != ""){
+            text+= "<li>"+this+"</li>";
+        }
+    });
+    text += "</ol>";
+
+    $.gritter.add({
+        title: title,
+        text: text,
+        // image: $path_assets+'/avatars/avatar.png',
+        // sticky: true,
+        time: '',
+        class_name: 'gritter-success gritter-light'
+    });
 }

@@ -27,16 +27,17 @@ var $weimob_addcode_url = "http://47.74.253.166:8801/api/weimobCode/add";
 var $all_products_url = "http://47.74.253.166:8801/api/allProducts";
 // var $all_products_url = "http://localhost:8801/api/allProducts";
 
-// var $weimob_classify_url = "http://47.74.253.166:8801/api/classify/queryList";
-var $weimob_classify_url = "http://localhost:8801/api/classify/queryList";
+var $weimob_classify_url = "http://47.74.253.166:8801/api/classify/queryList";
+// var $weimob_classify_url = "http://localhost:8801/api/classify/queryList";
 
-// var $weimob_goodlist_url = "http://47.74.253.166:8801/api/goods/list";
-var $weimob_goodlist_url = "http://localhost:8801/api/goods/list";
+var $weimob_goodlist_url = "http://47.74.253.166:8801/api/goods/list";
+// var $weimob_goodlist_url = "http://localhost:8801/api/goods/list";
 
-// var $exange_rage_url = "http://47.74.253.166:8801/api/currency";
-var $exange_rage_url = "http://localhost:8801/api/currency";
+var $exange_rage_url = "http://47.74.253.166:8801/api/currency";
+// var $exange_rage_url = "http://localhost:8801/api/currency";
 
-
+var $weimob_goodupdate_url = "http://47.74.253.166:8801/api/goods/update";
+// var $weimob_goodupdate_url = "http://localhost:8801/api/goods/update";
 
 //cookie storage
 if (!('mee' in window)) {
