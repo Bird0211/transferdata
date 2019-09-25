@@ -39,6 +39,17 @@ var $exange_rage_url = "http://47.74.253.166:8801/api/currency";
 var $weimob_goodupdate_url = "http://47.74.253.166:8801/api/goods/update";
 // var $weimob_goodupdate_url = "http://localhost:8801/api/goods/update";
 
+
+var $exl_title_url = "http://47.74.253.166:8801/api/exltitle/query";
+// var $exl_title_url = "http://localhost:8801/api/exltitle/query";
+
+var $update_exl_title_url = "http://47.74.253.166:8801/api/exltitle/update";
+// var $update_exl_title_url = "http://localhost:8801/api/exltitle/update";
+
+var $add_exl_title_url = "http://47.74.253.166:8801/api/exltitle/add";
+// var $add_exl_title_url = "http://localhost:8801/api/exltitle/add";
+
+
 //cookie storage
 if (!('mee' in window)) {
     window['mee'] = {}

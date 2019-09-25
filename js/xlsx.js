@@ -8,6 +8,7 @@ xlsx.option.type = 1;//1:taobao;2:Enring
 xlsx.option.isFilter = true;
 xlsx.option.split = true;
 xlsx.option.name = "";//名字:后缀
+xlsx.option.exltitle = null;
 xlsx.url = {};
 xlsx.url.products = "file/Mee_products.xlsx";
 xlsx.url.split = "file/Mee_split.xls";
@@ -52,7 +53,6 @@ xlsx.importdata = function (obj,callback) {
                         oridata.range = wb.Sheets[sheet]['!range'];
                         oridata.manges = wb.Sheets[sheet]['!merges'];
                         oridata.data = XLSX.utils.sheet_to_json(wb.Sheets[sheet],{raw:true});
-                        // console.info(wb);
                         // break; // 如果只取第一张表，就取消注释这行
                         oriFile.data.push(oridata);
                     }
@@ -189,14 +189,11 @@ xlsx.merge_data = function(ori_datas) {
         return;
     }
 
-    console.info("xlsx.merge_data");
     var datas = type_datas(ori_datas);
     if(datas == null) {
-        console.info("datas is null")
         return;
     }
 
-    console.info(datas);
     var detail_data = datas["detail"];
     var express_data = datas["express"];
 
@@ -210,14 +207,11 @@ xlsx.merge_settle_data = function (ori_datas) {
         return;
     }
 
-    console.info("xlsx.merge_data");
     var datas = type_datas(ori_datas);
     if(datas == null) {
-        console.info("datas is null")
         return;
     }
 
-    console.info(datas);
     var detail_data = datas["detail"];
     var express_data = datas["express"];
 
@@ -261,7 +255,6 @@ pre_settle_data = function (base_data,express_data) {
                     parseFloat(data.num)+","+
                     expId+","+
                     sender+"\n";
-                console.info(key);
                 // continue;
             }
 
@@ -376,7 +369,6 @@ xlsx.new_detail_data = function(table_datas) {
 
 type_datas = function (ori_datas) {
     if(ori_datas == null || ori_datas.length < 2){
-        console.info("ori_datas.length < 2 " + ori_datas.length);
         return;
     }
 
@@ -483,7 +475,6 @@ pre_down_data = function (base_data,express_data) {
                     data.content+","+
                     parseFloat(data.num)+","+
                     expId+"\n";
-                console.info(key);
                 // continue;
             }
 
@@ -519,71 +510,36 @@ format_Taobao = function (ori_datas) {
     var sheet = wb[0];
     var data = sheet.data;
 
+    if (!xlsx.option.exltitle || xlsx.option.exltitle == null || xlsx.option.exltitle == 'null') {
+        toastr.error("Excel标题还未设置,请点击'淘宝订单标题'按钮,设置Excel标题！");
+        return null;
+    }
+
+    var indexMap = {};
+    var isStart = false;
     for(var i = 0; i<data.length; i++){
         var d = data[i];
         var row_data = {};
-        for(var item in d) {
-            if(!d[item])
-                continue;
 
-            var item_data = d[item].toString();
-            if(item_data.indexOf('行号') > -1){
-                if(item_data == '行号')
+        if(start_row == -1) {
+            if(isStartLine(d)){
+                if (d.length == 1) {
                     isMac = false;
-                start_row = i;
-                break;
-            }
-            // console.info("item:" + item + " = " + item_data);
-
-            if(item_data.indexOf('合计') == 0 && item == '订单类型'){
-                start_row = -1;
-                break;
-            }
-
-            // console.info("start_row:" + start_row +" , i = " + i);
-
-            if(i > start_row && start_row > -1) {
-                if(isMac){
-                    var jValue = item_data;
-                    var values = jValue.split(',');
-
-                    row_data.order = values[1].replace(reg, "").trim().toString();
-                    row_data.name = values[2].replace(reg, "").trim();
-                    row_data.phone = values[9].replace(reg, "").trim();
-                    row_data.addr = values[8].replace(reg, "").trim();
-                    row_data.content = values[3].replace(reg, "").trim();
-                    row_data.num = values[5].replace(reg, "").trim();
-                    row_data.express = values[10].replace(reg, "").trim();
-                    row_data.id_num = values[12].replace(reg, "").trim();
-                    row_data.sku = values[4].replace(reg, "").trim();
-
-                }else {
-                    if(item == '线上订单')
-                        row_data.order = item_data.replace(reg, "").trim().toString();
-                    else if(item == '__EMPTY')
-                        row_data.name = item_data.replace(reg, "").trim();
-                    else if(item == '__EMPTY_7')
-                        row_data.phone = item_data.replace(reg, "").trim();
-                    else if(item == '__EMPTY_6')
-                        row_data.addr = item_data.replace(reg, "").trim();
-                    else if(item == '__EMPTY_1')
-                        row_data.content = item_data.replace(reg, "").trim();
-                    else if(item == '__EMPTY_3')
-                        row_data.num = item_data.replace(reg, "").trim();
-                    else if(item == '__EMPTY_8')
-                        row_data.express = item_data.replace(reg, "").trim();
-                    else if(item == '__EMPTY_10')
-                        row_data.id_num = item_data.replace(reg, "").trim();
-                    else if(item == '__EMPTY_2')
-                        row_data.sku = item_data.replace(reg, "").trim();
-
                 }
+                indexMap = getIndex(d,isMac);
+                start_row = i;
+                isStart = true;
             }
         }
 
         if(i > start_row && start_row > -1) {
+            if (isEndLine(d)) {
+                start_row = -1;
+                break;
+            }
+
+            row_data = getRowData(d,indexMap,isMac);
             if(row_data.express != null && row_data.express != ''){   //存在物流公司 则跳过
-                console.info("express not null")
                 continue;
             }
 
@@ -597,7 +553,7 @@ format_Taobao = function (ori_datas) {
                 o.order = row_data.order;
                 o.name = row_data.name;
                 o.phone = row_data.phone;
-                o.id_num = row_data.id_num?row_data.id_num:"";
+                o.id_num = row_data.idNo?row_data.idNo:"";
                 o.address = row_data.addr;
                 o.addr = row_data.addr;
                 o.num = row_data.num;
@@ -608,8 +564,11 @@ format_Taobao = function (ori_datas) {
         }
     }
 
-    console.info("order_data");
-    console.info(order_data);
+    if(!isStart) {
+        toastr.error("无法获取Excel中信息,请点击'淘宝订单标题'按钮,确认Excel标题正确！");
+        return null;
+    }
+
     var datas = [];
     if(order_data != null && !$.isEmptyObject(order_data)){
         for(var key in order_data){
@@ -617,9 +576,9 @@ format_Taobao = function (ori_datas) {
         }
     }
     return datas;
-
-
 }
+
+
 
 getFileType = function(row0) {
     //1:订单详情,2:快递信息,3:订单信息
@@ -813,8 +772,6 @@ xlsx.readWorkbookFromRemoteFile = function(url, callback) {
             var remote_data = [];
             var data = new Uint8Array(xhr.response)
             var wb = XLSX.read(data, {type: 'array'});
-            console.info(wb);
-            console.info(wb.Props.ModifiedDate);
             // 遍历每张表读取
             for (var sheet in wb.Sheets) {
                 if (wb.Sheets.hasOwnProperty(sheet)) {
@@ -825,7 +782,6 @@ xlsx.readWorkbookFromRemoteFile = function(url, callback) {
                     oridata.manges = wb.Sheets[sheet]['!merges'];
                     oridata.data = XLSX.utils.sheet_to_json(wb.Sheets[sheet],{raw:true});
                     // break; // 如果只取第一张表，就取消注释这行
-                    console.info(oridata);
 
                     remote_data.push(oridata);
                 }
@@ -950,6 +906,136 @@ xlsx.init_customer = function () {
     xlsx.readWorkbookFromRemoteFile(xlsx.url.customer,set_customer);
 }
 
+function isStartLine(line){
+    let title = xlsx.option.exltitle;
+    let num = 0;
+    for(let item in line) {
+        let value = line[item];
+        if(value == title.name ||
+            value == title.orderNo ||
+            value == title.addr ||
+            value == title.express ||
+            value == title.idNo ||
+            value == title.num ||
+            value == title.phone ||
+            value == title.productName ||
+            value == title.sku
+        ) {
+            num ++;
+        }
+    }
+
+    if(num >= 9)
+        return true;
+    else
+        return false;
+
+}
+
+function isEndLine(line) {
+    for(let item in line) {
+        let value = line[item].toString();
+        if(value && value.indexOf("合计") > -1){
+            return true;
+        }
+    }
+
+    return false;
+
+}
+
+function getIndex(line,isMac) {
+    const mapIndex = {};
+    let title = xlsx.option.exltitle;
+    var items = null;
+    if(isMac){
+        items = line;
+
+    } else {
+        items = line.split(",");
+    }
+
+    for (let i in items) {
+        let value = items[i];
+        if(value === title.name) {
+            mapIndex.name = i;
+        }else if(value === title.orderNo) {
+            mapIndex.orderNo = i;
+        }else if(value === title.addr){
+            mapIndex.addr = i;
+        }else if(value === title.express){
+            mapIndex.express = i;
+        }else if(value === title.idNo){
+            mapIndex.idNo = i;
+        }else if(value === title.num){
+            mapIndex.num = i;
+        }else if(value === title.phone){
+            mapIndex.phone = i;
+        }else if(value === title.productName){
+            mapIndex.productName = i;
+        }else if(value === title.sku){
+            mapIndex.sku = i;
+        }
+    }
+    return mapIndex;
+}
+
+function getRowData(line,mapIndex,isMac) {
+    const row_data = {};
+    var items = null;
+    if(isMac){
+        items = line;
+    } else {
+        items = line.split(",");
+    }
+
+    let order = items[mapIndex.orderNo];
+    if(order && order != null)
+        order = order.toString().replace(reg, "").trim();
+    row_data.order = order;
+
+    let name = items[mapIndex.name];
+    if(name && name != null)
+        name = name.toString().replace(reg, "").trim();
+    row_data.name = name;
+
+    let phone = items[mapIndex.phone];
+    if (phone && phone != null)
+        phone = phone.toString().replace(reg, "").trim();
+    row_data.phone = phone;
+
+    let addr = items[mapIndex.addr];
+    if (addr && addr != null)
+        addr = addr.toString().replace(reg, "").trim();
+    row_data.addr = addr;
+
+    let content = items[mapIndex.productName];
+    if(content && content != null)
+        content = content.toString().replace(reg, "").trim();
+    row_data.content = content;
+
+    let num = items[mapIndex.num];
+    if(num && num != null)
+        num = num.toString().replace(reg, "").trim();
+    row_data.num = num;
+
+    let express = items[mapIndex.express];
+    if (express && express != null)
+        express = express.toString().replace(reg, "").trim();
+    row_data.express = express;
+
+    let idNo = items[mapIndex.idNo];
+    if(idNo && idNo != null)
+        idNo = idNo.toString().replace(reg, "").trim();
+    row_data.idNo = idNo;
+
+    let sku = items[mapIndex.sku];
+    if(sku && sku != null)
+        sku = sku.toString().replace(reg, "").trim();
+    row_data.sku = sku
+
+    return row_data;
+}
 
 set_customer = function (oridata) {
     if(!oridata || oridata == null)
@@ -984,6 +1070,14 @@ xlsx.get_customerByName = function (name) {
 
 xlsx.init_gifr_role = function(){
     xlsx.readWorkbookFromRemoteFile(xlsx.url.gift,set_gift_role);
+}
+
+xlsx.getExlTitle = function(businessName) {
+    sendData($exl_title_url,"name="+businessName,false,function (data) {
+        if(data && data.statusCode == 0) {
+            xlsx.option.exltitle = data.data;
+        }
+    });
 }
 
 set_gift_role = function (oridata) {
@@ -1023,4 +1117,137 @@ set_gift_role = function (oridata) {
 
     var giftString = JSON.stringify(giftdata);
     sessionStorage.setItem("_giftrole",giftString);
+}
+
+$('#exltitle').on('click',function () {
+    let title = xlsx.option.exltitle;
+    if(title != null) {
+        $('#orderNo').val(title.orderNo);
+        $('#name').val(title.name);
+        $('#phone').val(title.phone);
+        $('#addr').val(title.addr);
+        $('#content').val(title.productName);
+        $('#num').val(title.num);
+        $('#express').val(title.express);
+        $('#idNo').val(title.idNo);
+        $('#sku').val(title.sku);
+    }
+
+    var business_name = xlsx.option.name;
+    $('#exlTitleModel').show();
+})
+
+$('#exlTitleModel').on('show.bs.modal', function (event) {
+    var modal = $(this);
+    var title = "淘宝订单Excel，Title对应关系表";
+
+    modal.find('.modal-title').text(title);
+});
+
+$('#addBtn').on('click',function () {
+
+    const exlTitle = getExlTitleVo();
+    if(exlTitle != null) {
+        let url = $add_exl_title_url;
+        sendJData(url,JSON.stringify(exlTitle),true,function (data) {
+            if(data.statusCode == 0) {
+                toastr.success("添加成功！");
+                $('.modal').modal('hide');
+            }else {
+                toastr.error("添加失败！");
+            }
+        })
+    }
+
+});
+
+$('#updateBtn').on('click',function () {
+    const exlTitle = getExlTitleVo();
+    if(exlTitle != null) {
+        let url = $update_exl_title_url;
+        sendJData(url,JSON.stringify(exlTitle),true,function (data) {
+            if(data.statusCode == 0) {
+                toastr.success("更新成功！");
+                $('.modal').modal('hide');
+            }else {
+                toastr.error("更新失败！");
+            }
+        })
+    }
+});
+
+function getExlTitleVo() {
+    var order = $('#orderNo').val();
+    var name = $('#name').val();
+    var phone = $('#phone').val();
+    var addr = $('#addr').val();
+    var content = $('#content').val();
+    var num = $('#num').val();
+    var express = $('#express').val();
+    var idNo = $('#idNo').val();
+    var sku = $('#sku').val();
+    var business_name = xlsx.option.name;
+
+    if(!order || order == "") {
+        toastr.error("订单编码不能为空，请填写完整信息！");
+        return null;
+    }
+
+    if(!name || name == "") {
+        toastr.error("收件人不能为空，请填写完整信息！");
+        return null;
+    }
+
+    if(!phone || phone == "") {
+        toastr.error("收件人电话不能为空，请填写完整信息！");
+        return null;
+    }
+
+    if(!addr || addr == "") {
+        toastr.error("地址不能为空，请填写完整信息！");
+        return null;
+    }
+
+    if(!content || content == "") {
+        toastr.error("商品名称不能为空，请填写完整信息！");
+        return null;
+    }
+
+    if(!num || num == "") {
+        toastr.error("数量不能为空，请填写完整信息！");
+        return;
+    }
+
+    if(!express || express == "") {
+        toastr.error("物流信息不能为空，请填写完整信息！");
+        return null;
+    }
+
+    if(!idNo || idNo == "") {
+        toastr.error("身份证不能为空，请填写完整信息！");
+        return null;
+    }
+    if(!sku || sku == "") {
+        toastr.error("SKU编码不能为空，请填写完整信息！");
+        return null;
+    }
+
+    if(!business_name || business_name == "") {
+        toastr.error("商户名称为空，请先上传Excel文档！");
+        return null;
+    }
+
+    const exlTitle = {};
+    exlTitle.name = name;
+    exlTitle.orderNo = order;
+    exlTitle.addr = addr;
+    exlTitle.express = express;
+    exlTitle.idNo = idNo;
+    exlTitle.num = num;
+    exlTitle.phone = phone;
+    exlTitle.productName = content;
+    exlTitle.sku = sku;
+    exlTitle.businessName = business_name;
+
+    return exlTitle;
 }

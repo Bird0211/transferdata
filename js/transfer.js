@@ -2,6 +2,8 @@ const appToken = "";
 const appKey = "";
 const method_createOrder = "";
 
+var all_products = null;
+
 init_data = function () {
 
     /*
@@ -25,6 +27,8 @@ init_data = function () {
         xlsx.init_gifr_role();
     }
 
+    getAllProductFromUrl();
+
 }
 
 import_data = function (myDropzone) {
@@ -41,18 +45,19 @@ show_data = function (ori_datas) {
         var name = ori_datas[i].name;
         if(name.indexOf("_") > -1){
             var names = name.split("_");
-            xlsx.option.name = names[names.length - 1].split(".")[0];
+            let businessName = names[names.length - 1].split(".")[0];
+            if(businessName && businessName.indexOf("(") > 0) {
+                businessName = businessName.substring(0,businessName.indexOf("("));
+            }
+            xlsx.option.name = businessName;
             console.info("set name = "+xlsx.option.name);
             break;
         }
     }
 
     xlsx.getCustomer();
-    /*
-    if(!customer || customer == null){
-        table.showMissOrder(["请联系管理员，添加用户("+xlsx.option.name+") ID"], "用户基本信息有误!");
-    }*/
 
+    xlsx.getExlTitle(xlsx.option.name);
 
     if(getStep(ori_datas) == 1) {
         var format_data = xlsx.format_data(ori_datas);
@@ -270,8 +275,10 @@ getAllProduct = function () {
 
 
 getAllProductFromUrl = function () {
-    const products = {};
+    if(all_products && all_products != null)
+        return all_products;
 
+    const products = {};
     getData($all_products_url,false,function (data) {
         if(data.statusCode == 0){
             var datas = data.data;
@@ -290,7 +297,7 @@ getAllProductFromUrl = function () {
             console.info(products);
         }
     });
-
+    all_products = products;
     return products;
 }
 
@@ -428,4 +435,6 @@ getProducts = function (products) {
 
     return p;
 }
+
+
 
