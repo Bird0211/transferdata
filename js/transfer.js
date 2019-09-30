@@ -279,7 +279,7 @@ getAllProductFromUrl = function () {
         return all_products;
 
     const products = {};
-    getData($all_products_url,false,function (data) {
+    sendData($all_products_url,'bizId=20',false,function (data) {
         if(data.statusCode == 0){
             var datas = data.data;
             if(!datas)
