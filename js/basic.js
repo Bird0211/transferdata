@@ -1,5 +1,6 @@
 
 var $mongoDB_path = "http://47.74.253.166:5000";
+
 var $manage_user_url = "http://47.74.253.166:8801/api/getuser";
 // var $manage_user_url = "http://localhost:8801/api/getuser";
 
@@ -9,13 +10,11 @@ var $manage_fee_url = "http://47.74.253.166:8801/api/settle";
 var $manage_addproducts_url = "http://47.74.253.166:8801/api/addBathProduct";
 // var $manage_addproducts_url = "http://localhost:8801/api/addBathProduct";
 
-
 var $ocr_url = "http://47.74.253.166:8801/api/imageRecognition";
 // var $ocr_url = "http://localhost:8801/api/imageRecognition";
 
 var $text_ocr_url = "http://47.74.253.166:8801/api/textocr";
 //var $text_ocr_url = "http://localhost:8801/api/textocr";
-
 
 var $weimob_orderlist_url = "http://47.74.253.166:8801/api/order/queryList";
 //var $weimob_orderlist_url = "http://localhost:8801/api/order/queryList";
@@ -27,18 +26,17 @@ var $weimob_addcode_url = "http://47.74.253.166:8801/api/weimobCode/add";
 var $all_products_url = "http://47.74.253.166:8801/api/allProducts";
 // var $all_products_url = "http://localhost:8801/api/allProducts";
 
-// var $weimob_classify_url = "http://47.74.253.166:8801/api/classify/queryList";
-var $weimob_classify_url = "http://localhost:8801/api/classify/queryList";
+var $weimob_classify_url = "http://47.74.253.166:8801/api/classify/queryList";
+// var $weimob_classify_url = "http://localhost:8801/api/classify/queryList";
 
-// var $weimob_goodlist_url = "http://47.74.253.166:8801/api/goods/list";
-var $weimob_goodlist_url = "http://localhost:8801/api/goods/list";
+var $weimob_goodlist_url = "http://47.74.253.166:8801/api/goods/list";
+// var $weimob_goodlist_url = "http://localhost:8801/api/goods/list";
 
 var $exange_rage_url = "http://47.74.253.166:8801/api/currency";
 // var $exange_rage_url = "http://localhost:8801/api/currency";
 
 var $weimob_goodupdate_url = "http://47.74.253.166:8801/api/goods/update";
 // var $weimob_goodupdate_url = "http://localhost:8801/api/goods/update";
-
 
 var $exl_title_url = "http://47.74.253.166:8801/api/exltitle/query";
 // var $exl_title_url = "http://localhost:8801/api/exltitle/query";
@@ -48,6 +46,10 @@ var $update_exl_title_url = "http://47.74.253.166:8801/api/exltitle/update";
 
 var $add_exl_title_url = "http://47.74.253.166:8801/api/exltitle/add";
 // var $add_exl_title_url = "http://localhost:8801/api/exltitle/add";
+
+var $weimob_order_delivery_url = "http://47.74.253.166:8801/api/order/delivery";
+// var $weimob_order_delivery_url = "http://localhost:8801/api/order/delivery";
+
 
 
 //cookie storage

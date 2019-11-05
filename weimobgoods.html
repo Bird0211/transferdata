@@ -79,7 +79,27 @@
                             <input type="text" id="coefficient" class="col-xs-6 col-sm-7" placeholder="输入系数" />
                         </div>
                         <div class="col-xs-6 col-sm-1">
-                            <button class="btn btn-primary btn-sm" id="countBtn">计算</button>
+                            <!--<button class="btn btn-primary btn-sm" id="countBtn">计算</button>-->
+                            <div class="btn-group">
+                                <button data-toggle="dropdown" class="btn btn-info btn-sm dropdown-toggle">
+                                    计算
+                                    <span class="ace-icon fa fa-caret-down icon-on-right"></span>
+                                </button>
+
+                                <ul class="dropdown-menu dropdown-info dropdown-menu-right">
+                                    <li>
+                                        <a href="#" onclick="countCostPrice();return false;">成本价</a>
+                                    </li>
+
+                                    <li>
+                                        <a href="#" onclick="countSalsePrice();return false;">销售价</a>
+                                    </li>
+
+                                    <li>
+                                        <a href="#" onclick="countAllPrice();return false;">全部价格</a>
+                                    </li>
+                                </ul>
+                            </div><!-- /.btn-group -->
                         </div>
                         <div class="col-xs-6 col-sm-1">
                             <button class="btn btn-primary btn-sm" id="updateBtn">更新</button>

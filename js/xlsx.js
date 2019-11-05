@@ -126,8 +126,12 @@ xlsx.format_data = function (ori_datas) {
     if(ori_datas.length == 1 && ori_datas[0].name.indexOf('订单发货明细表') > -1) {
         //taobao
         this.option.type = 1;
+        xlsx.getExlTitle(xlsx.option.name);
         formatDatas = format_Taobao(ori_datas);
-    }else {
+    } else if(ori_datas.length == 1 && ori_datas[0].name.indexOf('订单明细') > -1) {
+        this.option.type = 1;
+        formatDatas = format_Ymtou(ori_datas);
+    } else {
         //商城
         this.option.type = 2;
         formatDatas = format_Enring(ori_datas);
@@ -139,7 +143,7 @@ xlsx.format_data = function (ori_datas) {
 xlsx.checkFiles = function (files) {
 
     if(files.length == 1) {
-        if(files[0].name.indexOf("订单发货明细表") > -1 &&
+        if((files[0].name.indexOf("订单明细") > -1 || files[0].name.indexOf("订单发货明细表") > -1) &&
             files[0].name.indexOf('_') < 0) {
             toastr.error("请修改文件名，添加所属名称，例如: "+files[0].name.split('.')[0]+"_fiona"+"."+files[0].name.split('.')[1]);
             return false;
@@ -328,6 +332,7 @@ xlsx.new_express_data = function(table_datas) {
         d["内件品名1"] =  xlsx.reNewContext(format_content);
         d["总数量"] = num.toString();
         d["*实际重量（kg）"] = "";
+        d["收件人身份证号"] = this.id_num;
         format_data.push(d);
     });
 
@@ -579,6 +584,87 @@ format_Taobao = function (ori_datas) {
 }
 
 
+format_Ymtou = function(ori_datas) {
+    var file_data = ori_datas[0];
+    var wb = file_data.data;
+    var sheet = wb[0];
+    var data = sheet.data;
+
+    var datas = [];
+    for(var i = 0; i < data.length; i++) {
+        const  d = data[i];
+        const  row_data = getYamRowData(d);
+        datas.push(row_data);
+    }
+    return datas;
+}
+
+
+getYamRowData = function (data) {
+    const row_data = {};
+    console.log(data);
+
+    let order = data["订单号"]
+    if(order && order != null)
+        order = order.toString().replace(reg, "").trim();
+    row_data.order = order;
+
+    let name = data["收货人姓名"];
+    if(name && name != null)
+        name = name.toString().replace(reg, "").trim();
+    row_data.name = name;
+
+    let phone = data["收货人手机"];
+    if (phone && phone != null)
+        phone = phone.toString().replace(reg, "").trim();
+    row_data.phone = phone;
+
+    let addr = data["收货人地址"];
+    if (addr && addr != null)
+        addr = addr.toString().replace(reg, "").trim();
+    row_data.addr = addr;
+
+    let express = data["国际物流单号"];
+    if (express && express != null)
+        express = express.toString().replace(reg, "").trim();
+    row_data.express = express;
+
+    let idNo = data["收货人证件号"];
+    if(idNo && idNo != null)
+        idNo = idNo.toString().replace(reg, "").trim();
+    row_data.idNo = idNo;
+
+    let skuStr = data["商品编号"];
+    let productStr = data["商品名"];
+    let numStr = data["下单数量"];
+
+    const skus = skuStr.split(";");
+    const products = productStr.split(";");
+    const nums = numStr.split(";");
+
+    let content = "";
+    let total_num = 0;
+    for (let i = 0; i < skus.length; i ++ ){
+        let p = products[i];
+        if(p == null || p == "")
+            continue;
+
+        let sku = skus[i];
+        let num = nums[i];
+
+        let s = sku.split("X");
+        if(s != null && s.length > 1)
+            num = parseInt(num) * parseInt(s[1]);
+
+        content += p + " X " + parseInt(num)+ ";" + s[0] +"</br>";
+        total_num += parseInt(num);
+    }
+    row_data.content = content.toString().replace(reg, "").trim();;
+    row_data.num = total_num;
+    row_data.sender = data["买家用户名"];
+    row_data.is3pl = "true";
+    return row_data;
+}
 
 getFileType = function(row0) {
     //1:订单详情,2:快递信息,3:订单信息

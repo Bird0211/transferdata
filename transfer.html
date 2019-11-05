@@ -234,6 +234,7 @@
         jQuery(function($){
 //            toastr.options.positionClass = 'toast-top-center';
             init_data();
+            init();
 
             Dropzone.autoDiscover = false;
             try {
@@ -241,7 +242,7 @@
                     paramName: "file", // The name that will be used to transfer the file
                     maxFilesize: 5, // MB
                     maxFiles:3,
-                    acceptedFiles:".xls,.xlsx,.csv",
+                    acceptedFiles:".xlsx",
                     addRemoveLinks : true,
                     dictDefaultMessage :
                         '<span class="bigger-150 bolder"><i class="ace-icon fa fa-caret-right red"></i> Drop files</span> to upload \
@@ -256,14 +257,20 @@
 
                 myDropzone.on("addedfile", function(file) {
                     /* Maybe display some more file information on your page */
-
                     if(this.files.length > 0 ){
+                        for(let i = 0; i < this.files.length; i++) {
+                            let f = this.files[i];
+                            if(f.status == 'error')
+                                return;
+                        }
+
                         if(!xlsx.checkFiles(this.files)){
                             this.removeFile(this.files[this.files.length-1]);
                             return;
                         }
 
                         if(this.files.length == 1 && this.files[0].name.indexOf('订单发货明细表')> -1 ||
+                            this.files.length == 1 && this.files[0].name.indexOf('订单明细')> -1 ||
                             this.files.length == 2 ) {
                             import_data(myDropzone);
                         }

@@ -23,7 +23,7 @@ jQuery(grid_selector).jqGrid({
     data: grid_data,
     datatype: "local",
     height: '600',
-    colNames:['商品图片','商品ID','商品名称','SKU','重量','成本价','销售价','易云成本价','易云销售价','新成本价','新销售价','原始图片'],
+    colNames:['商品图片','商品ID','商品名称','SKU','重量','成本价','销售价','易云成本价','易云销售价','新成本价','新销售价','原始图片','skuId','originalPrice'],
     colModel:[
         {name:'image',index:'image', width:30, editable: false,
             formatter:function (cellvalue, options, rowObject) {
@@ -44,7 +44,9 @@ jQuery(grid_selector).jqGrid({
         {name:'yiyunSalesPrice',index:'salesPrice', width:28,editable: false},
         {name:'newCostPrice',index:'costPrice', width:28,editable: true},
         {name:'newSalePrice',index:'salesPrice', width:28,editable: true},
-        {name:'img',index:'img', width:90, editable: false,hidden:true}
+        {name:'img',index:'img', width:90, editable: false,hidden:true},
+        {name:'skuId',index:'skuId', width:90, editable: false,hidden:true},
+        {name:'originalPrice',index:'originalPrice', width:90, editable: false,hidden:true}
 
     ],
     cellEdit:true,
@@ -156,11 +158,13 @@ var colorbox_params = {
 
 var table = {};
 
-table.setTableData = function (data) {
-    var page = jQuery(grid_selector).jqGrid('getGridParam','page');
+table.setTableData = function (data,pageNum) {
+    var page = pageNum;
+    if (!page)
+      page = jQuery(grid_selector).jqGrid('getGridParam','page');
     // var rowNum = o.jqGrid('getGridParam', 'rowNum'); //获取显示配置记录数量
 
-    $(grid_selector).setGridParam({ datastr: data, datatype:'jsonstring' ,page:1}).trigger('reloadGrid');
+    $(grid_selector).setGridParam({datastr: data, datatype:'jsonstring' ,page:1}).trigger('reloadGrid');
 
     $('.ui-jqgrid tr.jqgrow td').css("text-overflow","ellipsis");
 

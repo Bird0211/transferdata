@@ -1,0 +1,150 @@
+<title>处理商城数据</title>
+
+<link rel="stylesheet" href="css/dropzone.css" />
+<link rel="stylesheet" href="css/ui.jqgrid.css"/>
+<link rel="stylesheet" href="css/jquery.gritter.css" />
+
+
+<script src="js/jqGrid/jquery.jqGrid.min.js"></script>
+<script src="js/ace-elements.min.js"/>
+
+<!--<script src="js/jq-table.js"/>-->
+<script type="text/javascript">
+    toastr.options.positionClass = 'toast-top-center';
+
+</script>
+<!-- ajax layout which only needs content area -->
+<div class="page-header">
+    <h1>
+        Data-transform
+        <small>
+            <i class="ace-icon fa fa-angle-double-right"></i>
+            Drag &amp; drop file upload with image preview
+        </small>
+    </h1>
+</div><!-- /.page-header -->
+
+<div class="row">
+    <div class="col-xs-12">
+        <!-- PAGE CONTENT BEGINS -->
+        <!-- #section:elements.accordion -->
+        <div id="accordion" class="accordion-style1 panel-group">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h4 class="panel-title">
+                        <a class="accordion-toggle" id="accordionOne" data-toggle="collapse" data-parent="#accordion" href="#collapseOne">
+                            <i class="ace-icon fa fa-angle-down bigger-110" data-icon-hide="ace-icon fa fa-angle-down" data-icon-show="ace-icon fa fa-angle-right"></i>
+                            &nbsp;导入数据 #1
+                        </a>
+                    </h4>
+                </div>
+
+                <div class="panel-collapse collapse in" id="collapseOne">
+                    <div class="panel-body">
+                        <form action="#" class="dropzone" id="dropzone">
+                            <div class="fallback">
+                                <input name="file" type="file" multiple="" />
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- /section:elements.accordion -->
+
+        </div>
+            <!-- PAGE CONTENT ENDS -->
+    </div><!-- /.col -->
+</div><!-- /.row -->
+
+
+<!-- inline scripts related to this page -->
+<!--<script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.5.1/min/dropzone.min.js"/>-->
+<!--<script src="js/dropzone.min.js"/>-->
+<script src="js/jq-table.js"/>
+
+<script type="text/javascript">
+
+    var dateObj = new Date();
+    var year = dateObj.getFullYear();
+    var month = dateObj.getMonth()+1;//月  (注意：月份+1)
+    var date = dateObj.getDate();//日
+
+    var scripts = ["js/weimob-table.js","js/weimobdelivery.js","js/xlsx.js",
+        "js/jqGrid/i18n/grid.locale-en.js",
+        "js/jquery.gritter.min.js",
+        "https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.14.3/xlsx.full.min.js",
+        "https://cdnjs.cloudflare.com/ajax/libs/Nestable/2012-10-15/jquery.nestable.min.js",
+        "https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.5.1/min/dropzone.min.js",
+        "https://cdnjs.cloudflare.com/ajax/libs/jquery.gridster/0.5.6/jquery.gridster.min.js"]
+//    var scripts = [];
+    ace.load_ajax_scripts(scripts, function() {
+        //inline scripts related to this page
+        jQuery(function($){
+//            toastr.options.positionClass = 'toast-top-center';
+//            init_data();
+
+            Dropzone.autoDiscover = false;
+            try {
+                var myDropzone = new Dropzone("#dropzone" , {
+                    paramName: "file", // The name that will be used to transfer the file
+                    maxFilesize: 5, // MB
+                    maxFiles:3,
+                    acceptedFiles:".csv",
+                    addRemoveLinks : true,
+                    dictDefaultMessage :
+                        '<span class="bigger-150 bolder"><i class="ace-icon fa fa-caret-right red"></i> Drop files</span> to upload \
+                        <span class="smaller-80 grey">(or click)</span> <br /> \
+                        <i class="upload-icon ace-icon fa fa-cloud-upload blue fa-3x"></i>'
+                    ,
+                    dictResponseError: 'Error while uploading file!',
+
+                    //change the previewTemplate to use Bootstrap progress bars
+                    previewTemplate: "<div class=\"dz-preview dz-file-preview\">\n  <div class=\"dz-details\">\n    <div class=\"dz-filename\"><span data-dz-name></span></div>\n    <div class=\"dz-size\" data-dz-size></div>\n    <img data-dz-thumbnail />\n  </div>\n  <div class=\"progress progress-small progress-striped active\"><div class=\"progress-bar progress-bar-success\" data-dz-uploadprogress></div></div>\n  <div class=\"dz-success-mark\"><span></span></div>\n  <div class=\"dz-error-mark\"><span></span></div>\n  <div class=\"dz-error-message\"><span data-dz-errormessage></span></div>\n</div>"
+                });
+
+                myDropzone.on("addedfile", function(file) {
+                    /* Maybe display some more file information on your page */
+                    if(this.files.length > 0 ){
+                        for(let i = 0; i < this.files.length; i++) {
+                            let f = this.files[i];
+                            if(f.status == 'error')
+                                return;
+                        }
+
+                        if(this.files.length == 1) {
+                            import_data(myDropzone);
+                        }
+                    }
+                });
+
+                myDropzone.on("removedfile",function (file) {
+
+                });
+            } catch(e) {
+                alert('Dropzone.js does not support older browsers!');
+                console.info("Dropzone init Error")
+
+            }
+
+            console.info("Dropzone init End")
+
+
+            $('.dd').nestable({ "maxDepth":2 });
+
+            $('.dd-handle a').on('mousedown', function(e){
+                e.stopPropagation();
+            });
+
+            $('.dd').on('change', function() {
+                nestableChange();
+            });
+            $('[data-rel="tooltip"]').tooltip();
+
+            $('#splitOrder').bind("click",table.split_order);
+
+            $("#grid-pager_left").css("width", "auto");
+
+        });
+    });
+</script>

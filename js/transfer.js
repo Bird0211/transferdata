@@ -57,8 +57,6 @@ show_data = function (ori_datas) {
 
     xlsx.getCustomer();
 
-    xlsx.getExlTitle(xlsx.option.name);
-
     if(getStep(ori_datas) == 1) {
         var format_data = xlsx.format_data(ori_datas);
         if (format_data == null) {
@@ -66,7 +64,6 @@ show_data = function (ori_datas) {
             return;
         }
         xlsx.transferName(format_data);
-
 
     }else if(getStep(ori_datas) == 2) {
         var download_data = xlsx.merge_data(ori_datas);
@@ -89,7 +86,8 @@ show_data = function (ori_datas) {
 }
 
 getStep = function (ori_datas) {
-    if (ori_datas.length == 1 && ori_datas[0].name.indexOf('订单发货明细表') > -1) {
+    if (ori_datas.length == 1 && (ori_datas[0].name.indexOf('订单发货明细表') > -1 ||
+            ori_datas[0].name.indexOf('商品明细') > -1) ) {
         return 1;
     }else if(ori_datas.length == 2 && (
             ori_datas[0].name.indexOf('New订单') > -1 ||
