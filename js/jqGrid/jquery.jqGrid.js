@@ -758,6 +758,21 @@ $.extend($.jgrid,{
 	}
 });
 
+//切换翻页之后仍然让之前选中的用户切回来的时候依然保持选中状态
+    function setCheckBox(){
+        console.log("rowsId = {}",rowsId);
+        var rowsId = ts.p.selarrrow;
+        var checkBox = $(grid_selector).jqGrid("getRowData"),
+            length = $(grid_selector).jqGrid("getRowData").length;
+        for(var i = 0; i < length; i++){
+            for(var j = 0, l = rowsId.length; j < l; j++){
+                if(checkBox[i]["id"] == rowsId[j]){
+                    $("#jqg_"+$.jgrid.jqID(ts.p.id)+"_"+$.jgrid.jqID(this.id) )[ts.p.useProp ? 'prop': 'attr']("checked",true);
+                }
+            }
+        }
+    }
+
 $.fn.jqGrid = function( pin ) {
 	if (typeof pin === 'string') {
 		var fn = $.jgrid.getMethod(pin);
@@ -2104,10 +2119,11 @@ $.fn.jqGrid = function( pin ) {
 				if ($.isFunction(ts.p.onPaging) ) { ret = ts.p.onPaging.call(ts,onpaging); }
 				if(ret==='stop') {return false;}
 				ts.p.selrow = null;
-				if(ts.p.multiselect) {ts.p.selarrrow =[]; setHeadCheckBox( false );}
+				if(ts.p.multiselect && ts.p.datatype != 'local') {ts.p.selarrrow =[]; setHeadCheckBox( false );}
 				ts.p.savedRow = [];
 				return true;
 			};
+            setCheckBox();
 			pgid = pgid.substr(1);
 			tp += "_" + pgid;
 			pgcnt = "pg_"+pgid;

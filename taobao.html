@@ -8,7 +8,6 @@
 
 
 
-
 <script src="js/jqGrid/jquery.jqGrid.min.js"></script>
 <script src="js/ace-elements.min.js"/>
 
@@ -57,12 +56,13 @@
                         </form>
                         <div class="space-10"></div>
                         -->
+
                         <form action="#" class="dropzone" id="dropzone">
-                            <button id="exltitle" type='button' data-toggle="modal" data-target="#exlTitleModel" class='btn btn-default btn-sm' data-dismiss='modal'>淘宝订单标题</button>
                             <div class="fallback">
                                 <input name="file" type="file" multiple="" />
                             </div>
                         </form>
+
                     </div>
                 </div>
             </div>
@@ -108,107 +108,10 @@
                             </div>
                         </div>
                         <div class="modal-footer">
-
                         </div>
                     </div><!-- /.modal-content -->
                 </div><!-- /.modal -->
             </div>
-
-            <!-- 模态框（Modal）modal-sm -->
-            <div class="modal fade bs-example-modal-sm" id="exlTitleModel" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-                <div class="modal-dialog ">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
-                                &times;
-                            </button>
-                            <h4 class="modal-title" id="modelTitle">
-                            </h4>
-                        </div>
-                        <div class="modal-body">
-                            <form class="form-horizontal" role="form">
-                                <!-- #section:elements.form -->
-                                <div class="form-group">
-                                    <label class="col-sm-3 control-label no-padding-right" for="orderNo"> 订单编码 </label>
-
-                                    <div class="col-sm-9">
-                                        <input type="text" id="orderNo" placeholder="订单编码" class="col-xs-10 col-sm-5" />
-                                    </div>
-                                </div>
-
-                                <div class="form-group">
-                                    <label class="col-sm-3 control-label no-padding-right" for="name"> 收件人姓名 </label>
-
-                                    <div class="col-sm-9">
-                                        <input type="text" id="name" placeholder="收件人姓名" class="col-xs-10 col-sm-5" />
-                                    </div>
-                                </div>
-
-                                <div class="form-group">
-                                    <label class="col-sm-3 control-label no-padding-right" for="phone"> 收件人电话 </label>
-
-                                    <div class="col-sm-9">
-                                        <input type="text" id="phone" placeholder="收件人电话" class="col-xs-10 col-sm-5" />
-                                    </div>
-                                </div>
-
-                                <div class="form-group">
-                                    <label class="col-sm-3 control-label no-padding-right" for="addr"> 地址 </label>
-
-                                    <div class="col-sm-9">
-                                        <input type="text" id="addr" placeholder="地址" class="col-xs-10 col-sm-5" />
-                                    </div>
-                                </div>
-
-                                <div class="form-group">
-                                    <label class="col-sm-3 control-label no-padding-right" for="content"> 商品名称 </label>
-
-                                    <div class="col-sm-9">
-                                        <input type="text" id="content" placeholder="商品名称" class="col-xs-10 col-sm-5" />
-                                    </div>
-                                </div>
-
-                                <div class="form-group">
-                                    <label class="col-sm-3 control-label no-padding-right" for="num"> 数量 </label>
-
-                                    <div class="col-sm-9">
-                                        <input type="text" id="num" placeholder="数量" class="col-xs-10 col-sm-5" />
-                                    </div>
-                                </div>
-
-                                <div class="form-group">
-                                    <label class="col-sm-3 control-label no-padding-right" for="express"> 物流信息 </label>
-
-                                    <div class="col-sm-9">
-                                        <input type="text" id="express" placeholder="物流信息" class="col-xs-10 col-sm-5" />
-                                    </div>
-                                </div>
-
-                                <div class="form-group">
-                                    <label class="col-sm-3 control-label no-padding-right" for="idNo"> 身份证号 </label>
-
-                                    <div class="col-sm-9">
-                                        <input type="text" id="idNo" placeholder="身份证号" class="col-xs-10 col-sm-5" />
-                                    </div>
-                                </div>
-
-                                <div class="form-group">
-                                    <label class="col-sm-3 control-label no-padding-right" for="sku"> SKU编码 </label>
-
-                                    <div class="col-sm-9">
-                                        <input type="text" id="sku" placeholder="SKU编码" class="col-xs-10 col-sm-5" />
-                                    </div>
-                                </div>
-                            </form>
-                        </div>
-                        <div class="modal-footer">
-                            <button id="updateBtn" type='button' class='btn btn-default btn-sm'>更新</button>
-                            <button id="addBtn" type='button' class='btn btn-success btn-sm'>新建</button>
-                        </div>
-                    </div><!-- /.modal-content -->
-                </div><!-- /.modal -->
-            </div>
-
         </div>
             <!-- PAGE CONTENT ENDS -->
     </div><!-- /.col -->
@@ -218,6 +121,7 @@
 <!-- inline scripts related to this page -->
 <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.5.1/min/dropzone.min.js"/>-->
 <!--<script src="js/dropzone.min.js"/>-->
+<script src="js/jq-table.js"/>
 
 <script type="text/javascript">
 
@@ -226,15 +130,12 @@
     var month = dateObj.getMonth()+1;//月  (注意：月份+1)
     var date = dateObj.getDate();//日
 
-    var scripts = ["js/transfer.js",
-        "js/jq-table.js",
-        "js/xlsx.js",
+    var scripts = ["js/taobao.js","js/xlsx.js",
         "js/jqGrid/i18n/grid.locale-en.js",
         "js/jquery.gritter.min.js",
-        "https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.14.3/xlsx.full.min.js",
+        "https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.15.1/xlsx.full.min.js",
 //        "https://cdnjs.cloudflare.com/ajax/libs/Nestable/2012-10-15/jquery.nestable.min.js",
-//        "https://cdnjs.cloudflare.com/ajax/libs/nestable2/1.6.0/jquery.nestable.min.js",
-        "https://cdn.jsdelivr.net/npm/nestable2@1.6.0/jquery.nestable.min.js",
+        "https://cdnjs.cloudflare.com/ajax/libs/nestable2/1.6.0/jquery.nestable.min.js",
         "https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.5.1/min/dropzone.min.js",
         "https://cdnjs.cloudflare.com/ajax/libs/jquery.gridster/0.5.6/jquery.gridster.min.js"]
 //    var scripts = [];
@@ -242,7 +143,7 @@
         //inline scripts related to this page
         jQuery(function($){
 //            toastr.options.positionClass = 'toast-top-center';
-            init_data();
+//            init_data();
 //            init();
 
             Dropzone.autoDiscover = false;
@@ -272,16 +173,19 @@
                             if(f.status == 'error')
                                 return;
                         }
+/*
 
-                        if(!xlsx.checkFiles(this.files)){
+                        if(!xlsx.checkFiles(this.files)) {
                             this.removeFile(this.files[this.files.length-1]);
                             return;
                         }
+*/
 
-                        if(this.files.length == 1 && this.files[0].name.indexOf('订单发货明细表')> -1 ||
-                            this.files.length == 1 && this.files[0].name.indexOf('订单明细')> -1 ||
-                            this.files.length == 2 ) {
+
+                        if(this.files.length == 2 ) {
+//                            input_password();
                             import_data(myDropzone);
+
                         }
                     }
                 });
@@ -291,12 +195,10 @@
                 });
             } catch(e) {
                 alert('Dropzone.js does not support older browsers!');
-                console.info("Dropzone init Error")
-
+                console.info("Dropzone init Error");
             }
 
-            console.info("Dropzone init End")
-
+            console.info("Dropzone init End");
 
             $('.dd').nestable({ "maxDepth":2 });
 
@@ -308,6 +210,8 @@
                 nestableChange();
             });
             $('[data-rel="tooltip"]').tooltip();
+
+            $('#splitOrder').bind("click",table.split_order);
 
             $("#grid-pager_left").css("width", "auto");
 

@@ -280,7 +280,7 @@ pre_settle_data = function (base_data,express_data) {
     }
 
     if(missExpdata.length > 0){
-        table.showMissOrder(missExpdata,"部分快递信息匹配错误，请确认以下订单");
+        table.showMissOrder(missExpdata,"部分快递信息匹配错误，请确认以下订单",'');
     }
 
     return f_data;
@@ -443,7 +443,7 @@ process_data = function (order_data,detail_data) {
 
         }
         if(missOrder.length > 0){
-            table.showMissOrder(missOrder,"部分订单信息有误,请确认！");
+            table.showMissOrder(missOrder,"部分订单信息有误,请确认！",'');
         }
         return process_data;
     }
@@ -500,7 +500,7 @@ pre_down_data = function (base_data,express_data) {
     }
 
     if(missExpdata.length > 0){
-        table.showMissOrder(missExpdata,"部分快递信息匹配错误，请确认以下订单");
+        table.showMissOrder(missExpdata,"部分快递信息匹配错误，请确认以下订单",'');
     }
 
     return f_data;
@@ -913,11 +913,10 @@ xlsx.transferName = function (format_data) {
     })
 
     if(error_sku && error_sku.length > 0) {
-        table.showMissOrder($.unique(error_sku),"以下SKU有误，请确认！");
+        table.showMissOrder($.unique(error_sku),"以下SKU有误，请确认！",'');
     }
 
     table.setTableData(merge);
-
 }
 
 function isNumber(value) {

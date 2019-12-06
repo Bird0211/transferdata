@@ -14,6 +14,7 @@
 
 		<link rel="stylesheet" href="css/bootstrap-datetimepicker.min.css" media="screen">
 		<link rel="stylesheet" href="css/toastr/toastr.min.css" />
+		<link rel="stylesheet" href="js/font_icon/iconfont.css" />
 
 		<!-- text fonts -->
 		<link rel="stylesheet" href="css/ace-fonts.css" />
@@ -39,6 +40,8 @@
 		<!--[if lte IE 8]>
 		<script src="js/html5shiv.js"></script>
 		<script src="js/respond.min.js"></script>
+		<script src="https://kit.fontawesome.com/0d84c67055.js" crossorigin="anonymous"></script>
+
 		<![endif]-->
 	</head>
 
@@ -189,9 +192,8 @@
 
 					<li class="">
 						<a class="dropdown-toggle" href="#">
-							<i class="menu-icon fa fa-bar-chart-o"></i>
+							<span class="iconfont icon-weimob1"></span>
 							<span class="menu-text"> 微盟数据 </span>
-
 							<b class="arrow fa fa-angle-down"></b>
 
 						</a>
@@ -217,7 +219,51 @@
 							<li class="">
 								<a data-url="page/weimobdelivery" href="index.html?page=weimobdelivery">
 									<i class="menu-icon fa fa-list-alt"></i>
-									<span class="menu-text">商品发货 </span>
+									<span class="menu-text">订单发货 </span>
+								</a>
+
+								<b class="arrow"></b>
+							</li>
+						</ul>
+					</li>
+
+					<li class="">
+						<a class="dropdown-toggle" href="#">
+							<span class="iconfont icon-taobao1"></span>
+							<span class="menu-text"> 淘宝数据 </span>
+
+							<b class="arrow fa fa-angle-down"></b>
+
+						</a>
+
+						<b class="arrow"></b>
+						<ul class="submenu">
+							<li class="">
+								<a data-url="page/taobao" href="index.html?page=taobao">
+									<i class="menu-icon fa fa-list-alt"></i>
+									<span class="menu-text"> 订单导入 </span>
+								</a>
+
+								<b class="arrow"></b>
+							</li>
+						</ul>
+					</li>
+
+					<li class="">
+						<a class="dropdown-toggle" href="#">
+							<i class="menu-icon fa fa-bar-chart-o"></i>
+							<span class="menu-text"> 拾九数据 </span>
+
+							<b class="arrow fa fa-angle-down"></b>
+
+						</a>
+
+						<b class="arrow"></b>
+						<ul class="submenu">
+							<li class="">
+								<a data-url="page/weimob" href="index.html?page=nineteenorder">
+									<i class="menu-icon fa fa-list-alt"></i>
+									<span class="menu-text"> 订单导入 </span>
 								</a>
 
 								<b class="arrow"></b>
@@ -276,6 +322,16 @@
 
 								<b class="arrow"></b>
 							</li>
+<!--
+							<li class="">
+								<a data-url="page=data/sale-order" href="index.html?page=data/sale-order">
+									<i class="menu-icon fa fa-caret-right"></i>
+									<span class="menu-text"> 销售统计 </span>
+								</a>
+
+								<b class="arrow"></b>
+							</li>
+-->
 
 							<li class="">
 								<a data-url="page=data/compared" href="index.html?page=data/compared">
@@ -470,8 +526,8 @@
 					<!-- #section:basics/footer -->
 					<div class="footer-content">
 						<span class="bigger-120">
-							<span class="blue bolder">Ace</span>
-							Application &copy; 2018-2019
+							<span class="blue bolder">Middle-Earth</span>
+							Application &copy; 2019-2020
 						</span>
 
 						&nbsp; &nbsp;

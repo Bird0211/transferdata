@@ -3,6 +3,7 @@
 <link rel="stylesheet" href="css/ui.jqgrid.css"/>
 <link rel="stylesheet" href="css/jquery.gritter.css" />
 <link rel="stylesheet" href="css/bootstrap-datepicker.min.css"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/nestable2/1.6.0/jquery.nestable.min.css" />
 
 
 <!--<script src="js/xlsx.full.min.js"></script>-->
@@ -38,13 +39,13 @@
         <div id="accordion" class="accordion-style1 panel-group">
 
             <div class="panel-collapse collapse in" id="collapseOne">
-                <div class="panel-body">
+                <!--<div class="panel-body">-->
                     <form class="form-inline" role="form" action="#" data-ajax="true" data-ajax-mode="replace" data-ajax-update="#searchTable" id="searchForm" method="post">
                         <div class="form-group">
                             <label for="startTime" class="control-label">订单时间:</label>
-                            <input id="startTime" class="form-control date-picker" type="text" data-date-format="dd-mm-yyyy" />
+                            <input id="startTime" class="form-control date-picker" type="text" data-date-format="dd-mm-yyyy" autocomplete="off"/>
                             <span>至</span>
-                            <input id="endTime" class="form-control date-picker" type="text" data-date-format="dd-mm-yyyy" />
+                            <input id="endTime" class="form-control date-picker" type="text" data-date-format="dd-mm-yyyy" autocomplete="off"/>
 
                             <label for="sendarea" class="control-label">发货地址:</label>
                             <select class="form-control" id="sendarea" name="orderStatuses">
@@ -74,7 +75,7 @@
                         </div>
                     </form>
                     <div class="space-10"></div>
-                </div>
+                <!--</div>-->
             </div>
 
             <table id="grid-table"></table>
@@ -97,12 +98,13 @@
                         <div class="modal-body">
                             <div class="dd" id="nestable">
                                 <ol id="menulist" class="dd-list">
+                                    <li class="dd-item" data-id="1">
+                                        <div class="dd-handle">Item 1</div>
+                                    </li>
                                 </ol>
                             </div>
                         </div>
                         <div class="modal-footer">
-                            <button type='button' class='btn btn-default btn-sm' data-dismiss='modal'>关闭</button>
-                            <button id="splitOrder" type='button' class='btn btn-success btn-sm'>确认拆分</button>
                         </div>
                     </div><!-- /.modal-content -->
                 </div><!-- /.modal -->
@@ -121,13 +123,13 @@
     var month = dateObj.getMonth()+1;//月  (注意：月份+1)
     var date = dateObj.getDate();
 
-
-
-    var scripts = ["js/jq-table.js?v=7","js/xlsx.js?v=13","js/jquery.gritter.min.js","js/weimob.js",
+    var scripts = ["js/jq-table.js","js/xlsx.js","js/jquery.gritter.min.js","js/weimob.js",
         "js/weimob_init.js",
         "js/jqGrid/i18n/grid.locale-en.js",
         "https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.14.3/xlsx.full.min.js",
-        "https://cdnjs.cloudflare.com/ajax/libs/Nestable/2012-10-15/jquery.nestable.min.js",
+//        "https://cdnjs.cloudflare.com/ajax/libs/Nestable/2012-10-15/jquery.nestable.min.js",
+        "https://cdn.jsdelivr.net/npm/nestable2@1.6.0/jquery.nestable.min.js",
+//        "js/jquery.nestable.js",
         "https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"]
 //    var scripts = [];
     ace.load_ajax_scripts(scripts, function() {
@@ -137,17 +139,17 @@
 
             $('.dd').nestable({ "maxDepth":2 });
 
+
             $('.dd-handle a').on('mousedown', function(e){
                 e.stopPropagation();
             });
+
 
             $('.dd').on('change', function() {
                 nestableChange();
             });
 
             $('[data-rel="tooltip"]').tooltip();
-
-            $('#splitOrder').bind("click",table.split_order);
 
             $("#grid-pager_left").css("width", "auto");
 

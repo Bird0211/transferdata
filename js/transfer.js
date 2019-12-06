@@ -417,7 +417,7 @@ download_settle = function(data){
     });
 
     if(error_sku != ""){
-        table.showMissOrder(error_sku.split(";"),"系统缺少以下SKU，请联系管理员！");
+        table.showMissOrder(error_sku.split(";"),"系统缺少以下SKU，请联系管理员！",'');
     }
     all_data.push(settle_data,exp_detail_data);
 

@@ -49,7 +49,7 @@ getLogisticsInfo = function (datas) {
     });
 
     if(err.length > 0) {
-        table.showMissOrder(err, "物流信息有误!");
+        table.showMissOrder(err, "物流信息有误!",10);
     }
 
     if(expInfo.length > 0){
