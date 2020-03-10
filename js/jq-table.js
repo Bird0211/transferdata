@@ -24,22 +24,29 @@ jQuery(grid_selector).jqGrid({
     data: grid_data,
     datatype: "local",
     height: '600',
-    colNames:['','订单编号','商品名称','数量','发件人','sender','is3pl','收件人' ,'电话','身份证','地址','物流','expresstype'],
+    colNames:['','订单编号','商品名称','数量','发件人','sender','is3pl','收件人' ,'电话','身份证','地址','备注','物流','expresstype'],
     colModel:[
         {name:'option',width:20,sortable:false, align:"center",editable:false,
             formatter:function (cellvalue, options, rowObject) {
 
-                var detail = '<div style="text-align: center; ">';
-                detail +='<a id="splitorder" style="margin: 2px;" data-toggle="modal" href="#" data-target="#myModal" data-original-title="拆分订单" data-type="split" data-whatever='+options.rowId+'>';
-                if(rowObject.num > 5)
+                var detail = '<div style="text-align: center;font-size: 20px">';
+                if(rowObject.num > 11) {
+                    detail +='<a id="autosplitorder" style="margin: 2px;" data-toggle="modal" href="#" data-target="#myModal" data-original-title="自动拆分订单" data-type="autosplit" data-whatever='+options.rowId+'>';
                     detail += '<i class="ui-icon ace-icon fa fa-plus-circle red"></i>';
-                else
-                    detail += '<i class="ui-icon ace-icon fa fa-plus-circle purple"></i>';
+                }
+                else if (11 >= rowObject.num && rowObject.num > 7) {
+                    detail +='<a id="splitorder" style="margin: 2px;" data-toggle="modal" href="#" data-target="#myModal" data-original-title="拆分订单" data-type="split" data-whatever='+options.rowId+'>';
+                    detail += '<i class="ui-icon ace-icon fa fa-plus-circle orange"></i>';
+                } else {
+                    detail +='<a id="splitorder" style="margin: 2px;" data-toggle="modal" href="#" data-target="#myModal" data-original-title="拆分订单" data-type="split" data-whatever='+options.rowId+'>';
+                    detail += '<i class="ui-icon ace-icon fa fa-plus-circle green"></i>';
+
+                }
                 detail += "</a>";
 
-                if(rowObject.option.isMerge && rowObject.option.isMerge == 1) {
+                if(cellvalue.isMerge === 1) {
                     detail += '<a id="mergeOrder" style="text-decoration: none;margin: 2px;" data-toggle="modal" href="#" data-target="#myModal" data-original-title="合并订单" data-type="merge" data-whatever='+options.rowId+'>';
-                    detail += '<span class="ui-icon iconfont ace-icon icon-hebing1 "></span>';
+                    detail += '<span class="ui-icon iconfont ace-icon icon-hebing"></span>';
                     detail += '</a>';
                 }
                 detail += '</div>';
@@ -74,7 +81,8 @@ jQuery(grid_selector).jqGrid({
         {name:'name',index:'name', width:70, editable: false,hidden:true},
         {name:'phone',index:'phone', width:90, editable: false,hidden:true},
         {name:'id_num',index:'id_num', width:90, editable: false,hidden:true},
-        {name:'address',index:'address', width:150, sortable:false,editable:false,hidden:true},
+        {name:'address',index:'address', width:50, sortable:false,editable:false,hidden:true},
+        {name:'remark',index:'remark', width:50, sortable:false,editable:false,hidden:false},
         {name:'express',width:35, editable:false,
             formatter:function (cellvalue, options, rowObject) {
                 <!-- #section:elements.button.group -->
@@ -93,6 +101,16 @@ jQuery(grid_selector).jqGrid({
                 value+='<label class="btn btn-sm btn-white btn-info '+(rowObject.expresstype === "2"?'active':'')+'" onclick="selectExp('+options.rowId+',2)">';
                 value+='<input type="radio" value="2" />';
                 value+='<span class="iconfont icon-tianmaoshunfengbaoyou"></span>';
+                value+='</label>';
+
+                value+='<label class="btn btn-sm btn-white btn-info '+(rowObject.expresstype === "3"?'active':'')+'" onclick="selectExp('+options.rowId+',3)">';
+                value+='<input type="radio" value="3" />';
+                value+='<span class="iconfont icon-cheng"></span>';
+                value+='</label>';
+
+                value+='<label class="btn btn-sm btn-white btn-info '+(rowObject.expresstype === "4"?'active':'')+'" onclick="selectExp('+options.rowId+',4)">';
+                value+='<input type="radio" value="4" />';
+                value+='<span class="iconfont icon-naifen"></span>';
                 value+='</label>';
 
                 value+='</div>';
@@ -124,7 +142,6 @@ jQuery(grid_selector).jqGrid({
             updateActionIcons(table);
             updatePagerIcons(table);
             enableTooltips(table);
-
         }, 0);
     }
 
@@ -259,13 +276,48 @@ jQuery(grid_selector).jqGrid('navGrid',pager_selector,
 
 }).navSeparatorAdd(pager_selector,{sepclass : "ui-separator",sepcontent: ''
 }).navButtonAdd(pager_selector,{
-    id:'express',
-    caption: "物流切换",
-    title:"物流切换",
-    buttonicon: "ace-icon fa-bookmark-o",
+    id:'ftd',
+    caption: "",
+    title:"富腾达快递",
+    buttonicon: "iconfont icon-wuliu table-buttom blue",
     onClickButton: function () {
         //
-        change_express();
+        change_express("1");
+    },
+    position: "last"
+
+}).navButtonAdd(pager_selector,{
+    id:'sf',
+    caption: "",
+    title:"顺丰物流",
+    // buttonicon: "ace-icon fa-bookmark-o",
+    buttonicon: "iconfont icon-tianmaoshunfengbaoyou table-buttom blue",
+    onClickButton: function () {
+        //
+        change_express("2");
+    },
+    position: "last"
+
+}).navButtonAdd(pager_selector,{
+    id:'cg',
+    caption: "",
+    title:"程光物流",
+    // buttonicon: "ace-icon fa-bookmark-o",
+    buttonicon: "iconfont icon-cheng blue",
+    onClickButton: function () {
+        change_express("3");
+    },
+    position: "last"
+
+}).navButtonAdd(pager_selector,{
+    id:'milk',
+    caption: "",
+    title:"奶粉订单",
+    // buttonicon: "ace-icon fa-bookmark-o",
+    buttonicon: "iconfont icon-naifen blue",
+    onClickButton: function () {
+        //
+        change_express("4");
     },
     position: "last"
 
@@ -273,7 +325,7 @@ jQuery(grid_selector).jqGrid('navGrid',pager_selector,
 }).navButtonAdd(pager_selector,{
     caption: "",
     title:"Download",
-    buttonicon: "ace-icon fa fa-download purple",
+    buttonicon: "ace-icon fa fa-download table-buttom purple",
     onClickButton: function () {
         download_data();
     },
@@ -363,6 +415,8 @@ function styleCheckbox(table) {
 //unlike navButtons icons, action icons in rows seem to be hard-coded
 //you can change them like this in here if you want
 function updateActionIcons(table) {
+    $('.ui-pg-button div .iconfont').removeClass('ui-icon');
+    $('.icon-cheng').css("margin-top","-1px");
 
      var replacement =
      {
@@ -408,52 +462,84 @@ $(document).on('ajaxloadstart', function(e) {
     $('.ui-jqdialog').remove();
 });
 
-$('#splitorder').bind("click",function (e) {
-    $('#myModal').show();
-});
 
 $('#myModal').on('show.bs.modal', function (event) {
     var button = $(event.relatedTarget) // Button that triggered the modal
     var rowId = button.data('whatever') // Extract info from data-* attributes
     var type = button.data('type')
+    var modal = $(this);
 
     // If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
     // Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
+    setModal(modal,rowId,type);
+});
 
+setModal = function (modal,rowId,type) {
     var rowData = jQuery(grid_selector).jqGrid("getRowData",rowId);
-    var modal = $(this);
     var title = "";
-    var orders;
-    var footer = "";
-    footer = '<button type="button" class="btn btn-default btn-sm" data-dismiss="modal">关闭</button>';
+    var body = null;
+    var footer = '<button type="button" class="btn btn-default btn-sm" data-dismiss="modal">关闭</button>';
     if(type == 'split') {
         title = "拆分订单";
-        orders = splitOrders(table.getRelatedRowData(rowData));
+        let orders = splitOrders(table.getRelatedRowData(rowData));
+        body = getContentHtml(orders);
         footer += '<button id="splitOrder" onclick="table.split_order()" type="button" class="btn btn-success btn-sm">确认拆分</button>';
+
+        modal.find('.dd-list').html(body);
+        modal.find('.dd-list').show();
+        modal.find('.row').hide();
         $(".dd").css("pointer-events","");
+
+    }else if (type == 'autosplit') {
+        title = "自动拆分订单";
+
+        // body = '<div class="row">';
+        body = '<div class="form-group">';
+        body +='    <label class="col-sm-3 control-label no-padding-right" for="form-field-1"> 包裹内商品最大数量 </label>';
+        body +='    <div class="col-sm-9">';
+        body +='        <input type="text" id="autosplitbtn" placeholder="number" class="col-xs-10 col-sm-5" />';
+        body +='    </div>';
+        body +='</div>';
+        // body +='</div>';
+
+        modal.find('.row').html(body);
+        modal.find('.dd-list').hide();
+        modal.find('.row').show();
+
+        footer += '<button id="splitOrder" onclick="get_split_order('+rowId+',\'split\')" type="button" class="btn btn-info btn-sm">手动拆分</button>';
+        footer += '<button id="splitOrder" onclick="table.auto_split_order('+rowId+')" type="button" class="btn btn-success btn-sm">确认拆分</button>';
+
     }
     else {
         title = "合并订单";
-        orders = mergeOrders(table.getSameRowData(rowData));
+        let orders = mergeOrders(table.getSameRowData(rowData));
+        body = getContentHtml(orders);
         footer += '<button id="mergeOrder" onclick="table.merge_order()" type="button" class="btn btn-success btn-sm">确认合并</button>';
+
+        modal.find('.dd-list').html(body);
+        modal.find('.dd-list').show();
+        modal.find('.row').hide();
         $(".dd").css("pointer-events","none");
     }
     // var order = rowData.order;
 
-
-    var body = getContentHtml(orders);
+    // modal.find('.modal-body').html(body);
     modal.find('.modal-title').text(title);
-    modal.find('.dd-list').html(body);
     modal.find('.modal-footer').html(footer);
+}
 
-});
-
+get_split_order = function (rowId,type) {
+    $('#myModal').hide();
+    setModal($('#myModal'),rowId,type);
+    $('#myModal').show();
+}
 
 getContentHtml = function(datas) {
     if(!datas)
         return;
 
     var content_hteml = '';
+
     for(var item in datas){
         var data = datas[item];
         content_hteml += "<li class=\"dd-item\" data-id='"+item+"'>";
@@ -468,7 +554,6 @@ getContentHtml = function(datas) {
         }
         content_hteml += "</ol></li>";
     }
-
     return content_hteml;
 }
 
@@ -526,8 +611,9 @@ function nestableChange() {
     for(var i = 0; i < childrens.length; i++){
         var d = childrens[i];
         var key = id;
-        if(i > 0)
-            key += '-'+i;
+        if(childrens.length > 1) {
+            key += '-' + i;
+        }
         newDatas[key] = d;
     }
     $('#myModal').find('.dd-list').html(getContentHtml(newDatas));
@@ -543,7 +629,8 @@ download_data = function () {
         type = "Enring";
     else if(xlsx.option.type == 3)
         type = "Weimob";
-
+    else if(xlsx.option.type == 4)
+        type = "19Mini";
 
     if(!checkExpress(table_data)){
         return;
@@ -560,6 +647,17 @@ download_data = function () {
         xlsx.downloadExl(xlsx.new_express_data(expData.sf),"xlsx",month + "." + date + "顺丰_"+type + ".xlsx",false);
         xlsx.downloadExl(xlsx.new_detail_data(expData.sf),"xlsx",month + "." + date + "New订单[顺丰]_"+type + ".xlsx",false);
     }
+
+    if(expData && expData.cg.length > 0) {
+        xlsx.downloadExl(xlsx.new_chengguang_data(expData.cg),"xlsx",month + "." + date + "程光_"+type + ".xlsx",false);
+        xlsx.downloadExl(xlsx.new_detail_data(expData.cg),"xlsx",month + "." + date + "New订单[程光]_"+type + ".xlsx",false);
+    }
+
+    if(expData && expData.milk.length > 0) {
+        xlsx.downloadExl(xlsx.new_milk_data(expData.milk),"xlsx",month + "." + date + "奶粉_"+type + ".xlsx",false);
+        // xlsx.downloadExl(xlsx.new_detail_data(expData.milk),"xlsx",month + "." + date + "New订单[顺丰]_"+type + ".xlsx",false);
+    }
+
     /*
     if($('#accordionOne')) {
         $('#accordionOne').trigger("click");
@@ -640,39 +738,44 @@ table.splitOrder_detail = function (rowData,isSplit) {
 
     var goods = contents.split('<br>');
     var details = [];
-    for(var i = 0; i < goods.length ; i++){
+    for(var i = 0; i < goods.length ; i++) {
         var good = goods[i];
         if(!good || good == '')
             continue;
+
         var c = good.split(';');
         var sku = c[1];
         var content = c[0].split(' X ')[0].trim();
-        var num = c[0].split(' X ')[1].trim();
+        let number = c[0].split(' X ')[1].trim();
 
+        console.info(content,sku,number);
         if(isSplit) {
-            for (var n = 0; n < Number(num); n++) {
-                var item = {};
+            for (var n = 0; n < Number(number); n++) {
+                const item = {};
                 item.content = content;
                 item.name = name;
                 item.phone = phone;
                 item.id_num = id_num;
                 item.sku = sku;
-                item.num = 1;
+                item.num = "1";
                 item.sender = sender;
                 item.is3pl = is3pl;
                 item.expresstype = expresstype;
                 details.push(item);
             }
         }else {
-            var item = {};
+            const item = {};
             item.content = content;
             item.sku = sku;
-            item.num = num;
+            item.num = number;
             item.sender = sender;
             item.is3pl = is3pl;
+            item.name = name;
+            item.phone = phone;
+            item.id_num = id_num;
+            item.expresstype = expresstype;
             details.push(item);
         }
-
     }
     return details;
 }
@@ -697,6 +800,139 @@ table.split_order = function () {
 
     goUpdate();
 };
+
+table.auto_split_order = function (rowId) {
+    console.info("table.auto_split_order start");
+    var rowData = jQuery(grid_selector).jqGrid("getRowData",rowId);
+
+    var num = $('#autosplitbtn').val();
+
+    if( Number(rowData.num) <= Number(num) ) {
+        $('.modal').modal('hide');
+    } else {
+        var datas = table.splitOrder_detail(rowData,false);
+        let n = Math.ceil(rowData.num / num);
+
+        console.info(rowData);
+        let newData = [];
+        for (let i = 0; i < n; i++) {
+            let order = auto_split_order(datas,num);
+            datas = removeOrder(order,datas);
+
+            var mergeOrder = {};
+            mergeOrder.sender = rowData.sender;
+            mergeOrder.order = rowData.order + ('-'+i);
+            mergeOrder.is3pl = rowData.is3pl;
+            mergeOrder.name = rowData.name;
+            mergeOrder.phone = rowData.phone;
+            mergeOrder.id_num = rowData.id_num;
+            mergeOrder.address = rowData.address;
+            mergeOrder.remark = rowData.remark;
+            mergeOrder.expresstype = rowData.expresstype;
+
+
+            let newNum = 0;
+            let content = "";
+            for(let k = 0; k < order.length; k++) {
+                let newOrder = order[k];
+                newNum += (Number(newOrder.num));
+                content += (newOrder.content + ' X ' + newOrder.num + ";" + newOrder.sku);
+                if(k != order.length -1)
+                    content += "<br>";
+            }
+            mergeOrder.num = newNum;
+            mergeOrder.content = content;
+            newData.push(mergeOrder);
+        }
+
+        var rowDatas = [];
+        var obj = table.getJQAllData();
+
+        jQuery(obj).each(function() {
+            if(this.order === rowData.order) {
+                for (let i = 0; i < newData.length; i++) {
+                    rowDatas.push(newData[i]);
+                }
+            }else {
+                rowDatas.push(this);
+            }
+        });
+
+
+        $('.modal').modal('hide');
+        table.setTableData(rowDatas);
+    }
+
+    console.info("table.auto_split_order end");
+
+};
+
+
+removeOrder = function (orders,datas) {
+    var filterDatas = [];
+    for(let i = 0 ; i < datas.length ; i ++) {
+        let data = Object.assign({}, datas[i]);;
+        let removeOrder = null;
+        for (let o = 0 ; o < orders.length; o ++) {
+            let order = orders[o];
+
+            if(order.sku === data.sku) {
+                removeOrder = order;
+                break;
+            }
+        }
+
+        if(removeOrder == null) {
+            filterDatas.push(data);
+        } else {
+            if(removeOrder.num == data.num) {
+                continue;
+            } else {
+                data.num = data.num - removeOrder.num;
+                filterDatas.push(data);
+            }
+        }
+    }
+
+    return filterDatas;
+}
+
+
+auto_split_order = function(datas,num) {
+    datas = datas.sort(function (a,b) {
+        if(Number(a.num) > Number(b.num))
+            return -1;
+        else  if (Number(a.num) == Number(b.num))
+            return 0;
+        else
+            return 1;
+    });
+
+    var newDatas = [];
+    var moreDatas = [];
+    for(var i = 0; i < datas.length ; i++) {
+        let data = datas[i];
+        if(Number(data.num) > num) {
+            moreDatas.push(data);
+        } else if (Number(data.num) <= num) {
+            newDatas.push(data);
+            num = Number(num) - Number(data.num);
+        }
+        if(num == 0)
+            break;
+    }
+
+    if(num > 0 && moreDatas.length > 0) {
+        //需要拆单
+        let moreData = Object.assign({},moreDatas[0]);
+        if(Number(moreData.num) > num) {
+            moreData.num = num;
+        }
+        newDatas.push(moreData);
+    }
+    return newDatas;
+}
+
 
 table.merge_order = function () {
     var datas = $('.dd').nestable('serialize');
@@ -772,6 +1008,7 @@ goUpdate = function () {
                     d.phone = this.phone;
                     d.id_num = this.id_num;
                     d.sender = this.sender;
+                    d.remark = this.remark;
                     rowDatas.push(d);
                 }
                 isAdd = true;
@@ -845,6 +1082,7 @@ table.merge = function (data) {
 table.setTableData = function (data) {
 
     data = table.isMergeOrder(data);
+    table.checkSku(data);
 
     var page = jQuery(grid_selector).jqGrid('getGridParam','page');
     // var rowNum = o.jqGrid('getGridParam', 'rowNum'); //获取显示配置记录数量
@@ -862,10 +1100,36 @@ table.setTableData = function (data) {
             "height":"auto"});
 */
 
-    if(jQuery('#accordionTwo').attr("class")) {
-        if (jQuery('#accordionTwo').attr("class").indexOf("collapsed") > 0) {
-            $('#accordionTwo').trigger("click");
+    if(jQuery('#accordionTable').attr("class")) {
+        if (jQuery('#accordionTable').attr("class").indexOf("collapsed") > 0) {
+            $('#accordionTable').trigger("click");
         }
+    }
+}
+
+table.checkSku = function (datas) {
+    var errorOrders = [];
+    for (let i = 0; i < datas.length; i++) {
+        let data = datas[i];
+        let content = data.content;
+        let products = content.split('</br>');
+        let nullSku = false;
+        for(let i = 0; i < products.length; i++) {
+            let product = products[i];
+            let d = product.split(';');
+            if(d.length < 2 || d[1] == null || d[1] == "") {
+                nullSku = true;
+                break;
+            }
+        }
+
+        if(nullSku == true) {
+            errorOrders.push(data.order);
+        }
+    }
+
+    if(errorOrders.length > 0) {
+        table.showMissOrder(errorOrders,"以下订单缺少商品SKU,请添加商品SKU信息",'')
     }
 }
 
@@ -931,6 +1195,7 @@ table.isMergeOrder = function (datas) {
         for (let j = 0; j < datas.length; j++) {
             if(i == j)
                 continue;
+
             let check_data = datas[j];
             if(data.name == check_data.name &&
                 data.address == check_data.address && data.phone == check_data.phone &&
@@ -939,18 +1204,22 @@ table.isMergeOrder = function (datas) {
             }
         }
     }
+
     return datas;
 }
 
 
 function subString(str, len) {
+    if(str == null || str == "")
+        return str;
+
     var newLength = 0;
     var newStr = "";
     var chineseRegex = /[^\x00-\xff]/g;
     var singleChar = "";
-    var strLength = str.replace(chineseRegex,"**").length;
+    var strLength = str.toString().replace(chineseRegex,"**").length;
     for(var i = 0;i < strLength;i++) {
-        singleChar = str.charAt(i).toString();
+        singleChar = str.toString().charAt(i).toString();
         if(singleChar.match(chineseRegex) != null) {
             newLength += 2;
         }else {
@@ -971,7 +1240,6 @@ selectExp = function (rowId,expId) {
     var rowData = jQuery(grid_selector).jqGrid("getRowData",rowId);
     rowData.expresstype = ""+expId;
     jQuery(grid_selector).jqGrid("setRowData",rowId,rowData);
-
 }
 
 checkExpress = function (datas) {
@@ -1004,36 +1272,34 @@ splitExpData = function (datas) {
     var expData = {};
     expData.ftd = [];
     expData.sf = [];
+    expData.cg = [];
+    expData.milk = [];
 
     for (let i = 0; i < datas.length; i ++) {
         var  data = datas[i];
         if(data.expresstype === "1") {
             expData.ftd.push(data);
-        }else {
+        } else if(data.expresstype === "2") {
             expData.sf.push(data);
+        } else if(data.expresstype === "3") {
+            expData.cg.push(data);
+        } else if(data.expresstype === "4") {
+            expData.milk.push(data);
         }
     }
 
     return expData;
 }
 
-change_express = function () {
-    var isSF = true;
-    if($('#express div span').hasClass("fa-bookmark-o")){
-        $('#express div span').addClass('fa-bookmark');
-        $('#express div span').removeClass('fa-bookmark-o');
-        isSF = false;
-    }else {
-        $('#express div span').addClass('fa-bookmark-o');
-        $('#express div span').removeClass('fa-bookmark');
-    }
-
+change_express = function (expresstype) {
     var table_data=table.getJQAllData();
     jQuery(table_data).each(function(){
-        this.expresstype = isSF ? "1" : "2";
+        this.expresstype = expresstype
     })
     table.setTableData(table_data);
 }
+
+
 
 /*
 $('.switch-field-1').attr('checked' , 'checked').on('click', function(){

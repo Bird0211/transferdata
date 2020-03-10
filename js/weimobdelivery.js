@@ -1,13 +1,20 @@
 
 import_data = function (myDropzone) {
-    xlsx.importdata(myDropzone,show_delivery);
+    xlsx.importdata(myDropzone,0,show_delivery);
 }
 
 show_delivery = function (ori_datas) {
     var file_data = ori_datas[0];
+    var file_name = file_data.name;
     var wb = file_data.data;
     var sheet = wb[0];
     var data = sheet.data;
+
+    var names = (file_name.split(".")[0]).split("-");
+    let express_type = null;
+    if(names.length > 2) {
+        express_type = names[2];
+    }
 
     const datas = [];
     for(var i = 0; i < data.length; i++) {
@@ -38,6 +45,8 @@ show_delivery = function (ori_datas) {
                 o.content = sku_name;
                 o.skuNum = num;
                 o.deliveryId = expId;
+                o.expressComCode = express_type;
+
                 datas.push(o);
 
             }
@@ -64,6 +73,7 @@ show_delivery = function (ori_datas) {
             o.content = sku_name;
             o.skuNum = num;
             o.deliveryId = expId;
+            o.expressComCode = express_type;
 
             datas.push(o);
         }
@@ -90,6 +100,7 @@ merge_order = function (datas) {
              d.id_num = data.id_num;
              d.address = data.address;
              d.deliveryId = data.deliveryId;
+             d.expressComCode = data.expressComCode;
 
              d.skuInfo = [];
          }
@@ -122,10 +133,9 @@ send_data = function (datas) {
             if(orderDeliveryResult.success) {
                 toastr.success("发货成功，请稍后再试!");
             } else {
-                 toastr.error("发货失败，请稍后再试!");
+                toastr.error("发货失败，请稍后再试!");
+                table.showErrInfo(orderDeliveryResult.errorOrderIds,"发货失败订单号")
             }
-
-            table.showErrInfo(orderDeliveryResult.errorOrderIds,"发货失败订单号")
         }
     })
 

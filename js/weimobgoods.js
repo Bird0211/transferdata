@@ -56,7 +56,6 @@ goods.search = function() {
     }
 
     sendJData(url,JSON.stringify(param),true,function (data) {
-
         console.info(data)
         const goods = [];
         const details = data.data;
@@ -98,6 +97,10 @@ $("#search").on("click",goods.search);
 
 count = function (num) {
     const selectData = table.getSelData();
+    count(num,selectData);
+}
+
+count = function (num,selectData) {
     if(!selectData || selectData == null || selectData.length <= 0) {
         toastr.error("请选择需要计算的商品!");
         return false;
@@ -145,7 +148,6 @@ count = function (num) {
     table.setTableData(selectData,1);
 }
 
-
 countCostPrice = function () {
     count(0);
 }
@@ -154,19 +156,59 @@ countSalsePrice = function () {
     count(1);
 }
 
-countAllPrice = function () {
+countPrice = function () {
     count(2);
 }
 
+countAllCostPrice = function () {
+    const alltData = table.getJQAllData();
+    count(0,alltData);
+}
 
+countAllSalsePrice = function () {
+    const alltData = table.getJQAllData();
+    count(1,alltData);
+}
+
+countAllPrice = function () {
+    const alltData = table.getJQAllData();
+    count(2,alltData);
+}
 
 $('#updateBtn').on("click",function () {
     if(!checkPrice())
         return ;
 
     goUpdate();
-
 });
+
+
+
+$('#downloadBtn').on("click",function () {
+    const alltData = table.getJQAllData();
+    let cost_data = [];
+    for(let i = 0; i < alltData.length; i++) {
+        let data = alltData[i];
+        if(data.newSalePrice == 0)
+            continue;
+        
+        let d = {};
+        d["*商品ID"] = data.goodsId;
+        d["*SKUID"] = data.skuId;
+        d["*是否参加活动"] = "参与活动";
+        d["*优惠方式"] = "固定价格";
+        d["*优惠力度"] = data.newSalePrice;
+        d["取整"] = "";
+        d["*活动可用库存"] = 50;
+        d["*活动价限购"] = "";
+        d["活动排序"] = "";
+        d["初始预约人数"] = "";
+        cost_data.push(d);
+    }
+
+    console.info(cost_data);
+    xlsx.downloadExl(cost_data,"xlsx","活动特价导入模板.xlsx",false);
+})
 
 
 checkPrice = function () {

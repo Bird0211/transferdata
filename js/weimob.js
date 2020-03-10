@@ -50,7 +50,7 @@ setTable = function (pageNum,pageSize,pageList,totalCount) {
         data.phone = list.phone;
         data.name = list.name;
         data.order = list.orderNo;
-        data.id_num = list.idCardNo;
+        data.id_num = list.idCardNo != null ? list.idCardNo.match(/\d+(.\d+)?/g) : null;
         data.sender = 'MEE';
         data.is3pl = false;
         datas.push(data);

@@ -1,0 +1,18 @@
+.menuicon{
+    margin-right: 2px;
+    font-size: 20px;
+    min-width: 30px;
+    vertical-align: sub;
+    text-align: center;
+    font-weight: 400;
+    display: inline-block;
+}
+
+.chengguang {
+    font-size: 17px;
+    margin-top: -1px;
+}
+
+.table-buttom {
+    font-size: 23px;
+}

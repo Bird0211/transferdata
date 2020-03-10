@@ -54,46 +54,91 @@ show_data = function (ori_datas) {
     }
 
     xlsx.getCustomer();
+    var format_data = format_Taobao(ori_datas);
 
-    if(getStep(ori_datas) == 1) {
-        var format_data = xlsx.format_data(ori_datas);
-        if (format_data == null) {
-            toastr.error("文件有误，请检查数据");
-            return;
-        }
-        xlsx.transferName(format_data);
-
-    }else if(getStep(ori_datas) == 2) {
-        var download_data = xlsx.merge_data(ori_datas);
-        if(download_data == null) {
-            console.info("download_data is null")
-            toastr.error("文件有误，请检查数据");
-            return;
-        }
-        xlsx.downloadExl(download_data,"csv",month + "." + date + "MEE-Import" + ".csv",true);
-
-        var settle_info = xlsx.merge_settle_data(ori_datas);
-        // settlement(settle_info);
-
-        saveData(download_data);
-
-        setTimeout(function () {
-            myDropzone.removeAllFiles();
-        }, 1000);
+    if (format_data == null) {
+        toastr.error("文件有误，请检查数据");
+        return;
     }
+    xlsx.transferName(format_data);
+
 }
 
-getStep = function (ori_datas) {
-    if (ori_datas.length == 1 && (ori_datas[0].name.indexOf('订单发货明细表') > -1 ||
-            ori_datas[0].name.indexOf('商品明细') > -1) ) {
-        return 1;
-    }else if(ori_datas.length == 2 && (
-            ori_datas[0].name.indexOf('New订单') > -1 ||
-            ori_datas[1].name.indexOf('New订单') > -1
-        )) {
-        return 2;
-    }else
-        return 1;
+format_Taobao = function (ori_datas) {
+    var start_row = -1;
+    var order_data = {};
+    var isMac = true;
+    var file_data = ori_datas[0];
+    var wb = file_data.data;
+    var sheet = wb[0];
+    var data = sheet.data;
+
+    if (!xlsx.option.exltitle || xlsx.option.exltitle == null || xlsx.option.exltitle == 'null') {
+        toastr.error("Excel标题还未设置,请点击'淘宝订单标题'按钮,设置Excel标题！");
+        return null;
+    }
+
+    var indexMap = {};
+    var isStart = false;
+    for(var i = 0; i<data.length; i++){
+        var d = data[i];
+        var row_data = {};
+
+        if(start_row == -1) {
+            if(isStartLine(d)){
+                if (d.length == 1) {
+                    isMac = false;
+                }
+                indexMap = getIndex(d,isMac);
+                start_row = i;
+                isStart = true;
+            }
+        }
+
+        if(i > start_row && start_row > -1) {
+            if (isEndLine(d)) {
+                start_row = -1;
+                break;
+            }
+
+            row_data = getRowData(d,indexMap,isMac);
+            if(row_data.express != null && row_data.express != ''){   //存在物流公司 则跳过
+                continue;
+            }
+
+            if(order_data[row_data.order]) {
+                var o = order_data[row_data.order];
+                o.num = Number(o.num)+ Number(row_data.num);
+                o.content = o.content + row_data.content +" X "+ parseInt(row_data.num) + ";" + row_data.sku + "</br>";
+                order_data[row_data.order] = o;
+            }else {
+                var o = {};
+                o.order = row_data.order;
+                o.name = row_data.name;
+                o.phone = row_data.phone;
+                o.id_num = row_data.idNo?row_data.idNo:"";
+                o.address = row_data.addr;
+                o.addr = row_data.addr;
+                o.num = row_data.num;
+                o.content = row_data.content +" X "+ parseInt(row_data.num) + ";" + row_data.sku + "</br>";
+                o.sku = row_data.sku;
+                order_data[row_data.order] = o;
+            }
+        }
+    }
+
+    if(!isStart) {
+        toastr.error("无法获取Excel中信息,请点击'淘宝订单标题'按钮,确认Excel标题正确！");
+        return null;
+    }
+
+    var datas = [];
+    if(order_data != null && !$.isEmptyObject(order_data)){
+        for(var key in order_data){
+            datas.push(order_data[key]);
+        }
+    }
+    return datas;
 }
 
 getGift = function () {

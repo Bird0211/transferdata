@@ -19,17 +19,15 @@ ace.enable_ajax_content = function($, options) {
 	.on('hashchange.ajax', function(e, manual_trigger) {
         // var url = location.search; //获取url中"?"符后的字串
         var search = $.trim(window.location.search);
-        console.info("search : "+search)
         if(!search || search.length == 0) return;
         search = search.replace(/^(\?\!)?\?/, '');
-        console.info("research: "+search)
         var url = false;
 		
 		if(typeof content_url === 'function') url = content_url(search);
 		if(typeof url === 'string') getUrl(url, search, manual_trigger || false);
 	}).trigger('hashchange.ajax', [true]);
-	
-	/**
+
+	/*
 	if(has_history) {
 		window.onpopstate = function(event) {
 		  JSON.stringify(event.state);
@@ -37,7 +35,6 @@ ace.enable_ajax_content = function($, options) {
 		}
 	}
 	*/
-	
 	if(default_url && window.location.hash == '') window.location.hash = default_url;
 
 
@@ -46,7 +43,6 @@ ace.enable_ajax_content = function($, options) {
 		$(document).trigger(event = $.Event('ajaxloadstart'), {url: url, hash: hash})
 		if (event.isDefaultPrevented()) return;
 
-		
 		var contentArea = $('.page-content-area');
 		contentArea
 		.css('opacity', 0.25)
@@ -59,23 +55,19 @@ ace.enable_ajax_content = function($, options) {
 			'url': url
 		})
 		.complete(function() {
-			console.info("complete")
 			contentArea.css('opacity', 0.8)
 			$(document).on('ajaxscriptsloaded', function() {
-                console.info("opacity");
                 contentArea.css('opacity', 1)
 				contentArea.prevAll('.ajax-loading-overlay').remove();
-                console.info("remove")
 			});
 		})
 		.error(function() {
-			console.info("error")
 			$(document).trigger('ajaxloaderror', {url: url, hash: hash});
 		})
 		.done(function(result) {
-			console.info("done")
 			$(document).trigger('ajaxloaddone', {url: url, hash: hash});
-		
+
+			hash = hash.replace("=","/");
 			var link_element = $('a[data-url="'+hash+'"]');
 			var link_text = '';
 			if(link_element.length > 0) {
@@ -94,11 +86,13 @@ ace.enable_ajax_content = function($, options) {
 							}
 						})
 						link_element.closest('li').addClass('active').parents('.nav li').addClass('active open');
+						/*
 						if('sidebar_scroll' in ace.helper) {
 							ace.helper.sidebar_scroll.reset();
 							//first time only
 							if(manual_trigger) ace.helper.sidebar_scroll.scroll_to_active();
 						}
+						*/
 					}
 					if(update_breadcrumbs) {
 						link_text = updateBreadcrumbs(link_element);
@@ -205,10 +199,8 @@ ace.load_ajax_scripts = function(scripts, callback) {
 		(function() {
 			var script_name = "js-"+scripts[i].replace(/[^\w\d\-]/g, '-').replace(/\-\-/g, '-');
 			//only load scripts that are not loaded yet!
-			console.info(script_name+" -loaded")
 			if(! (script_name in ace.vars['ajax_loaded_scripts']) ) {
 				deferreds.push( jQuery.getScript(scripts[i]).done(function() {
-					console.info(script_name +" -done")
 					ace.vars['ajax_loaded_scripts'][script_name] = true;
 				}));
 			}
@@ -217,9 +209,7 @@ ace.load_ajax_scripts = function(scripts, callback) {
 
 	if(deferreds.length > 0) {
 		deferreds.push(jQuery.Deferred(function( deferred ){jQuery( deferred.resolve )}));
-		console.info(deferreds)
 		jQuery.when.apply( null, deferreds ).then(function() {
-			console.info("apply");
 			if(typeof callback === 'function') callback();
 			jQuery('.btn-group[data-toggle="buttons"] > .btn').button();
 			$(document).trigger('ajaxscriptsloaded');

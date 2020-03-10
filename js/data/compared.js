@@ -1,5 +1,5 @@
 import_data = function (myDropzone) {
-    xlsx.importdata(myDropzone,getInfo);
+    xlsx.importdata(myDropzone,0,getInfo);
 }
 
 getInfo = function (ori_Data) {

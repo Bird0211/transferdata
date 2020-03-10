@@ -55,45 +55,28 @@ show_data = function (ori_datas) {
 
     xlsx.getCustomer();
 
-    if(getStep(ori_datas) == 1) {
-        var format_data = xlsx.format_data(ori_datas);
-        if (format_data == null) {
-            toastr.error("文件有误，请检查数据");
-            return;
-        }
-        xlsx.transferName(format_data);
-
-    }else if(getStep(ori_datas) == 2) {
-        var download_data = xlsx.merge_data(ori_datas);
-        if(download_data == null) {
-            console.info("download_data is null")
-            toastr.error("文件有误，请检查数据");
-            return;
-        }
-        xlsx.downloadExl(download_data,"csv",month + "." + date + "MEE-Import" + ".csv",true);
-
-        var settle_info = xlsx.merge_settle_data(ori_datas);
-        // settlement(settle_info);
-
-        saveData(download_data);
-
-        setTimeout(function () {
-            myDropzone.removeAllFiles();
-        }, 1000);
+    var format_data = format_Enring(ori_datas);
+    if (format_data == null) {
+        toastr.error("文件有误，请检查数据");
+        return;
     }
+    xlsx.transferName(format_data);
 }
 
-getStep = function (ori_datas) {
-    if (ori_datas.length == 1 && (ori_datas[0].name.indexOf('订单发货明细表') > -1 ||
-            ori_datas[0].name.indexOf('商品明细') > -1) ) {
-        return 1;
-    }else if(ori_datas.length == 2 && (
-            ori_datas[0].name.indexOf('New订单') > -1 ||
-            ori_datas[1].name.indexOf('New订单') > -1
-        )) {
-        return 2;
-    }else
-        return 1;
+format_Enring = function (ori_datas) {
+    if(ori_datas == null || ori_datas.length < 2){
+        return;
+    }
+
+    var datas = type_datas(ori_datas);
+    if(datas == null)
+        return;
+
+    var detail_data = datas["detail"];
+    var order_data = datas["order"];
+    if(detail_data && !$.isEmptyObject(order_data))
+        return process_data(order_data,detail_data);
+
 }
 
 getGift = function () {

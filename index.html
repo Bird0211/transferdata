@@ -32,6 +32,8 @@
 		  <link rel="stylesheet" href="css/ace-ie.min.css" />
 		<![endif]-->
 
+		<link rel="stylesheet" href="css/icon.css" />
+
 		<!-- ace settings handler -->
 		<script src="js/ace-extra.min.js"></script>
 
@@ -47,13 +49,14 @@
 
 	<body class="no-skin">
 		<!-- #section:basics/navbar.layout -->
+		<!--
 		<div id="navbar" class="navbar navbar-default">
 			<script type="text/javascript">
 				try{ace.settings.check('navbar' , 'fixed')}catch(e){}
 			</script>
 
 			<div class="navbar-container" id="navbar-container">
-				<!-- #section:basics/sidebar.mobile.toggle -->
+				&lt;!&ndash; #section:basics/sidebar.mobile.toggle &ndash;&gt;
 				<button type="button" class="navbar-toggle menu-toggler pull-left" id="menu-toggler">
 					<span class="sr-only">Toggle sidebar</span>
 
@@ -64,9 +67,9 @@
 					<span class="icon-bar"></span>
 				</button>
 
-				<!-- /section:basics/sidebar.mobile.toggle -->
+				&lt;!&ndash; /section:basics/sidebar.mobile.toggle &ndash;&gt;
 				<div class="navbar-header pull-left">
-					<!-- #section:basics/navbar.layout.brand -->
+					&lt;!&ndash; #section:basics/navbar.layout.brand &ndash;&gt;
 					<a href="#" class="navbar-brand">
 						<img class="nav-user-photo" src="img/Mee_logo.png" height="27" />
 						<small>
@@ -74,16 +77,16 @@
 						</small>
 					</a>
 
-					<!-- /section:basics/navbar.layout.brand -->
+					&lt;!&ndash; /section:basics/navbar.layout.brand &ndash;&gt;
 
-					<!-- #section:basics/navbar.toggle -->
+					&lt;!&ndash; #section:basics/navbar.toggle &ndash;&gt;
 
-					<!-- /section:basics/navbar.toggle -->
+					&lt;!&ndash; /section:basics/navbar.toggle &ndash;&gt;
 				</div>
 
-				<!-- #section:basics/navbar.dropdown -->
+				&lt;!&ndash; #section:basics/navbar.dropdown &ndash;&gt;
 
-<!--
+&lt;!&ndash;
 				<div class="navbar-buttons navbar-header pull-right" role="navigation">
 					<ul class="nav ace-nav">
 
@@ -128,11 +131,13 @@
 						&lt;!&ndash; /section:basics/navbar.user_menu &ndash;&gt;
 					</ul>
 				</div>
--->
+&ndash;&gt;
 
-				<!-- /section:basics/navbar.dropdown -->
-			</div><!-- /.navbar-container -->
+				&lt;!&ndash; /section:basics/navbar.dropdown &ndash;&gt;
+			</div>&lt;!&ndash; /.navbar-container &ndash;&gt;
 		</div>
+		-->
+
 
 		<!-- /section:basics/navbar.layout -->
 		<div class="main-container" id="main-container">
@@ -141,10 +146,11 @@
 			</script>
 
 			<!-- #section:basics/sidebar -->
-			<div id="sidebar" class="sidebar                  responsive">
+			<div id="sidebar" class="sidebar responsive menu-min">
 				<script type="text/javascript">
 					try{ace.settings.check('sidebar' , 'fixed')}catch(e){}
 				</script>
+<!--
 
 				<div class="sidebar-shortcuts" id="sidebar-shortcuts">
 					<div class="sidebar-shortcuts-large" id="sidebar-shortcuts-large">
@@ -156,7 +162,7 @@
 							<i class="ace-icon fa fa-pencil"></i>
 						</button>
 
-						<!-- #section:basics/sidebar.layout.shortcuts -->
+						&lt;!&ndash; #section:basics/sidebar.layout.shortcuts &ndash;&gt;
 						<button class="btn btn-warning">
 							<i class="ace-icon fa fa-users"></i>
 						</button>
@@ -165,7 +171,7 @@
 							<i class="ace-icon fa fa-cogs"></i>
 						</button>
 
-						<!-- /section:basics/sidebar.layout.shortcuts -->
+						&lt;!&ndash; /section:basics/sidebar.layout.shortcuts &ndash;&gt;
 					</div>
 
 					<div class="sidebar-shortcuts-mini" id="sidebar-shortcuts-mini">
@@ -177,13 +183,14 @@
 
 						<span class="btn btn-danger"></span>
 					</div>
-				</div><!-- /.sidebar-shortcuts -->
+				</div>&lt;!&ndash; /.sidebar-shortcuts &ndash;&gt;
 
+-->
 				<ul id="ulmene" class="nav nav-list">
 
 					<li class="">
 						<a data-url="page/transfer" href="index.html?page=transfer">
-							<i class="menu-icon fa fa-list-alt"></i>
+							<i class="menu-icon fa fa-bar-chart-o"></i>
 							<span class="menu-text"> 数据处理 </span>
 						</a>
 
@@ -191,8 +198,17 @@
 					</li>
 
 					<li class="">
+						<a data-url="page/excelimport" href="index.html?page=excelimport">
+							<i class="menu-icon fa fa-book"></i>
+							<span class="menu-text"> 数据导入 </span>
+						</a>
+
+						<b class="arrow"></b>
+					</li>
+
+					<li class="">
 						<a class="dropdown-toggle" href="#">
-							<span class="iconfont icon-weimob1"></span>
+							<span class="iconfont icon-weimob menuicon"></span>
 							<span class="menu-text"> 微盟数据 </span>
 							<b class="arrow fa fa-angle-down"></b>
 
@@ -229,7 +245,7 @@
 
 					<li class="">
 						<a class="dropdown-toggle" href="#">
-							<span class="iconfont icon-taobao1"></span>
+							<span class="iconfont icon-taobao menuicon"></span>
 							<span class="menu-text"> 淘宝数据 </span>
 
 							<b class="arrow fa fa-angle-down"></b>
@@ -251,17 +267,15 @@
 
 					<li class="">
 						<a class="dropdown-toggle" href="#">
-							<i class="menu-icon fa fa-bar-chart-o"></i>
-							<span class="menu-text"> 拾九数据 </span>
-
+							<span class="iconfont icon-guanliyuan menuicon"></span>
+							<span class="menu-text"> 管家婆数据 </span>
 							<b class="arrow fa fa-angle-down"></b>
-
 						</a>
 
 						<b class="arrow"></b>
 						<ul class="submenu">
 							<li class="">
-								<a data-url="page/weimob" href="index.html?page=nineteenorder">
+								<a data-url="page/gjp" href="index.html?page=gjp">
 									<i class="menu-icon fa fa-list-alt"></i>
 									<span class="menu-text"> 订单导入 </span>
 								</a>
@@ -273,7 +287,86 @@
 
 					<li class="">
 						<a class="dropdown-toggle" href="#">
-							<i class="menu-icon fa fa-bar-chart-o"></i>
+							<span class="iconfont icon-wei menuicon"></span>
+							<span class="menu-text"> 微商城数据 </span>
+							<b class="arrow fa fa-angle-down"></b>
+						</a>
+
+						<b class="arrow"></b>
+						<ul class="submenu">
+							<li class="">
+								<a data-url="page/wsj" href="index.html?page=wsj">
+									<i class="menu-icon fa fa-list-alt"></i>
+									<span class="menu-text"> 订单导入 </span>
+								</a>
+
+								<b class="arrow"></b>
+							</li>
+						</ul>
+					</li>
+
+					<li class="">
+						<a class="dropdown-toggle" href="#">
+							<span class="iconfont icon-huabanfuben menuicon"></span>
+							<span class="menu-text"> 拾九数据 </span>
+
+							<b class="arrow fa fa-angle-down"></b>
+
+						</a>
+
+						<b class="arrow"></b>
+						<ul class="submenu">
+							<li class="">
+								<a data-url="page/nineteenorder" href="index.html?page=nineteenorder">
+									<i class="menu-icon fa fa-list-alt"></i>
+									<span class="menu-text"> 订单导入 </span>
+								</a>
+
+								<b class="arrow"></b>
+							</li>
+						</ul>
+					</li>
+
+					<li class="">
+						<a class="dropdown-toggle" href="#">
+							<span class="iconfont icon-wuliukuaidi menuicon"></span>
+							<span class="menu-text"> 物流数据 </span>
+							<b class="arrow fa fa-angle-down"></b>
+						</a>
+
+						<b class="arrow"></b>
+						<ul class="submenu">
+							<li class="">
+								<a data-url="page/ftd" href="index.html?page=ftd">
+									<span class="iconfont icon-F menuicon"></span>
+									<span class="menu-text"> 富腾达导入 </span>
+								</a>
+
+								<b class="arrow"></b>
+							</li>
+							<li class="">
+								<a data-url="page/sf" href="index.html?page=sf">
+									<span class="iconfont icon-shunfeng menuicon"></span>
+									<span class="menu-text"> 顺丰导入 </span>
+								</a>
+
+								<b class="arrow"></b>
+							</li>
+							<li class="">
+								<a data-url="page/cg" href="index.html?page=cg">
+									<span class="iconfont icon-cheng menuicon"></span>
+									<span class="menu-text"> 程光导入 </span>
+								</a>
+
+								<b class="arrow"></b>
+							</li>
+
+						</ul>
+					</li>
+
+					<li class="">
+						<a class="dropdown-toggle" href="#">
+							<span class="iconfont icon-image menuicon"></span>
 							<span class="menu-text"> Image Center</span>
 
 							<b class="arrow fa fa-angle-down"></b>
@@ -303,7 +396,7 @@
 					</li>
 					<li class="">
 						<a class="dropdown-toggle" href="#">
-							<i class="menu-icon fa fa-bar-chart-o"></i>
+							<span class="iconfont icon-data menuicon"></span>
 							<span class="menu-text"> Data Center</span>
 
 							<b class="arrow fa fa-angle-down"></b>
@@ -398,6 +491,7 @@
 			<!-- /section:basics/sidebar -->
 			<div class="main-content">
 				<!-- #section:basics/content.breadcrumbs -->
+				<!--
 				<div class="breadcrumbs" id="breadcrumbs">
 					<script type="text/javascript">
 						try{ace.settings.check('breadcrumbs' , 'fixed')}catch(e){}
@@ -408,22 +502,24 @@
 							<i class="ace-icon fa fa-home home-icon"></i>
 							<a href="index.html">首页</a>
 						</li>
-					</ul><!-- /.breadcrumb -->
+					</ul>
 
-					<!-- #section:basics/content.searchbox -->
-					<!--<div class="nav-search" id="nav-search">-->
-						<!--<form class="form-search">-->
-							<!--<span class="input-icon">-->
-								<!--<input type="text" placeholder="Search ..." class="nav-search-input" id="nav-search-input" autocomplete="off" />-->
-								<!--<i class="ace-icon fa fa-search nav-search-icon"></i>-->
-							<!--</span>-->
-						<!--</form>-->
-					<!--</div>&lt;!&ndash; /.nav-search &ndash;&gt;-->
+					&lt;!&ndash; /.breadcrumb &ndash;&gt;
 
-					<!-- /section:basics/content.searchbox -->
+					&lt;!&ndash; #section:basics/content.searchbox &ndash;&gt;
+					&lt;!&ndash;<div class="nav-search" id="nav-search">&ndash;&gt;
+						&lt;!&ndash;<form class="form-search">&ndash;&gt;
+							&lt;!&ndash;<span class="input-icon">&ndash;&gt;
+								&lt;!&ndash;<input type="text" placeholder="Search ..." class="nav-search-input" id="nav-search-input" autocomplete="off" />&ndash;&gt;
+								&lt;!&ndash;<i class="ace-icon fa fa-search nav-search-icon"></i>&ndash;&gt;
+							&lt;!&ndash;</span>&ndash;&gt;
+						&lt;!&ndash;</form>&ndash;&gt;
+					&lt;!&ndash;</div>&lt;!&ndash; /.nav-search &ndash;&gt;&ndash;&gt;
+
+					&lt;!&ndash; /section:basics/content.searchbox &ndash;&gt;
 				</div>
 
-				<!-- /section:basics/content.breadcrumbs -->
+-->				<!-- /section:basics/content.breadcrumbs -->
 				<div class="page-content">
 					<!-- #section:settings.box -->
 					<div class="ace-settings-container" id="ace-settings-container">
@@ -520,14 +616,14 @@
 					</div><!-- /.page-content-area -->
 				</div><!-- /.page-content -->
 			</div><!-- /.main-content -->
-
+			<!--
 			<div class="footer">
 				<div class="footer-inner">
-					<!-- #section:basics/footer -->
+					&lt;!&ndash; #section:basics/footer &ndash;&gt;
 					<div class="footer-content">
 						<span class="bigger-120">
-							<span class="blue bolder">Middle-Earth</span>
-							Application &copy; 2019-2020
+							<span class="blue bolder">Middle-Earth Export</span>
+							Application &copy; 2020-2021
 						</span>
 
 						&nbsp; &nbsp;
@@ -546,9 +642,10 @@
 						</span>
 					</div>
 
-					<!-- /section:basics/footer -->
+					&lt;!&ndash; /section:basics/footer &ndash;&gt;
 				</div>
 			</div>
+			-->
 
 			<a href="#" id="btn-scroll-up" class="btn-scroll-up btn btn-sm btn-inverse">
 				<i class="ace-icon fa fa-angle-double-up icon-only bigger-110"></i>
@@ -590,34 +687,32 @@
 
 		<script src="js/ace1.min.js"></script>
 		<script src="js/loading.js"></script>
-		<!--<script src="js/ace.ajax-content.js"></script>-->
+		<script src="js/ace.ajax-content.js"></script>
 
-		<!--<script src="js/ace-elements.min.js"></script>-->
+		<script src="js/ace-elements.min.js"></script>
 		<script type="text/javascript">
 			//Load content via ajax
 					jQuery(function($) {
                         if('enable_ajax_content' in ace) {
-                            console.info("enable_ajax_content")
                             var options = {
 						  content_url: function(url) {
 							//this is for Ace demo only, you should change it
 							//please refer to documentation for more info
 //							if(!url.match(/^page\//)) return false;
-							console.info("start")
 							if(url.indexOf("page=") < 0) return false;
-							console.info("page")
 							var path = document.location.pathname;
 							//for Ace HTML demo version, convert ajax.html?page=gallery to > gallery.html and load it
 							if(path.match(/index\.html/)) {
 							    var params = mee.getCurrentUrlQueryString();
 							    if(params != null) {
-
 							        var p = "";
+							        var hash = "";
                                     for (let key in params) {
                                         let value = params[key]
                                         console.log(key + "=" + value);
                                         if(key == 'page'){
                                             path = path.replace(/index\.html/,value+'.html');
+                                            hash = value;
                                         }else {
                                             if(p.indexOf("?") > -1) {
                                                 p += "&";
@@ -628,15 +723,12 @@
 										}
 
                                     }
-
 //							        return path.replace(/index\.html/,page+'.html');
-									console.info(path + p)
 									return path + p;
 								}
 
 //                                return path.replace(/index\.html/, url.replace(/^page\//, '')+'.html') ;
                             }
-
 							//for Ace PHP demo version convert "page=dashboard" to "?page=dashboard" and load it
 							return path + "?" + url.replace(/\//, "=");
 						  },
@@ -644,8 +736,9 @@
 						}
 						ace.enable_ajax_content($, options)
 					  }
-					    
 					})
+
+
 		</script>
 	</body>
 </html>

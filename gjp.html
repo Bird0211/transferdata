@@ -15,9 +15,7 @@
 
 </script>
 <!-- ajax layout which only needs content area -->
-<!--
-
-<div class="page-header">
+<!--<div class="page-header">
     <h1>
         Data-transform
         <small>
@@ -25,9 +23,7 @@
             Drag &amp; drop file upload with image preview
         </small>
     </h1>
-</div>
--->
-
+</div>-->
 <!-- /.page-header -->
 
 <div class="row">
@@ -228,7 +224,7 @@
     var month = dateObj.getMonth()+1;//月  (注意：月份+1)
     var date = dateObj.getDate();//日
 
-    var scripts = ["js/transfer.js",
+    var scripts = ["js/gjp.js",
         "js/jq-table.js",
         "js/xlsx.js",
         "js/jqGrid/i18n/grid.locale-en.js",
@@ -281,8 +277,7 @@
                         }
 
                         if(this.files.length == 1 && this.files[0].name.indexOf('订单发货明细表')> -1 ||
-                            this.files.length == 1 && this.files[0].name.indexOf('订单明细')> -1 ||
-                            this.files.length == 2 ) {
+                            this.files.length == 1 && this.files[0].name.indexOf('订单明细')> -1 ) {
                             import_data(myDropzone);
                         }
                     }
@@ -298,6 +293,7 @@
             }
 
             console.info("Dropzone init End")
+
 
             $('.dd').nestable({ "maxDepth":2 });
 

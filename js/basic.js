@@ -1,61 +1,121 @@
 
-var $mongoDB_path = "http://47.74.253.166:5000";
+var $mongoDB_path = "http://47.74.87.173:5000";
 
-var $manage_user_url = "http://47.74.253.166:8801/api/getuser";
+var $manage_user_url = "https://external.yiyun.co.nz/api/getuser";
 // var $manage_user_url = "http://localhost:8801/api/getuser";
 
-var $manage_fee_url = "http://47.74.253.166:8801/api/settle";
+var $manage_fee_url = "https://external.yiyun.co.nz/api/settle";
 // var $manage_fee_url = "http://localhost:8801/api/settle";
 
-var $manage_addproducts_url = "http://47.74.253.166:8801/api/addBathProduct";
+var $manage_addproducts_url = "https://external.yiyun.co.nz/api/addBathProduct";
 // var $manage_addproducts_url = "http://localhost:8801/api/addBathProduct";
 
-var $ocr_url = "http://47.74.253.166:8801/api/imageRecognition";
+var $ocr_url = "https://external.yiyun.co.nz/api/imageRecognition";
 // var $ocr_url = "http://localhost:8801/api/imageRecognition";
 
-var $text_ocr_url = "http://47.74.253.166:8801/api/textocr";
+var $text_ocr_url = "https://external.yiyun.co.nz/api/textocr";
 //var $text_ocr_url = "http://localhost:8801/api/textocr";
 
-var $weimob_orderlist_url = "http://47.74.253.166:8801/api/order/queryList";
+var $weimob_orderlist_url = "https://external.yiyun.co.nz/api/order/queryList";
 //var $weimob_orderlist_url = "http://localhost:8801/api/order/queryList";
 
-var $weimob_checktoken_url = "http://47.74.253.166:8801/api/token/check";
+var $weimob_checktoken_url = "https://external.yiyun.co.nz/api/token/check";
 
-var $weimob_addcode_url = "http://47.74.253.166:8801/api/weimobCode/add";
+var $weimob_addcode_url = "https://external.yiyun.co.nz/api/weimobCode/add";
 
-var $all_products_url = "http://47.74.253.166:8801/api/allProducts";
+var $all_products_url = "https://external.yiyun.co.nz/api/allProducts";
 // var $all_products_url = "http://localhost:8801/api/allProducts";
 
-var $weimob_classify_url = "http://47.74.253.166:8801/api/classify/queryList";
+var $weimob_classify_url = "https://external.yiyun.co.nz/api/classify/queryList";
 // var $weimob_classify_url = "http://localhost:8801/api/classify/queryList";
 
-var $weimob_goodlist_url = "http://47.74.253.166:8801/api/goods/list";
+var $weimob_goodlist_url = "https://external.yiyun.co.nz/api/goods/list";
 // var $weimob_goodlist_url = "http://localhost:8801/api/goods/list";
 
-var $exange_rage_url = "http://47.74.253.166:8801/api/currency";
+var $exange_rage_url = "https://external.yiyun.co.nz/api/currency";
 // var $exange_rage_url = "http://localhost:8801/api/currency";
 
-var $weimob_goodupdate_url = "http://47.74.253.166:8801/api/goods/update";
+var $weimob_goodupdate_url = "https://external.yiyun.co.nz/api/goods/update";
 // var $weimob_goodupdate_url = "http://localhost:8801/api/goods/update";
 
-var $exl_title_url = "http://47.74.253.166:8801/api/exltitle/query";
+var $exl_title_url = "https://external.yiyun.co.nz/api/exltitle/query";
 // var $exl_title_url = "http://localhost:8801/api/exltitle/query";
 
-var $update_exl_title_url = "http://47.74.253.166:8801/api/exltitle/update";
+var $update_exl_title_url = "https://external.yiyun.co.nz/api/exltitle/update";
 // var $update_exl_title_url = "http://localhost:8801/api/exltitle/update";
 
-var $add_exl_title_url = "http://47.74.253.166:8801/api/exltitle/add";
+var $add_exl_title_url = "https://external.yiyun.co.nz/api/exltitle/add";
 // var $add_exl_title_url = "http://localhost:8801/api/exltitle/add";
 
-var $weimob_order_delivery_url = "http://47.74.253.166:8801/api/order/delivery";
+var $weimob_order_delivery_url = "https://external.yiyun.co.nz/api/order/delivery";
 // var $weimob_order_delivery_url = "http://localhost:8801/api/order/delivery";
 
+var $text_match_url = "https://external.yiyun.co.nz/api/matching";
+// var $text_match_url = "http://localhost:8801/api/matching";
 
+var default_bizId = 20;
 
 //cookie storage
 if (!('mee' in window)) {
     window['mee'] = {}
 }
+
+
+var all_products = null;
+getAllProductFromUrl = function () {
+    if(all_products && all_products != null)
+        return all_products;
+
+    const products = {};
+    sendData($all_products_url,'bizId='+default_bizId,false,function (data) {
+        if(data.statusCode == 0){
+            var datas = data.data;
+            if(!datas)
+                return null;
+            jQuery(datas).each(function () {
+                var code = this.code.toString().replace(reg, "").trim();
+                var product = {};
+                product.code = code;
+                product.name = this.chName.replace('[不含GST]','').replace('【不含GST】','');
+                product.weight = this.weight;
+                product.brand = this.brand;
+                products[code] = product;
+            })
+
+            console.info(products);
+        }
+    });
+    all_products = products;
+    return products;
+}
+
+getAllProductByBizId = function (bizId) {
+    if(all_products && all_products != null)
+        return all_products;
+
+    const products = {};
+    sendData($all_products_url,'bizId='+bizId,false,function (data) {
+        if(data.statusCode == 0){
+            var datas = data.data;
+            if(!datas)
+                return null;
+            jQuery(datas).each(function () {
+                var code = this.code.toString().replace(reg, "").trim();
+                var product = {};
+                product.code = code;
+                product.name = this.chName.replace('[不含GST]','').replace('【不含GST】','');
+                product.weight = this.weight;
+                product.brand = this.brand;
+                products[code] = product;
+            })
+
+            console.info(products);
+        }
+    });
+    all_products = products;
+    return products;
+}
+
 
 function sendJsonData(url, data,async ,callBack) {
     jQuery.ajax({
@@ -99,6 +159,36 @@ function sendJData(url, data,async ,callBack) {
         // contentType: "application/json",
         // contentType: "charset=utf-8",
         // headers: {'Content-Type': 'application/json; charset=utf-8'},
+        cache: true,
+        data: data,
+        beforeSend: function (request) {
+            $("body").Loading();
+            // request.setRequestHeader("Access-Control-Allow-Origin", "*");
+        },
+        success: function (data) {
+            $("body").Loading("hide")
+            if(callBack)
+                return callBack(data);
+        },
+        error: function (e) {
+            $("body").Loading("hide");
+            //console.log(e);
+        }
+    });
+}
+
+function sendJDataWithHeader(url, data,header,async,callBack) {
+    jQuery.ajax({
+        type: "post",
+        async: async,
+        dataType: "json",
+        url: url,
+        timeout: 25000,
+        contentType: "application/json; charset=utf-8",
+        // crossDomain: true,
+        // contentType: "application/json",
+        // contentType: "charset=utf-8",
+        headers: header,
         cache: true,
         data: data,
         beforeSend: function (request) {

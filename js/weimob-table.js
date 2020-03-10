@@ -76,6 +76,23 @@ jQuery(grid_selector).jqGrid({
             enableTooltips(table);
         }, 0);
     },
+    /*
+    onSelectAll:function (aRowids, status) {
+
+        if(status) {
+            let alldata = table.getJQAllData();
+            for (let i = 0; i < alldata.length; i++) {
+                let data = alldata[i];
+                console.info(data)
+
+                this.selarrrow.push(data.id);
+            }
+        } else {
+            this.selarrrow = [];
+
+        }
+    }
+    */
 
 });
 $(window).triggerHandler('resize.jqGrid');//trigger window resize to make the grid get the correct size
@@ -224,3 +241,30 @@ table.showSuccInfo = function (data,title) {
         class_name: 'gritter-success gritter-light'
     });
 }
+
+table.getJQAllData = function () {
+    var o = jQuery(grid_selector);
+    //获取当前显示的数据
+    // var rows = o.jqGrid('getRowData');
+    var rowNum = o.jqGrid('getGridParam', 'rowNum'); //获取显示配置记录数量
+    var total = o.jqGrid('getGridParam', 'records'); //获取查询得到的总记录数量
+    var page = o.jqGrid('getGridParam','page');
+
+    //设置rowNum为总记录数量并且刷新jqGrid，使所有记录现出来调用getRowData方法才能获取到所有数据
+    o.jqGrid('setGridParam', { rowNum: total ,page:1}).trigger('reloadGrid');
+    var rows = o.jqGrid('getRowData');  //此时获取表格所有匹配的
+
+    /*var rows = [];
+    var ids = $("#grid-table").jqGrid("getGridParam", "selarrrow");
+    //遍历访问这个集合
+    $(ids).each(function (index, id) {
+        //由id获得对应数据行
+        var row = $("#grid-table").jqGrid('getRowData', id);
+        rows.push(row);
+    }*/
+
+    o.jqGrid('setGridParam', { rowNum: rowNum ,page:page}).trigger('reloadGrid'); //还原原来显示的记录数量
+    return rows;
+};
+
+

@@ -15,13 +15,14 @@
 <!--<script src="js/date-time/moment.min.js"></script>-->
 <!--<script src="js/bootstrap-datepicker.min.js" type="text/javascript"  charset="UTF-8"></script>-->
 
+<script src="js/basic.js"></script>
 
 <script type="text/javascript">
     toastr.options.positionClass = 'toast-top-center';
 </script>
 
 <!-- ajax layout which only needs content area -->
-<div class="page-header">
+<!--<div class="page-header">
     <h1>
         Weimob
         <small>
@@ -29,7 +30,8 @@
             Products
         </small>
     </h1>
-</div><!-- /.page-header -->
+</div>-->
+<!-- /.page-header -->
 
 <div class="row">
     <div class="col-xs-12">
@@ -82,7 +84,7 @@
                             <!--<button class="btn btn-primary btn-sm" id="countBtn">计算</button>-->
                             <div class="btn-group">
                                 <button data-toggle="dropdown" class="btn btn-info btn-sm dropdown-toggle">
-                                    计算
+                                    部分计算
                                     <span class="ace-icon fa fa-caret-down icon-on-right"></span>
                                 </button>
 
@@ -96,6 +98,29 @@
                                     </li>
 
                                     <li>
+                                        <a href="#" onclick="countPrice();return false;">全部价格</a>
+                                    </li>
+                                </ul>
+                            </div><!-- /.btn-group -->
+                        </div>
+                        <div class="col-xs-6 col-sm-1">
+                            <!--<button class="btn btn-primary btn-sm" id="countBtn">计算</button>-->
+                            <div class="btn-group">
+                                <button data-toggle="dropdown" class="btn btn-info btn-sm dropdown-toggle">
+                                    全部计算
+                                    <span class="ace-icon fa fa-caret-down icon-on-right"></span>
+                                </button>
+
+                                <ul class="dropdown-menu dropdown-info dropdown-menu-right">
+                                    <li>
+                                        <a href="#" onclick="countAllCostPrice();return false;">成本价</a>
+                                    </li>
+
+                                    <li>
+                                        <a href="#" onclick="countAllSalsePrice();return false;">销售价</a>
+                                    </li>
+
+                                    <li>
                                         <a href="#" onclick="countAllPrice();return false;">全部价格</a>
                                     </li>
                                 </ul>
@@ -103,6 +128,10 @@
                         </div>
                         <div class="col-xs-6 col-sm-1">
                             <button class="btn btn-primary btn-sm" id="updateBtn">更新</button>
+                        </div>
+
+                        <div class="col-xs-6 col-sm-1">
+                            <button class="btn btn-primary btn-sm" id="downloadBtn">下载活动价</button>
                         </div>
                     </div>
 
@@ -153,7 +182,10 @@
 
 
 
-    var scripts = ["js/weimob-table.js?v=7","js/jquery.gritter.min.js","js/weimobgoods.js",
+    var scripts = ["js/weimob-table.js",
+        "js/xlsx.js",
+        "js/jquery.gritter.min.js",
+        "js/weimobgoods.js",
         "js/weimob_init.js",
         "js/jqGrid/i18n/grid.locale-en.js",
         "https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.14.3/xlsx.full.min.js",

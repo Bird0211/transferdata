@@ -13,11 +13,32 @@
       "unicode_decimal": 983169
     },
     {
+      "icon_id": "205616",
+      "name": "cheng",
+      "font_class": "cheng",
+      "unicode": "e603",
+      "unicode_decimal": 58883
+    },
+    {
+      "icon_id": "380534",
+      "name": "物流快递",
+      "font_class": "wuliukuaidi",
+      "unicode": "e616",
+      "unicode_decimal": 58902
+    },
+    {
       "icon_id": "1053137",
       "name": "物流",
       "font_class": "wuliu",
       "unicode": "e629",
       "unicode_decimal": 58921
+    },
+    {
+      "icon_id": "1421607",
+      "name": "奶粉",
+      "font_class": "naifen",
+      "unicode": "e64b",
+      "unicode_decimal": 58955
     },
     {
       "icon_id": "2060826",
@@ -27,67 +48,109 @@
       "unicode_decimal": 58895
     },
     {
-      "icon_id": "3546411",
-      "name": "weimob",
-      "font_class": "weimob",
-      "unicode": "e64b",
-      "unicode_decimal": 58955
+      "icon_id": "2330058",
+      "name": "F",
+      "font_class": "F",
+      "unicode": "e501",
+      "unicode_decimal": 58625
     },
     {
-      "icon_id": "4085673",
-      "name": "微盟",
-      "font_class": "weimeng",
-      "unicode": "e694",
-      "unicode_decimal": 59028
+      "icon_id": "2761324",
+      "name": "F",
+      "font_class": "F1",
+      "unicode": "e613",
+      "unicode_decimal": 58899
     },
     {
-      "icon_id": "4158546",
-      "name": "淘宝",
-      "font_class": "taobao",
-      "unicode": "e623",
-      "unicode_decimal": 58915
+      "icon_id": "2938801",
+      "name": "19",
+      "font_class": "huabanfuben",
+      "unicode": "e618",
+      "unicode_decimal": 58904
+    },
+    {
+      "icon_id": "4215937",
+      "name": "顺丰快递",
+      "font_class": "shunfengkuaidi",
+      "unicode": "e60a",
+      "unicode_decimal": 58890
+    },
+    {
+      "icon_id": "4565080",
+      "name": "管",
+      "font_class": "guanliyuan",
+      "unicode": "e634",
+      "unicode_decimal": 58932
+    },
+    {
+      "icon_id": "5321875",
+      "name": "快递包裹",
+      "font_class": "kuaidibaoguo",
+      "unicode": "e671",
+      "unicode_decimal": 58993
     },
     {
       "icon_id": "5723428",
       "name": "淘宝",
-      "font_class": "taobao1",
+      "font_class": "taobao",
       "unicode": "e691",
       "unicode_decimal": 59025
     },
     {
-      "icon_id": "7295670",
-      "name": "合并",
-      "font_class": "hebing",
-      "unicode": "e604",
-      "unicode_decimal": 58884
+      "icon_id": "6735864",
+      "name": "19",
+      "font_class": "icon-test",
+      "unicode": "e66c",
+      "unicode_decimal": 58988
     },
     {
-      "icon_id": "7722415",
-      "name": "微盟",
-      "font_class": "weimeng1",
-      "unicode": "e6b2",
-      "unicode_decimal": 59058
+      "icon_id": "8002103",
+      "name": "微",
+      "font_class": "wei",
+      "unicode": "e614",
+      "unicode_decimal": 58900
     },
     {
-      "icon_id": "8577179",
-      "name": "淘宝 (1)",
-      "font_class": "taobao2",
-      "unicode": "e602",
-      "unicode_decimal": 58882
+      "icon_id": "8323505",
+      "name": "data",
+      "font_class": "data",
+      "unicode": "e617",
+      "unicode_decimal": 58903
+    },
+    {
+      "icon_id": "8770020",
+      "name": "image",
+      "font_class": "image",
+      "unicode": "e715",
+      "unicode_decimal": 59157
     },
     {
       "icon_id": "8963803",
       "name": "合并 (1)",
-      "font_class": "hebing1",
+      "font_class": "hebing",
       "unicode": "e610",
       "unicode_decimal": 58896
     },
     {
-      "icon_id": "10263133",
+      "icon_id": "9263988",
+      "name": "顺丰图标",
+      "font_class": "shunfengtubiao",
+      "unicode": "e64f",
+      "unicode_decimal": 58959
+    },
+    {
+      "icon_id": "9278306",
+      "name": "shunfeng",
+      "font_class": "shunfeng",
+      "unicode": "e609",
+      "unicode_decimal": 58889
+    },
+    {
+      "icon_id": "10335080",
       "name": "weimob",
-      "font_class": "weimob1",
-      "unicode": "e64a",
-      "unicode_decimal": 58954
+      "font_class": "weimob",
+      "unicode": "e653",
+      "unicode_decimal": 58963
     }
   ]
 }

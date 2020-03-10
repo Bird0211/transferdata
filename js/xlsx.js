@@ -17,7 +17,7 @@ xlsx.url.customer = "file/customer.xlsx";
 
 xlsx.customer = null;
 
-xlsx.importdata = function (obj,callback) {
+xlsx.importdata = function (obj,range,callback) {
     if(!obj.files) {
         return;
     }
@@ -52,7 +52,7 @@ xlsx.importdata = function (obj,callback) {
                         oridata.fromTo = wb.Sheets[sheet]['!ref'];
                         oridata.range = wb.Sheets[sheet]['!range'];
                         oridata.manges = wb.Sheets[sheet]['!merges'];
-                        oridata.data = XLSX.utils.sheet_to_json(wb.Sheets[sheet],{raw:true});
+                        oridata.data = XLSX.utils.sheet_to_json(wb.Sheets[sheet],{raw:true,range: range});
                         // break; // 如果只取第一张表，就取消注释这行
                         oriFile.data.push(oridata);
                     }
@@ -71,7 +71,7 @@ xlsx.importdata = function (obj,callback) {
                 callback(oridatas);
         }
     }
-};
+}
 
 xlsx.downloadExl = function (data, type,filename,isSkipHeader) {
     if(!data || data == null || data.length <= 0) {
@@ -84,7 +84,7 @@ xlsx.downloadExl = function (data, type,filename,isSkipHeader) {
 
     // var reName = filename.split(".")[0]+xlsx.option.name+"."+filename.split(".")[1];
 
-var reName = filename.replace("."+type , "_"+xlsx.option.name+"."+type);
+var reName = (xlsx.option.name != null && xlsx.option.name != "") ? filename.replace("."+type , "_"+xlsx.option.name+"."+type):filename;
     const wb = { SheetNames: ['Sheet1'], Sheets: {}, Props: {} };
     wb.Sheets['Sheet1'] = XLSX.utils.json_to_sheet(data,{skipHeader: isSkipHeader});//通过json_to_sheet转成单页(Sheet)数据
     saveAs(new Blob([s2ab(XLSX.write(wb, {bookType: (type == undefined ? 'xlsx':type),bookSST: false, type: 'binary'}))],
@@ -220,7 +220,6 @@ xlsx.merge_settle_data = function (ori_datas) {
     var express_data = datas["express"];
 
     if(express_data && !$.isEmptyObject(express_data) && detail_data) {
-
          return pre_settle_data(detail_data,express_data);
 
     }
@@ -286,7 +285,50 @@ pre_settle_data = function (base_data,express_data) {
     return f_data;
 }
 
+xlsx.new_chengguang_data = function (table_datas) {
+    if(table_datas == null)
+        return;
 
+    var format_data = [];
+    jQuery(table_datas).each(function () {
+        var content = this.content;
+        var contents = content.split('<br>').sort();
+        var format_content = "";
+        for(var i = 0; i < contents.length; i++){
+            var c = contents[i];
+            if(!c || c == '')
+                continue;
+
+            format_content += c.split(";")[0].replace('X','*').trim()+',';
+        }
+        if(format_content == '')
+            return;
+
+        var sender = this.sender;
+        var is3pl = this.is3pl;
+
+        if(is3pl == "true" || !sender) {
+            sender = "3PL";
+        }
+
+        let pattern=/[`~!@#$^&()=|{}':;',\\\[\]\.<>\/?~！@#￥……&（）——|{}【】'；：""'。，、？]/g;
+        format_content = format_content.replace(pattern,"");
+
+        var d = {};
+        d["发件人"] = sender;
+        d["发件地址"] = "";
+        d["发件电话"] = "";
+        d["收件人"] = this.name;
+        d["收件地址"] = this.address;
+        d["收件电话"] = this.phone;
+        d["备注"] =  this.order;
+        d["物品描述"] = format_content
+        format_data.push(d);
+    });
+
+    return format_data;
+
+}
 
 
 xlsx.new_express_data = function(table_datas) {
@@ -370,6 +412,40 @@ xlsx.new_detail_data = function(table_datas) {
         }
     });
     return format_data;
+}
+
+
+xlsx.new_milk_data = function (table_datas) {
+    if(table_datas == null)
+        return;
+
+    var format_data = [];
+    jQuery(table_datas).each(function() {
+        var content = this.content;
+        var contents = content.split('<br>');
+        for(var i = 0; i < contents.length; i++){
+            var c = contents[i];
+            if(!c || c == '')
+                continue;
+
+            var detail_content = c.split(';')[0].split(' X ')[0].trim();
+            var num = c.split(';')[0].split(' X ')[1].trim();
+
+
+            var d = {};
+            d["收件人"] = this.name;
+            d["收件人联系电话"] = this.phone;
+            d["收货人详细地址"] = this.address;
+            d["寄件人电话"] = "";
+            d["内件品名1"] = detail_content +'*'+num+'箱';
+            d["身份证号码"] = this.id_num;
+            format_data.push(d);
+        }
+
+    });
+
+    return format_data;
+
 }
 
 type_datas = function (ori_datas) {
