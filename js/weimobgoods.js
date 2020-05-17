@@ -2,7 +2,8 @@ var goods = {};
 goods.goodTyps = {};
 
 goods.getGroup = function () {
-    var url = $weimob_classify_url;
+    var bizId = mee.getBizId();
+    var url = $weimob_classify_url+'/'+bizId;
 
     getData(url,true,function (data) {
         console.info(data);
@@ -37,7 +38,8 @@ goods.search = function() {
     const subGoodType = $('#subGoodType').val();
     const search = $('#searchTxt').val();
 
-    let url = $weimob_goodlist_url;
+    var bizId = mee.getBizId();
+    let url = $weimob_goodlist_url + '/' + bizId;
     const param = {};
     if(status && status != null && status != "") {
         param.goodsStatus = status;
@@ -260,6 +262,7 @@ cancelUpdate = function () {
 }
 
 goUpdate = function () {
+    const bizId = mee.getBizId();
     const  selectData = table.getSelData();
     console.info(selectData);
     const param = [];
@@ -276,7 +279,7 @@ goUpdate = function () {
 
     console.info(param);
 
-    sendJData($weimob_goodupdate_url,JSON.stringify(param),true,function (data) {
+    sendJData($weimob_goodupdate_url+'/'+bizId,JSON.stringify(param),true,function (data) {
         console.info(data);
         cancelUpdate();
         if(data.statusCode != 0) {

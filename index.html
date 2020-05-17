@@ -146,7 +146,7 @@
 			</script>
 
 			<!-- #section:basics/sidebar -->
-			<div id="sidebar" class="sidebar responsive menu-min">
+			<div id="sidebar" class="sidebar responsive menu-min" style="display: none;">
 				<script type="text/javascript">
 					try{ace.settings.check('sidebar' , 'fixed')}catch(e){}
 				</script>
@@ -186,7 +186,7 @@
 				</div>&lt;!&ndash; /.sidebar-shortcuts &ndash;&gt;
 
 -->
-				<ul id="ulmene" class="nav nav-list">
+				<ul id="ulmene" class="nav nav-list" style="display: none;">
 
 					<li class="">
 						<a data-url="page/transfer" href="index.html?page=transfer">
@@ -201,6 +201,24 @@
 						<a data-url="page/excelimport" href="index.html?page=excelimport">
 							<i class="menu-icon fa fa-book"></i>
 							<span class="menu-text"> 数据导入 </span>
+						</a>
+
+						<b class="arrow"></b>
+					</li>
+
+					<li class="">
+						<a data-url="page/skuimport" href="index.html?page=skuimport">
+							<i class="menu-icon fa fa-book"></i>
+							<span class="menu-text"> SKU数据导入 </span>
+						</a>
+
+						<b class="arrow"></b>
+					</li>
+
+					<li class="">
+						<a data-url="page/yiyunimport" href="index.html?page=yiyunimport">
+							<i class="menu-icon fa fa-book"></i>
+							<span class="menu-text"> 易云数据导入 </span>
 						</a>
 
 						<b class="arrow"></b>
@@ -324,6 +342,13 @@
 
 								<b class="arrow"></b>
 							</li>
+							<li class="">
+								<a data-url="page/nineteenlist" href="index.html?page=nineteenlist">
+									<i class="menu-icon fa fa-list-alt"></i>
+									<span class="menu-text"> 拾九订单  </span>
+								</a>
+								<b class="arrow"></b>
+							</li>
 						</ul>
 					</li>
 
@@ -365,6 +390,7 @@
 					</li>
 
 					<li class="">
+
 						<a class="dropdown-toggle" href="#">
 							<span class="iconfont icon-image menuicon"></span>
 							<span class="menu-text"> Image Center</span>
@@ -522,7 +548,7 @@
 -->				<!-- /section:basics/content.breadcrumbs -->
 				<div class="page-content">
 					<!-- #section:settings.box -->
-					<div class="ace-settings-container" id="ace-settings-container">
+					<div class="ace-settings-container" id="ace-settings-container" style="display: none;">
 						<div class="btn btn-app btn-xs btn-warning ace-settings-btn" id="ace-settings-btn">
 							<i class="ace-icon fa fa-cog bigger-150"></i>
 						</div>

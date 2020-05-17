@@ -6,7 +6,13 @@ import_data = function (myDropzone) {
 var confirmData = [];
 
 init_data = function() {
-    var allProject = getAllProductByBizId('24');
+    const bizId = mee.getBizId();
+    if(!bizId) {
+        toastr.error("系统异常,请重新登录！");
+        return;
+    }
+
+    var allProject = getAllProductByBizId(bizId);
     if(allProject != null) {
         for(let key in allProject) {
             let product = allProject[key];
@@ -180,7 +186,6 @@ setConfirmTable = function () {
 
     let promiseArr = [promiseTitle,promiseSkus,promiseNames,promiseNewSkus,promiseNewNames,promiseCnNames,promiseOptions];
     Promise.all(promiseArr).then(function (data) {
-        console.info(data);
         reSize(totalNum);
     });
 
@@ -198,7 +203,6 @@ setHtmlData = function (item,htmldata) {
 
 
 reSize = function (n) {
-    console.info("reSize: ",n);
    for(let i = 0; i < n; i++) {
 
        let maxHeight = 0;
@@ -283,23 +287,26 @@ $('#matchBtn').on("click",function () {
     data.name = names;
 
     var headers = {};
-    headers.bizId = 24;
+    const bizId = mee.getBizId();
+    headers.bizId = bizId;
 
     sendJDataWithHeader($text_match_url,JSON.stringify(data),headers,true,function (datas) {
         if(datas.statusCode == 0) {
             var matchDatas = datas.data;
-            console.info(matchDatas);
+            let n = 0;
             for(let i in confirmData) {
                 let d = confirmData[i];
                 let datas = d.datas;
                 for(let j in datas){
                     let data = datas[j];
-
-                    let n = Number(i * datas.length) + Number(j);
-                    let matchData = matchDatas[n];
-                    data.newSku = matchData.code == null ? "" : matchData.code;
-                    data.newName = matchData.name == null ? "" : matchData.name;
-                    data.newCnName = matchData.chName == null ? "" : matchData.chName;
+                    // let n = Number(i * datas.length) + Number(j);
+                    let matchData = matchDatas[n++];
+                    if(matchData) {
+                        console.log("data: {}",matchData);
+                        data.newSku = matchData.code == null ? "" : matchData.code;
+                        data.newName = matchData.name == null ? "" : matchData.name;
+                        data.newCnName = matchData.chName == null ? "" : matchData.chName;
+                    }
                 }
             }
 

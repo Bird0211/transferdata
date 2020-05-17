@@ -12,7 +12,7 @@ xlsx.option.exltitle = null;
 xlsx.url = {};
 xlsx.url.products = "file/Mee_products.xlsx";
 xlsx.url.split = "file/Mee_split.xls";
-xlsx.url.gift = "file/gift_role.xlsx";
+xlsx.url.gift = "file/gift_role.xlsx?v=" + new Date();
 xlsx.url.customer = "file/customer.xlsx";
 
 xlsx.customer = null;
@@ -298,20 +298,25 @@ xlsx.new_chengguang_data = function (table_datas) {
             var c = contents[i];
             if(!c || c == '')
                 continue;
-
-            format_content += c.split(";")[0].replace('X','*').trim()+',';
+            format_content += c.split(";")[0].replace(/(.*)X/,'$1*').trim() + ',';
         }
-        if(format_content == '')
+        if(format_content === undefined || format_content === "")
             return;
 
         var sender = this.sender;
         var is3pl = this.is3pl;
 
         if(is3pl == "true" || !sender) {
-            sender = "3PL";
+            sender = "";
         }
 
-        let pattern=/[`~!@#$^&()=|{}':;',\\\[\]\.<>\/?~！@#￥……&（）——|{}【】'；：""'。，、？]/g;
+        let remark = this.remark;
+        if(remark && remark.length > 0 ) {
+            sender += '['+remark+']'
+        }
+
+        format_content = format_content.slice(0,-1);
+        let pattern=/[`~!@#$^&()=|{}':;'\\\[\]\.<>\/?~！@#￥……&（）——|{}【】'；：""'。、？]/g;
         format_content = format_content.replace(pattern,"");
 
         var d = {};
@@ -361,7 +366,7 @@ xlsx.new_express_data = function(table_datas) {
         var is3pl = this.is3pl;
 
         if(is3pl == "true" || !sender) {
-            sender = "3PL";
+            sender = "";
         }
 
         var d = {};
@@ -493,7 +498,7 @@ process_data = function (order_data,detail_data) {
             var id_num = d.id_num;
             var sender = d.sender;
             if(!sender)
-                sender = "3PL";
+                sender = "";
             var detail = detail_data[d.order];
 
             if(!detail) {
@@ -678,7 +683,6 @@ format_Ymtou = function(ori_datas) {
 
 getYamRowData = function (data) {
     const row_data = {};
-    console.log(data);
 
     let order = data["订单号"]
     if(order && order != null)

@@ -64,12 +64,13 @@ getCgExpData = function (datas) {
         var d = datas[i];
         if(!d["备注"])
             continue;
+        
         let order = d["备注"].toString().replace(reg, "").trim();
         let item = {};
         item.express = d["运单号"];
         item.content = d["物品描述"];
         item.sender = d["发件人"];
-        express_data[order] = item;
+        express_data[order.toUpperCase()] = item;
     }
     return express_data;
 

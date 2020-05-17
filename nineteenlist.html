@@ -1,4 +1,4 @@
-<title>微盟商城数据</title>
+<title> 拾九商城数据</title>
 
 <link rel="stylesheet" href="css/ui.jqgrid.css"/>
 <link rel="stylesheet" href="css/jquery.gritter.css" />
@@ -39,37 +39,41 @@
         <!-- #section:elements.accordion -->
 
         <div id="accordion" class="accordion-style1">
+
             <div class="panel-collapse collapse in" id="collapseOne">
                 <!--<div class="panel-body">-->
                     <form class="form-inline" role="form" action="#" data-ajax="true" data-ajax-mode="replace" data-ajax-update="#searchTable" id="searchForm" method="post">
                         <div class="form-group">
-                            <label for="startTime" class="control-label">订单时间:</label>
-                            <input id="startTime" class="form-control date-picker" type="text" data-date-format="dd-mm-yyyy" autocomplete="off"/>
-                            <span>至</span>
-                            <input id="endTime" class="form-control date-picker" type="text" data-date-format="dd-mm-yyyy" autocomplete="off"/>
-
-                            <label for="sendarea" class="control-label">发货地址:</label>
-                            <select class="form-control" id="sendarea" name="orderStatuses">
+                            <label for="orderType" class="control-label">店铺:</label>
+                            <select class="form-control" id="platform"" name="platform">
                                 <option value=""></option>
-                                <option value="0">新西兰仓</option>
-                                <option value="1">国内现货</option>
                             </select>
+                            <label for="createStartTime" class="control-label">订单时间:</label>
+                            <input id="createStartTime" class="form-control date-picker" type="text" data-date-format="yyyy-mm-dd" autocomplete="off"/>
+                            <span>至</span>
+                            <input id="createEndTime" class="form-control date-picker" type="text" data-date-format="yyyy-mm-dd" autocomplete="off"/>
 
-                            <label for="orderStatuses" class="control-label">订单状态:</label>
-                            <select class="form-control" id="orderStatuses" name="orderStatuses">
+                            <label for="payStartTime" class="control-label">支付时间:</label>
+                            <input id="payStartTime" class="form-control date-picker" type="text" data-date-format="yyyy-mm-dd" autocomplete="off"/>
+                            <span>至</span>
+                            <input id="payEndTime" class="form-control date-picker" type="text" data-date-format="yyyy-mm-dd" autocomplete="off"/>
+
+                            <label for="state" class="control-label">订单状态:</label>
+                            <select class="form-control" id="state" name="orderStatuses">
                                 <option value=""></option>
                                 <option value="0">待支付</option>
                                 <option value="1">待发货</option>
-                                <option value="2">已发货</option>
+                                <option value="2">已收货</option>
                                 <option value="3">已完成</option>
-                                <option value="4">已取消</option>
+                                <option value="5">申请退款</option>
+                                <option value="5">退款成功</option>
                             </select>
 
-                            <label for="orderType" class="control-label">订单类型:</label>
-                            <select class="form-control" id="orderType" name="orderType">
+                            <label for="state" class="control-label">订单来源:</label>
+                            <select class="form-control" id="filter" name="OrderFilter">
                                 <option value=""></option>
-                                <option value="0">奶粉</option>
-                                <option value="1">其他</option>
+                                <option value="新西兰仓">新西兰仓</option>
+                                <option value="国内现货">国内现货</option>
                             </select>
 
                             <button id="search" type="button" class="btn btn-purple btn-sm" >查询<i class="ace-icon fa fa-search icon-on-right bigger-110"></i></button>
@@ -128,8 +132,11 @@
     var month = dateObj.getMonth()+1;//月  (注意：月份+1)
     var date = dateObj.getDate();
 
-    var scripts = ["js/jq-table.js","js/xlsx.js","js/jquery.gritter.min.js","js/weimob.js",
-        "js/weimob_init.js",
+    var scripts = [
+        "js/nineteen/nineteenorder.js?v=2",
+        "js/jq-table.js?v=14",
+        "js/xlsx.js?v=1",
+        "js/jquery.gritter.min.js",
         "js/jqGrid/i18n/grid.locale-en.js",
         "https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.14.3/xlsx.full.min.js",
 //        "https://cdnjs.cloudflare.com/ajax/libs/Nestable/2012-10-15/jquery.nestable.min.js",
@@ -141,9 +148,7 @@
         //inline scripts related to this page
         jQuery(function($){
 
-            // init_PlatForm();
-
-            init_weimob();
+            init_PlatForm();
 
             $('.dd').nestable({ "maxDepth":2 });
 

@@ -1,5 +1,11 @@
 
 $("#search").bind("click",function () {
+    const bizId = mee.getBizId();
+    if(!bizId) {
+        toastr.error("系统异常,请重新登录！");
+        return;
+    }
+
     var start = $("#startTime").val();
     var end = $("#endTime").val();
     var orderStatuses = $("#orderStatuses").val();
@@ -15,7 +21,7 @@ $("#search").bind("click",function () {
     data.orderType = orderType;
     data.sendarea = sendarea;
 
-    var url = $weimob_orderlist_url;
+    var url = $weimob_orderlist_url+'/'+bizId;
 
     sendJData(url,JSON.stringify(data),true,function (calldata) {
         var code = calldata.statusCode;

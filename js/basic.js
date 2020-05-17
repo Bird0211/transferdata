@@ -53,21 +53,26 @@ var $weimob_order_delivery_url = "https://external.yiyun.co.nz/api/order/deliver
 var $text_match_url = "https://external.yiyun.co.nz/api/matching";
 // var $text_match_url = "http://localhost:8801/api/matching";
 
-var default_bizId = 20;
+// var $plat_form_url = "http://localhost:8801/api/platform";
+var $plat_form_url = "https://external.yiyun.co.nz/api/platform";
+
+// var $nineteen_order_list_url = "http://localhost:8801/api/nineteen/list";
+var $nineteen_order_list_url = "https://external.yiyun.co.nz/api/nineteen/list";
 
 //cookie storage
 if (!('mee' in window)) {
     window['mee'] = {}
 }
 
-
 var all_products = null;
 getAllProductFromUrl = function () {
     if(all_products && all_products != null)
         return all_products;
 
+    const bizId = mee.getBizId() | 20;
+
     const products = {};
-    sendData($all_products_url,'bizId='+default_bizId,false,function (data) {
+    sendData($all_products_url,'bizId='+bizId,false,function (data) {
         if(data.statusCode == 0){
             var datas = data.data;
             if(!datas)
@@ -226,6 +231,7 @@ function getData(url,async,callBack) {
         },
         success: function (data) {
             // $("body").Loading("hide");
+            console.log(data);
             return callBack(data);
         },
         error: function (e) {
@@ -381,6 +387,31 @@ mee.getCurrentUrlQueryString = function () {
     return parames;
 };
 
+mee.getBizId = function() {
+    var params = mee.getCurrentUrlQueryString();
+    var bizId = null;
+
+    if(params != null) {
+        bizId = params.bid;
+    }
+    if (!bizId || bizId == null || bizId == "") {
+        bizId = mee.storage.get('bid');
+    }
+    return bizId;
+}
+
+mee.getUserId = function() {
+    var params = mee.getCurrentUrlQueryString();
+    var uid = null;
+    if(params != null) {
+        uid = params.uid;
+    }
+    if (!uid || uid == null || uid == "") {
+        uid = mee.storage.get('uid');
+    }
+    return uid;
+}
+
 Date.prototype.Format = function (fmt) { //author: meizz
     var o = {
         "M+": this.getMonth() + 1, //月份
@@ -395,4 +426,36 @@ Date.prototype.Format = function (fmt) { //author: meizz
     for (var k in o)
         if (new RegExp("(" + k + ")").test(fmt)) fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
     return fmt;
+}
+
+init_PlatForm = function() {
+    const bizId = mee.getBizId();
+    if(!bizId) {
+        toastr.error("系统异常,请重新登录！");
+    } else {
+        loadPlatForm();
+    }
+};
+
+loadPlatForm = function() {
+    const bizId = mee.getBizId();
+    getData($plat_form_url+'/'+bizId +'/19', true ,function(calldata) {
+        var code = calldata.statusCode;
+        if(code == 0) {
+            var data = calldata.data;
+            console.log(data);
+            if(!data || data.length <= 0) {
+                toastr.error("缺少店铺信息，请联系管理员添加店铺！");
+            }
+            var html = "";
+            for(let i = 0; i < data.length; i++) {
+                const item = data[i];
+                
+                html += '<option value="'+item.id+'">'+item.name+'</option>'
+            }
+            $('#platform').html(html);
+        } else {
+            toastr.error("系统错误,请稍后再试！");
+        }
+    });
 }

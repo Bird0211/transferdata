@@ -1,5 +1,4 @@
 
-console.info("grid-table init start")
 var grid_selector = "#grid-table";
 var pager_selector = "#grid-pager";
 //resize to fit page size
@@ -17,13 +16,12 @@ $(document).on('settings.ace.jqGrid' , function(ev, event_name, collapsed) {
     }
 });
 
-console.info("grid-table init end")
-
 var grid_data = {};
 jQuery(grid_selector).jqGrid({
     data: grid_data,
     datatype: "local",
     height: '600',
+    width: '100%',
     colNames:['','订单编号','商品名称','数量','发件人','sender','is3pl','收件人' ,'电话','身份证','地址','备注','物流','expresstype'],
     colModel:[
         {name:'option',width:20,sortable:false, align:"center",editable:false,
@@ -58,15 +56,18 @@ jQuery(grid_selector).jqGrid({
         {name:'num',index:'num', width:15,editable: false},
         {name:'', width:25,editable: false,
             formatter:function (cellvalue, options, rowObject) {
+            /**
             if(!rowObject.sender || rowObject.sender == ''){
                 rowObject.sender == "3PL"
                 return "3PL";
             }
-
-                var checked = 'checked';
-                if(rowObject.is3pl && rowObject.is3pl == "true"){
-                    checked = ''
-                }
+            */
+           if(rowObject.sender === undefined)
+                rowObject.sender = "";
+            var checked = 'checked';
+            if(rowObject.is3pl && rowObject.is3pl == "true"){
+                checked = ''
+            }
             var value = subString(rowObject.sender,6).padEnd(6);
             var detail = "<label>";
                 detail +="<input name='switch-field-1' onclick='change_row_3pl("+options.rowId+")' "+checked+" class='ace ace-switch' type='checkbox' />"
@@ -85,7 +86,6 @@ jQuery(grid_selector).jqGrid({
         {name:'remark',index:'remark', width:50, sortable:false,editable:false,hidden:false},
         {name:'express',width:35, editable:false,
             formatter:function (cellvalue, options, rowObject) {
-                <!-- #section:elements.button.group -->
                 if(!rowObject.expresstype || rowObject.expresstype === '') {
                     rowObject.expresstype = "1";
                 }
@@ -393,6 +393,117 @@ function beforeEditCallback(e) {
     style_edit_form(form);
 }
 
+initGift = function () {
+    var gift_role = sessionStorage.getItem("_giftrole")
+    if(!gift_role || gift_role == '') {
+        xlsx.init_gifr_role();
+    }
+}
+
+getGift = function () {
+    var giftString = sessionStorage.getItem("_giftrole");
+    var gift = null;
+    if(giftString){
+        gift = JSON.parse(giftString);
+    }
+    return gift[mee.getBizId()];
+}
+
+gift_data = function () {
+
+    var gifts = getGift();
+    if(!gifts){
+        toastr.error("缺少配置文件，请联系管理员");
+        return;
+    }
+    //1、获取所以订单
+    var all_data = table.getJQAllData();
+
+    var isAddGift = false;
+    //2、匹配
+    jQuery(all_data).each(function () {
+        var add_gifts = match_gift(this,gifts);
+        if(add_gifts && add_gifts.length > 0){
+            //merge gift
+            var gift_content = "";
+            var gift_num = 0;
+            for(let i in add_gifts) {
+                var add_gift = add_gifts[i];
+                var add_content = add_gift.name+" X "+parseInt(add_gift.num)+";"+add_gift.sku+"<br>";
+                gift_content += add_content;
+                gift_num = parseInt(gift_num) + parseInt(add_gift.num);
+            }
+            this.content += "<br>"+gift_content;
+            this.num = parseInt(this.num) + parseInt(gift_num);
+
+            isAddGift = true;
+        }
+    });
+
+    //3、刷新
+    if(isAddGift)
+        table.setTableData(all_data);
+
+};
+
+
+match_gift = function (row_data,gifts) {
+    var add_gift = null;
+    var datas = table.splitOrder_detail(row_data);
+    /*
+    var prudict_skus = [];
+    jQuery(datas).each(function () {
+        prudict_skus.push(this.sku);
+    });
+    */
+    var match_gift;
+    for(let i in gifts){
+        var gift = gifts[i];
+        var num = intersectNum(datas,gift.skus);
+        if(num >= gift.num) {
+            match_gift = gift;
+            break;
+        }
+    }
+
+    if(match_gift) {
+        add_gift = [];
+        var gift_pruducts = match_gift.gift;
+        if(gift_pruducts && gift_pruducts.length > 0) {
+            jQuery(gift_pruducts).each(function () {
+                let gift_detail = this.split(";");
+                if(gift_detail && gift_detail.length > 0){
+                    var g = {};
+                    g.sku = gift_detail[0];
+                    g.name = gift_detail[1].split('X')[0];
+                    g.num = gift_detail[1].split('X')[1];
+                    add_gift.push(g);
+                }
+            });
+        }
+    }
+
+    return add_gift;
+}
+
+intersectNum = function (order,giftSKU) {
+    if(!order || !giftSKU)
+        return 0;
+
+    var num = 0;
+    for(let i in order){
+        var sku = order[i].sku.replace(/[\r\n]/g,"");
+        for(let v in giftSKU){
+            let g_sku = giftSKU[v].replace(/[\r\n]/g,"");
+            if(g_sku.toString() === sku.toString()) {
+                num += order[i].num;
+                break;
+            }
+        }
+    }
+
+    return num;
+}
 
 
 //it causes some flicker when reloading or navigating grid
@@ -672,12 +783,10 @@ change_3pl = function () {
 
     var is3pl = "false";
     if($('#3pl div span').hasClass("btn-yellow")){
-        console.info("has Class")
         $('#3pl div span').addClass('info');
         $('#3pl div span').removeClass('btn-yellow');
         is3pl = "true";
     }else {
-        console.info("No Class")
         $('#3pl div span').addClass('btn-yellow');
         $('#3pl div span').removeClass('info');
     }
@@ -748,7 +857,6 @@ table.splitOrder_detail = function (rowData,isSplit) {
         var content = c[0].split(' X ')[0].trim();
         let number = c[0].split(' X ')[1].trim();
 
-        console.info(content,sku,number);
         if(isSplit) {
             for (var n = 0; n < Number(number); n++) {
                 const item = {};
@@ -802,7 +910,6 @@ table.split_order = function () {
 };
 
 table.auto_split_order = function (rowId) {
-    console.info("table.auto_split_order start");
     var rowData = jQuery(grid_selector).jqGrid("getRowData",rowId);
 
     var num = $('#autosplitbtn').val();
@@ -812,8 +919,6 @@ table.auto_split_order = function (rowId) {
     } else {
         var datas = table.splitOrder_detail(rowData,false);
         let n = Math.ceil(rowData.num / num);
-
-        console.info(rowData);
         let newData = [];
         for (let i = 0; i < n; i++) {
             let order = auto_split_order(datas,num);
@@ -862,8 +967,6 @@ table.auto_split_order = function (rowId) {
         $('.modal').modal('hide');
         table.setTableData(rowDatas);
     }
-
-    console.info("table.auto_split_order end");
 
 };
 
@@ -1080,9 +1183,12 @@ table.merge = function (data) {
 }
 
 table.setTableData = function (data) {
-
+    for (let i = 0; i < data.length; i++) {
+        let d = data[i];
+        d.address = d.address.replace(/[\r\n,，]/g,"");
+    }
     data = table.isMergeOrder(data);
-    table.checkSku(data);
+    // table.checkSku(data);
 
     var page = jQuery(grid_selector).jqGrid('getGridParam','page');
     // var rowNum = o.jqGrid('getGridParam', 'rowNum'); //获取显示配置记录数量
@@ -1099,6 +1205,7 @@ table.setTableData = function (data) {
             "white-space":"normal !important",
             "height":"auto"});
 */
+    initGift();
 
     if(jQuery('#accordionTable').attr("class")) {
         if (jQuery('#accordionTable').attr("class").indexOf("collapsed") > 0) {

@@ -124,8 +124,10 @@ send_data = function (datas) {
         let data = datas[key];
         delivery.push(data);
     }
+    
+    const bizId = mee.getBizId();
 
-    sendJData($weimob_order_delivery_url,JSON.stringify(delivery),true,function (data) {
+    sendJData($weimob_order_delivery_url+'/'+bizId,JSON.stringify(delivery),true,function (data) {
         if(data.statusCode != 0) {
             toastr.error("发货失败，请稍后再试!");
         }else {
