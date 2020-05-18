@@ -406,6 +406,7 @@ getGift = function () {
     if(giftString){
         gift = JSON.parse(giftString);
     }
+    console.log('Gift',gift);
     return gift[mee.getBizId()];
 }
 
@@ -433,7 +434,7 @@ gift_data = function () {
                 gift_content += add_content;
                 gift_num = parseInt(gift_num) + parseInt(add_gift.num);
             }
-            this.content += "<br>"+gift_content;
+            this.content += "<br><br>"+gift_content;
             this.num = parseInt(this.num) + parseInt(gift_num);
 
             isAddGift = true;

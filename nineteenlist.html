@@ -133,9 +133,9 @@
     var date = dateObj.getDate();
 
     var scripts = [
-        "js/nineteen/nineteenorder.js?v=2",
-        "js/jq-table.js?v=14",
-        "js/xlsx.js?v=1",
+        "js/nineteen/nineteenorder.js?v=4",
+        "js/jq-table.js?v=17",
+        "js/xlsx.js?v=23",
         "js/jquery.gritter.min.js",
         "js/jqGrid/i18n/grid.locale-en.js",
         "https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.14.3/xlsx.full.min.js",
@@ -152,11 +152,9 @@
 
             $('.dd').nestable({ "maxDepth":2 });
 
-
             $('.dd-handle a').on('mousedown', function(e){
                 e.stopPropagation();
             });
-
 
             $('.dd').on('change', function() {
                 nestableChange();
@@ -165,7 +163,6 @@
             $('[data-rel="tooltip"]').tooltip();
 
             $("#grid-pager_left").css("width", "auto");
-
 
             $('.date-picker').datepicker({
                 autoclose: true,

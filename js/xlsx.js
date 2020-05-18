@@ -12,7 +12,7 @@ xlsx.option.exltitle = null;
 xlsx.url = {};
 xlsx.url.products = "file/Mee_products.xlsx";
 xlsx.url.split = "file/Mee_split.xls";
-xlsx.url.gift = "file/gift_role.xlsx?v=" + new Date();
+xlsx.url.gift = "file/gift_role.xlsx?v=" + new Date().getTime();
 xlsx.url.customer = "file/customer.xlsx";
 
 xlsx.customer = null;
@@ -1249,6 +1249,7 @@ set_gift_role = function (oridata) {
     if(!oridata || oridata == null)
         return;
 
+    console.log('gift-data',oridata)
     var giftdata = {};
     jQuery(oridata).each(function () {
         var data = this.data;
@@ -1256,10 +1257,10 @@ set_gift_role = function (oridata) {
         var gifts = [];
         jQuery(data).each((i,v)=>{
             var sku = v["商品SKU"];
-            if(!sku)
+            if(!sku || sku === null && sku === undefined)
                 return;
 
-            var skus = sku.split('\n');
+            var skus = sku.toString().split('\n');
             var gift = v["赠品"].split('\n');
 
             var g = {};

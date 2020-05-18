@@ -47,14 +47,18 @@ show_data = function (ori_datas) {
         let num = 0;
      
         for(let i = 0; i < contents.length; i++) {
-            let d = contents[i];
-            let s = d.split('X');
-            let sku = "";
+            let d = contents[i];        // 9400501001116X1X4;
+            let s = d.split('X');       
+            
+            let sku = s[0];
+            let n = 1;
             if(s.length > 1) {
-                sku = s[0];
+                for(let i = 1; i < s.length; i++) {
+                    n = n * Number(s[i]);
+                }
             }
-            let n = s[1];
-            num += Number(n.trim());
+
+            num += n;
             let name = ""
             let product = allProject[sku];
             if(!product || product === null) {
@@ -63,7 +67,7 @@ show_data = function (ori_datas) {
                 name = product.name;
             }
             cont += name;
-            cont += " X " + Number(n.trim());
+            cont += " X " + n;
             cont += ";";
             cont += sku;
 

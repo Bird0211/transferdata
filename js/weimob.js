@@ -23,7 +23,7 @@ $("#search").bind("click",function () {
 
     var url = $weimob_orderlist_url+'/'+bizId;
 
-    sendJData(url,JSON.stringify(data),true,function (calldata) {
+    sendJData(url, JSON.stringify(data),true,function (calldata) {
         var code = calldata.statusCode;
         if(code == 0) {
             var data = calldata.data;
@@ -33,7 +33,7 @@ $("#search").bind("click",function () {
             let pageList = data.items;
             setTable(pageNum,pageSize,pageList,totalCount)
 
-        }else if (code == 118004) {
+        } else if (code == 118004) {
             toastr.error("授权失败,重新需要重新授权！");
         } else {
             toastr.error("系统错误,请稍后再试！");
@@ -59,6 +59,7 @@ setTable = function (pageNum,pageSize,pageList,totalCount) {
         data.id_num = list.idCardNo != null ? list.idCardNo.match(/\d+(.\d+)?/g) : null;
         data.sender = 'MEE';
         data.is3pl = false;
+        
         datas.push(data);
     }
 
