@@ -761,8 +761,13 @@ download_data = function () {
     }
 
     if(expData && expData.cg.length > 0) {
+
+        downloadCgData(expData.cg);
+
+        /*
         xlsx.downloadExl(xlsx.new_chengguang_data(expData.cg),"xlsx",month + "." + date + "程光_"+type + ".xlsx",false);
         xlsx.downloadExl(xlsx.new_detail_data(expData.cg),"xlsx",month + "." + date + "New订单[程光]_"+type + ".xlsx",false);
+        */
     }
 
     if(expData && expData.milk.length > 0) {
@@ -777,6 +782,52 @@ download_data = function () {
     if(myDropzone)
         myDropzone.removeAllFiles();
     */
+
+}
+
+downloadCgData = function(cgExpData) {
+    let data = xlsx.new_OnlineChengguang_data(cgExpData);
+    console.log("NewChengguang: ", cgExpData);
+
+    let url = $chengguang_order_url + '/' + mee.getBizId();
+
+    sendJData(url,JSON.stringify(data),true,function (data) {
+        if(data.statusCode === 0) {
+            let flywayOrder = data.data;
+            let express_data = getCgExpData(flywayOrder);
+            let detail_data = xlsx.new_detail_data(cgExpData);
+            console.log('express_data',express_data);
+            console.log('detail_data',detail_data);
+           
+            var download_data = pre_down_data(getDetailData(detail_data), express_data);
+            console.log('download_data',download_data);
+
+            xlsx.downloadExl(download_data,"csv",month + "." + date + "MEE-Import-CG" + ".csv",true);
+           
+        } else if(data.statusCode === 11813 || data.statusCode === 11814) {
+            toastr.error("添加失败！", data.description);
+            $('#cgModal').modal('show');
+        } else {
+            toastr.error("添加失败！");
+        }
+    })
+}
+
+getCgExpData = function (datas) {
+    var express_data = {};
+    for(var i = 0; i<datas.length; i++){
+        var d = datas[i];
+        if(!d["remark"])
+            continue;
+        
+        let order = d["remark"].toString().replace(reg, "").trim();
+        let item = {};
+        item.express = d["orderNumber"];
+        item.content = d["productName"];
+        item.sender = d["senderName"];
+        express_data[order.toUpperCase()] = item;
+    }
+    return express_data;
 
 }
 
@@ -971,6 +1022,30 @@ table.auto_split_order = function (rowId) {
 
 };
 
+
+table.submitCg = function() {
+    let username = $('#username').val();
+    let pwd = $('#pwd').val();
+
+    if (!username || !pwd) {
+        toastr.error("请输入程光用户名或密码！");
+        return;
+    } 
+
+    var url =  $chengguang_token_url + '/' + mee.getBizId();
+    var data = "username="+ username +'&password='+pwd
+    sendData(url,data,true,function(data) {
+        if(data.statusCode == 0) {
+            $('#cgModal').modal('hide');
+            var table_data = table.getJQAllData();
+            var expData = splitExpData(table_data);
+            if(expData && expData.cg)
+                downloadCgData(expData.cg);
+        } else {
+            toastr.error("授权失败, 请确认用户密码！");
+        }
+    });
+}
 
 removeOrder = function (orders,datas) {
     var filterDatas = [];

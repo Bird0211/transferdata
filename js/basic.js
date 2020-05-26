@@ -59,6 +59,14 @@ var $plat_form_url = "https://external.yiyun.co.nz/api/platform";
 // var $nineteen_order_list_url = "http://localhost:8801/api/nineteen/list";
 var $nineteen_order_list_url = "https://external.yiyun.co.nz/api/nineteen/list";
 
+// var $chengguang_order_url = "http://localhost:8801/api/flyway/addorder";
+var $chengguang_order_url = "https://external.yiyun.co.nz/api/flyway/addorder";
+
+
+// var $chengguang_token_url = "http://localhost:8801/api/flyway/token";
+var $chengguang_token_url = "https://external.yiyun.co.nz/api/flyway/token";
+
+
 //cookie storage
 if (!('mee' in window)) {
     window['mee'] = {}
@@ -252,14 +260,15 @@ function sendData(url, data,async ,callBack) {
         cache: true,
         data: data,
         beforeSend: function (request) {
-            // $("body").Loading();
+            $("body").Loading();
         },
         success: function (result) {
-            if(callBack)
+            $("body").Loading("hide");
+            if(callBack) 
                 return callBack(result);
         },
         error: function (e) {
-            // $("body").Loading("hide");
+            $("body").Loading("hide");
             //console.log(e);
         }
     });

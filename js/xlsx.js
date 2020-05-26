@@ -336,6 +336,85 @@ xlsx.new_chengguang_data = function (table_datas) {
 }
 
 
+
+xlsx.new_OnlineChengguang_data = function (table_datas) {
+    if(table_datas == null)
+        return;
+
+    var format_data = [];
+    jQuery(table_datas).each(function () {
+        var content = this.content;
+        var contents = content.split('<br>').sort();
+        // var format_content = "";
+        var products = [];
+        var number = [];
+        let pattern=/[`~!@#$^&()=|{}':;'\\\[\]\.<>\/?~！@#￥……&（）——|{}【】'；：""'。、？]/g;
+
+        for(var i = 0; i < contents.length; i++){
+            var c = contents[i];
+            if(!c || c == '')
+                continue;
+            console.log(c);
+            let sku = c.split(";")[1];
+            let pName = c.split(";")[0];
+            let product = pName.split("X")[0];
+            let num = pName.split("X")[1];
+
+            product = product.replace(pattern,"");
+            products.push(product);
+            number.push(num.trim());
+            // format_content += c.split(";")[0].replace(/(.*)X/,'$1*').trim() + ',';
+        }
+        // if(format_content === undefined || format_content === "")
+        //     return;
+
+        var sender = this.sender;
+        var is3pl = this.is3pl;
+
+        if(is3pl == "true" || !sender) {
+            sender = "";
+        }
+
+        let remark = this.remark;
+        if(remark && remark.length > 0 ) {
+            sender += '['+remark+']'
+        }
+
+        // format_content = format_content.slice(0,-1);
+        // format_content = format_content.replace(pattern,"");
+
+        var d = {};
+        
+        d.postType = '保健品线';
+
+        d.receiverName = this.name;
+    
+        d.receiverPhone = this.phone;
+    
+        d.receiverAddr = this.address;
+    
+        d.senderName = sender;
+    
+        d.senderPhone = "";
+    
+        d.senderAddr = "";
+    
+        d.remark = this.order;
+
+        d.productsName = products;
+
+        d.productsQuantity = number;
+
+        format_data.push(d);
+    });
+
+    console.log(format_data);
+    return format_data;
+
+}
+
+
+
 xlsx.new_express_data = function(table_datas) {
     if(table_datas == null)
         return;

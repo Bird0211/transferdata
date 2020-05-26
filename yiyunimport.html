@@ -11,7 +11,6 @@
 <script src="js/jqGrid/jquery.jqGrid.min.js"></script>
 <script src="js/ace-elements.min.js"/>
 
-<!--<script src="js/jq-table.js"/>-->
 <script type="text/javascript">
     toastr.options.positionClass = 'toast-top-center';
 
@@ -104,6 +103,48 @@
                     </div><!-- /.modal-content -->
                 </div><!-- /.modal -->
             </div>
+
+            <!-- 模态框（Modal）modal-sm -->
+            <div class="modal fade bs-example-modal-sm" id="cgModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                <div class="modal-dialog ">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                                &times;
+                            </button>
+                            <h4 class="modal-title" id="myModalLabel">
+                                程光授权登录
+                            </h4>
+                        </div>
+                        <div class="modal-body">
+                            <form class="form-horizontal" role="form">
+                              
+                                <div class="form-group">
+                                    <label class="col-sm-3 control-label no-padding-right" for="username"> 用户名 </label>
+
+                                    <div class="col-sm-9">
+                                        <input type="text" id="username" placeholder="用户名" class="col-xs-10 col-sm-5" />
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="col-sm-3 control-label no-padding-right" for="pwd"> 密码 </label>
+
+                                    <div class="col-sm-9">
+                                        <input type="text" id="pwd" placeholder="密码" class="col-xs-10 col-sm-5" />
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default btn-sm" data-dismiss="modal">关闭</button>
+
+                            <button id="cgSubmit" onclick="table.submitCg()" type="button" class="btn btn-success btn-sm">确认</button>
+                        </div>
+                    </div><!-- /.modal-content -->
+                </div><!-- /.modal -->
+            </div>
+
         </div>
             <!-- PAGE CONTENT ENDS -->
     </div><!-- /.col -->
@@ -121,8 +162,8 @@
 
     var scripts = [
         "js/yiyunimport.js",
-        "js/jq-table.js?v=1",
-        "js/xlsx.js?v=1",
+        "js/jq-table.js?v=20200506",
+        "js/xlsx.js?v=20200506",
         "js/chosen.jquery.min.js",
         "js/jqGrid/i18n/grid.locale-en.js",
         "js/jquery.gritter.min.js",

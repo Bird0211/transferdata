@@ -115,6 +115,47 @@
                 </div><!-- /.modal -->
             </div>
 
+            <!-- 模态框（Modal）modal-sm -->
+            <div class="modal fade bs-example-modal-sm" id="cgModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                <div class="modal-dialog ">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                                &times;
+                            </button>
+                            <h4 class="modal-title" id="myModalLabel">
+                                程光授权登录
+                            </h4>
+                        </div>
+                        <div class="modal-body">
+                            <form class="form-horizontal" role="form">
+                              
+                                <div class="form-group">
+                                    <label class="col-sm-3 control-label no-padding-right" for="username"> 用户名 </label>
+
+                                    <div class="col-sm-9">
+                                        <input type="text" id="username" placeholder="用户名" class="col-xs-10 col-sm-5" />
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="col-sm-3 control-label no-padding-right" for="pwd"> 密码 </label>
+
+                                    <div class="col-sm-9">
+                                        <input type="text" id="pwd" placeholder="密码" class="col-xs-10 col-sm-5" />
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default btn-sm" data-dismiss="modal">关闭</button>
+
+                            <button id="cgSubmit" onclick="table.submitCg()" type="button" class="btn btn-success btn-sm">确认</button>
+                        </div>
+                    </div><!-- /.modal-content -->
+                </div><!-- /.modal -->
+            </div>
+
         </div>
             <!-- PAGE CONTENT ENDS -->
     </div><!-- /.col -->
@@ -128,7 +169,10 @@
     var month = dateObj.getMonth()+1;//月  (注意：月份+1)
     var date = dateObj.getDate();
 
-    var scripts = ["js/jq-table.js","js/xlsx.js","js/jquery.gritter.min.js","js/weimob.js",
+    var scripts = ["js/jq-table.js?v=20200506",
+        "js/xlsx.js?v=20200506",
+        "js/jquery.gritter.min.js",
+        "js/weimob.js",
         "js/weimob_init.js",
         "js/jqGrid/i18n/grid.locale-en.js",
         "https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.14.3/xlsx.full.min.js",
