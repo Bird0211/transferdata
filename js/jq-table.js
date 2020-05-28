@@ -660,8 +660,9 @@ getContentHtml = function(datas) {
 
         for(var i = 0; i < data.length; i++){
             var d = data[i];
+            let content = d.content.replace('\'',"");
             content_hteml += "<li class=\"dd-item\" data-id='"+d.sku+"' data-sku='"+d.sku+"' data-content='"+d.content+"' data-num='"+d.num+"' data-sender='"+d.sender+"' data-expresstype='"+d.expresstype+"'>";
-            content_hteml += "<div class=\"dd-handle\">"+d.content + ' X ' + d.num + "</div>"
+            content_hteml += '<div class="dd-handle">'+ content + ' X ' + d.num + '</div>';
             content_hteml += "</li>";
         }
         content_hteml += "</ol></li>";
@@ -1261,6 +1262,8 @@ table.merge = function (data) {
 table.setTableData = function (data) {
     for (let i = 0; i < data.length; i++) {
         let d = data[i];
+        d.content = d.content.replace('\''," ").replace("'"," ");
+        
         d.address = d.address.replace(/[\r\n,，]/g,"");
     }
     data = table.isMergeOrder(data);
