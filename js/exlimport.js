@@ -58,7 +58,7 @@ show_data = function (ori_datas) {
             d = d.toString().replace("X"," X ");
             cont += d;
             if(i != contents.length -1 )
-                cont += '</br>';
+                cont += '<br>';
 
             let sku = "";
             let s = d.split(';');
@@ -350,7 +350,7 @@ getContent = function (datas) {
         content += (newSku == null || newSku == "") ? sku : newSku;
 
         if(i != datas.length -1)
-            content += '</br>';
+            content += '<br>';
 
     }
     return content;

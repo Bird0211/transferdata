@@ -1250,7 +1250,7 @@ table.merge = function (data) {
 
     for(var item in merge){
         var mergeData = merge[item];
-        content += mergeData.content +" X " + mergeData.num +";" + mergeData.sku + "<br/>";
+        content += mergeData.content +" X " + mergeData.num +";" + mergeData.sku + "<br>";
     }
 
     var merge_data = {};
@@ -1263,7 +1263,7 @@ table.setTableData = function (data) {
     for (let i = 0; i < data.length; i++) {
         let d = data[i];
         d.content = d.content.replace('\''," ").replace("'"," ");
-        
+        d.content = mergeOrder(d.content);
         d.address = d.address.replace(/[\r\n,，]/g,"");
     }
     data = table.isMergeOrder(data);
@@ -1298,7 +1298,7 @@ table.checkSku = function (datas) {
     for (let i = 0; i < datas.length; i++) {
         let data = datas[i];
         let content = data.content;
-        let products = content.split('</br>');
+        let products = content.split('<br>');
         let nullSku = false;
         for(let i = 0; i < products.length; i++) {
             let product = products[i];
@@ -1317,6 +1317,55 @@ table.checkSku = function (datas) {
     if(errorOrders.length > 0) {
         table.showMissOrder(errorOrders,"以下订单缺少商品SKU,请添加商品SKU信息",'')
     }
+}
+
+mergeOrder = function(content) {
+    let products = content.split('<br>');
+    console.log(products);
+    const skus = [];
+    var result = "";
+    for(let i = 0; i < products.length; i++) {
+        let product = products[i];
+        let d = product.split(';');
+        if(d.length < 2 || d[1] == null || d[1] == "") {
+           continue;
+        }
+
+        // 【C-5-1】Swisse Swisse 钙+VD 150粒 NZ不含GST X 5;9311770598170
+        var c = d[0].split(' X ')[0];
+        var n = Number(d[0].split(' X ')[1]);
+        var s = d[1];
+        let isMerge = false;
+
+        if(skus.indexOf(s) >= 0) {
+            continue;
+        }
+        for(let j = 0; j < products.length; j++) {
+            if(i == j)
+                continue;
+
+            let np = products[j];
+            let nd = np.split(';');
+            if(nd.length < 2 || nd[1] == null || nd[1] == "") {
+                continue;
+            }
+            let nc = nd[0].split(' X ')[0];
+            let nn = nd[0].split(' X ')[1];
+            let ns = nd[1];
+            
+            if(s === ns) {
+                n += Number(nn);
+                isMerge = true;
+            }
+        }
+
+        if(isMerge) {
+            skus.push(s);
+        }
+        result += c + " X " + n + ';' + s + '<br>'
+    }
+    console.log("result:" , result);
+    return result;
 }
 
 table.showMissOrder = function (data,title,time) {

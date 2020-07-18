@@ -26,7 +26,7 @@ show_data = function (ori_datas) {
 
         let orderdatas = {};
         orderdatas.order = order;
-        orderdatas.content = content != '-' ? (content+" ["+speci+"] " + " X " + num + ";" + sku +"</br>").replace(",","") : null;
+        orderdatas.content = content != '-' ? (content+" ["+speci+"] " + " X " + num + ";" + sku +"<br>").replace(",","") : null;
         orderdatas.num = num != '-' ? num : 0;
         orderdatas.name = name != '-' ? name : null;
         orderdatas.sender = sender != '-' ? sender : null;

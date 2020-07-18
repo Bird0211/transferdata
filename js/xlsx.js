@@ -587,7 +587,7 @@ process_data = function (order_data,detail_data) {
             var content = "";
             for(var item in detail){
                 var d_data = detail[item];
-                var c = d_data.content +" X "+ parseInt(d_data.num) +";" +d_data.sku + "</br>";
+                var c = d_data.content +" X "+ parseInt(d_data.num) +";" +d_data.sku + "<br>";
                 content += c;
             }
             var f_data = {};
@@ -711,7 +711,7 @@ format_Taobao = function (ori_datas) {
             if(order_data[row_data.order]) {
                 var o = order_data[row_data.order];
                 o.num = Number(o.num)+ Number(row_data.num);
-                o.content = o.content + row_data.content +" X "+ parseInt(row_data.num) + ";" + row_data.sku + "</br>";
+                o.content = o.content + row_data.content +" X "+ parseInt(row_data.num) + ";" + row_data.sku + "<br>";
                 order_data[row_data.order] = o;
             }else {
                 var o = {};
@@ -722,7 +722,7 @@ format_Taobao = function (ori_datas) {
                 o.address = row_data.addr;
                 o.addr = row_data.addr;
                 o.num = row_data.num;
-                o.content = row_data.content +" X "+ parseInt(row_data.num) + ";" + row_data.sku + "</br>";
+                o.content = row_data.content +" X "+ parseInt(row_data.num) + ";" + row_data.sku + "<br>";
                 o.sku = row_data.sku;
                 order_data[row_data.order] = o;
             }
@@ -815,7 +815,7 @@ getYamRowData = function (data) {
         if(s != null && s.length > 1)
             num = parseInt(num) * parseInt(s[1]);
 
-        content += p + " X " + parseInt(num)+ ";" + s[0] +"</br>";
+        content += p + " X " + parseInt(num)+ ";" + s[0] +"<br>";
         total_num += parseInt(num);
     }
     row_data.content = content.toString().replace(reg, "").trim();;
@@ -1094,7 +1094,7 @@ reNewData = function (format_data) {
     jQuery(format_data).each(function() {
         var order = this.order;
         var content = this.content;
-        var contents = content.split("</br>");
+        var contents = content.split("<br>");
         var format_content = "";
         for(var i = 0; i < contents.length; i++){
             var c = contents[i];

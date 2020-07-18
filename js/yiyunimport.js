@@ -71,7 +71,7 @@ show_data = function (ori_datas) {
             cont += sku;
 
             if(i != contents.length -1)
-                cont += '</br>';
+                cont += '<br>';
         }
 
         let orderdatas = {};

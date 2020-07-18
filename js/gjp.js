@@ -109,7 +109,7 @@ format_Taobao = function (ori_datas) {
             if(order_data[row_data.order]) {
                 var o = order_data[row_data.order];
                 o.num = Number(o.num)+ Number(row_data.num);
-                o.content = o.content + row_data.content +" X "+ parseInt(row_data.num) + ";" + row_data.sku + "</br>";
+                o.content = o.content + row_data.content +" X "+ parseInt(row_data.num) + ";" + row_data.sku + "<br>";
                 order_data[row_data.order] = o;
             }else {
                 var o = {};
@@ -120,7 +120,7 @@ format_Taobao = function (ori_datas) {
                 o.address = row_data.addr;
                 o.addr = row_data.addr;
                 o.num = row_data.num;
-                o.content = row_data.content +" X "+ parseInt(row_data.num) + ";" + row_data.sku + "</br>";
+                o.content = row_data.content +" X "+ parseInt(row_data.num) + ";" + row_data.sku + "<br>";
                 o.sku = row_data.sku;
                 order_data[row_data.order] = o;
             }
