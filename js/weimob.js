@@ -11,6 +11,7 @@ $("#search").bind("click",function () {
     var orderStatuses = $("#orderStatuses").val();
     var sendarea = $('#sendarea').val();
     var orderType = $('#orderType').val();
+    var orderFlag = $('#orderFlag').val();
 
     var data = {};
     data.pageNum = 1;
@@ -20,6 +21,7 @@ $("#search").bind("click",function () {
     data.orderStatuses = orderStatuses;
     data.orderType = orderType;
     data.sendarea = sendarea;
+    data.flagRanks = orderFlag;
 
     var url = $weimob_orderlist_url+'/'+bizId;
 

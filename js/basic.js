@@ -66,6 +66,8 @@ var $chengguang_order_url = "https://external.yiyun.co.nz/api/flyway/addorder";
 // var $chengguang_token_url = "http://localhost:8801/api/flyway/token";
 var $chengguang_token_url = "https://external.yiyun.co.nz/api/flyway/token";
 
+var $weimob_orderFlag_url = "https://external.yiyun.co.nz/api/weimob/order/flag";
+
 
 //cookie storage
 if (!('mee' in window)) {

@@ -734,14 +734,17 @@ function nestableChange() {
 
 download_data = function () {
     //get all data
-    var table_data=table.getJQAllData();
+    var table_data = table.getJQAllData();
     var type = "";
     if(xlsx.option.type == 1)
         type = "Taobao";
     else if(xlsx.option.type == 2)
         type = "Enring";
-    else if(xlsx.option.type == 3)
+    else if(xlsx.option.type == 3) {
+        const orderIds = table_data.map(item => item.order.split('-')[0]);
+        flagWeimobOrder(orderIds);
         type = "Weimob";
+    }
     else if(xlsx.option.type == 4)
         type = "19Mini";
 
@@ -764,25 +767,11 @@ download_data = function () {
     if(expData && expData.cg.length > 0) {
 
         downloadCgData(expData.cg);
-
-        /*
-        xlsx.downloadExl(xlsx.new_chengguang_data(expData.cg),"xlsx",month + "." + date + "程光_"+type + ".xlsx",false);
-        xlsx.downloadExl(xlsx.new_detail_data(expData.cg),"xlsx",month + "." + date + "New订单[程光]_"+type + ".xlsx",false);
-        */
     }
 
     if(expData && expData.milk.length > 0) {
         xlsx.downloadExl(xlsx.new_milk_data(expData.milk),"xlsx",month + "." + date + "奶粉_"+type + ".xlsx",false);
-        // xlsx.downloadExl(xlsx.new_detail_data(expData.milk),"xlsx",month + "." + date + "New订单[顺丰]_"+type + ".xlsx",false);
     }
-
-    /*
-    if($('#accordionOne')) {
-        $('#accordionOne').trigger("click");
-    }
-    if(myDropzone)
-        myDropzone.removeAllFiles();
-    */
 
 }
 
@@ -1534,6 +1523,27 @@ change_express = function (expresstype) {
     table.setTableData(table_data);
 }
 
+
+flagWeimobOrder = function(orders) {
+    const bizId = mee.getBizId();
+    if(!bizId) {
+        toastr.error("系统异常,请重新登录！");
+        return;
+    }
+
+    var url = $weimob_orderFlag_url+'/'+bizId;
+
+    sendJData(url, JSON.stringify(orders),true,function (calldata) {
+        var code = calldata.statusCode;
+        if(code == 0) {
+            toastr.success("微盟订单已标记！");
+        } else if (code == 118004) {
+            toastr.error("授权失败,重新需要重新授权！");
+        } else {
+            toastr.error("系统错误,请稍后再试！");
+        }
+    })
+}
 
 
 /*
