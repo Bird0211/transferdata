@@ -741,7 +741,7 @@ download_data = function () {
     else if(xlsx.option.type == 2)
         type = "Enring";
     else if(xlsx.option.type == 3) {
-        const orderIds = table_data.map(item => item.order.split('-')[0]);
+        const orderIds = table_data.map(item => item.order);
         flagWeimobOrder(orderIds);
         type = "Weimob";
     }
